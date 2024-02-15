@@ -1,51 +1,106 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Diagnostics;
 
 namespace SupermarketInfo
 {
-    // Add comments to class and methods    // Add comments to class and methods
     /// <summary>
-    /// The PageDownloader class provides methods to download
-    /// web pages using the Selenium WebDriver.
+    /// Event arguments for download progress events.
+    /// </summary>
+    public class DownloadProgressEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Index of the page being downloaded.
+        /// </summary>
+        public int PageIndex { get; set; }
+
+        /// <summary>
+        /// Percentage of completion for the download operation.
+        /// </summary>
+        public double ProgressPercentage { get; set; }
+    }
+
+    /// <summary>
+    /// Provides methods to download web pages and notifies subscribers about download progress.
     /// </summary>
     public static class PageDownloader
     {
+        private static IWebDriver driver; // WebDriver instance for downloading pages
+
         /// <summary>
-        /// Downloads the HTML source of the given web page.
+        /// Event raised to notify subscribers about download progress.
         /// </summary>
-        /// <param name="page_url">The URL of the web page to download.</param>
+        public static event EventHandler<DownloadProgressEventArgs> DownloadProgress;
+
+        /// <summary>
+        /// Downloads the HTML source of a single web page.
+        /// </summary>
+        /// <param name="pageUrl">The URL of the web page to download.</param>
         /// <returns>The HTML source of the web page.</returns>
-        public static string DownloadPage(string page_url)
+        public static string DownloadPage(string pageUrl)
         {
-            IWebDriver driver;
+            InitializeWebDriver();
             try
             {
-                driver = new ChromeDriver("chromedriver.exe");
-
+                driver.Navigate().GoToUrl(pageUrl);
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+                return driver.PageSource;
             }
-            catch (InvalidOperationException error)
+            catch (WebDriverException ex)
             {
-                Debug.WriteLine("ChromeDriver is not found or incorrect version.");
-                Debug.WriteLine(error.Message);
+                Debug.WriteLine("WebDriver exception occurred:");
+                Debug.WriteLine(ex.Message);
                 return string.Empty;
             }
-            driver.Navigate().GoToUrl(page_url);
-            IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-            js.ExecuteScript("return document.readyState").Equals("complete");
-            string htmlSource = driver.PageSource;
-            driver.Quit();
-            return htmlSource;
+            finally
+            {
+                DisposeWebDriver();
+            }
         }
+
         /// <summary>
-        /// Downloads the HTML source of the given web pages.
+        /// Downloads the HTML source of multiple web pages.
         /// </summary>
-        /// <param name="page_urls">The URLs of the web pages to download.</param>
-        /// <returns>The HTML source of the web pages.</returns>
-        public static string[] DownloadPages(string[] page_urls)
+        /// <param name="pageUrls">Array of URLs of the web pages to download.</param>
+        /// <returns>An array of HTML sources of the web pages.</returns>
+        public static string[] DownloadPages(string[] pageUrls)
         {
-            IWebDriver driver;
+            InitializeWebDriver();
+            try
+            {
+                string[] htmlSources = new string[pageUrls.Length];
+                for (int i = 0; i < pageUrls.Length; i++)
+                {
+                    driver.Navigate().GoToUrl(pageUrls[i]);
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                    wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+                    htmlSources[i] = driver.PageSource;
+
+                    // Notify subscribers about the download progress
+                    OnDownloadProgress(i, (double)(i + 1) / pageUrls.Length * 100);
+                }
+                return htmlSources;
+            }
+            catch (WebDriverException ex)
+            {
+                Debug.WriteLine("WebDriver exception occurred:");
+                Debug.WriteLine(ex.Message);
+                return new string[0];
+            }
+            finally
+            {
+                DisposeWebDriver();
+            }
+        }
+
+        /// <summary>
+        /// Initializes the WebDriver instance.
+        /// </summary>
+        private static void InitializeWebDriver()
+        {
             try
             {
                 driver = new ChromeDriver("chromedriver.exe");
@@ -54,19 +109,34 @@ namespace SupermarketInfo
             {
                 Debug.WriteLine("ChromeDriver is not found or incorrect version.");
                 Debug.WriteLine(error.Message);
-                return new string[0];
+                // Consider throwing an exception here to propagate the error
             }
-            string[] html_sources = new string[page_urls.Length];
-            for (int url_id = 0; url_id < page_urls.Length; url_id++)
+        }
+
+        /// <summary>
+        /// Disposes of the WebDriver instance.
+        /// </summary>
+        private static void DisposeWebDriver()
+        {
+            if (driver != null)
             {
-                string url = page_urls[url_id];
-                driver.Navigate().GoToUrl(url);
-                IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-                js.ExecuteScript("return document.readyState").Equals("complete");
-                html_sources[url_id] = driver.PageSource;
+                driver.Quit();
+                driver.Dispose();
             }
-            driver.Quit();
-            return html_sources;
+        }
+
+        /// <summary>
+        /// Raises the DownloadProgress event.
+        /// </summary>
+        /// <param name="pageIndex">Index of the page being downloaded.</param>
+        /// <param name="progressPercentage">Percentage of completion for the download operation.</param>
+        private static void OnDownloadProgress(int pageIndex, double progressPercentage)
+        {
+            DownloadProgress?.Invoke(null, new DownloadProgressEventArgs
+            {
+                PageIndex = pageIndex,
+                ProgressPercentage = progressPercentage
+            });
         }
     }
 }

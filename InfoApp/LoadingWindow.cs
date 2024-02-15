@@ -1,12 +1,17 @@
-﻿using System;
+﻿using SupermarketInfo;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace InfoApp
 {
     public partial class LoadingWindow : Form
     {
+        private SupermarketLink[] url_list;
+
         public LoadingWindow()
         {
             InitializeComponent();
@@ -14,12 +19,32 @@ namespace InfoApp
 
         private void LoadingWindow_Shown(object sender, EventArgs e)
         {
+            url_list = ExtractSupermarketList();
+
             BackgroundWorker fileCheckerUpdater = new BackgroundWorker();
             fileCheckerUpdater.DoWork += worker_DoWork;
             fileCheckerUpdater.WorkerReportsProgress = true;
             fileCheckerUpdater.ProgressChanged += worker_ProgressChanged;
             fileCheckerUpdater.RunWorkerCompleted += worker_RunWorkerCompleted;
             fileCheckerUpdater.RunWorkerAsync();
+        }
+
+        private static SupermarketLink[] ExtractSupermarketList()
+        {
+            SupermarketLink[] url_list;
+            var info = File.ReadAllLines(GlobalSettings.SupermarketURLsFile);
+            //Split each line info a supermarket link object
+            url_list = new SupermarketLink[info.Length];
+            for (int i = 0; i < info.Length; i++)
+            {
+                string[] line = info[i].Split(';');
+                int maxItems = SupermarketInfo.Tesco.GetMaxItems(line[0].Trim());
+                url_list[i] = new SupermarketLink(line[0].Trim(), line[1].Trim());
+                Debug.WriteLine(string.Format("Supermarket: {0}, URL: {1}", 
+                    url_list[i].Store, url_list[i].Link));
+            }
+
+            return url_list;
         }
 
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -45,7 +70,8 @@ namespace InfoApp
 
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            //Code for checking and then downloading the HTML for each page
+            var pages = url_list.Select(x => x.Link).ToArray();
+            var html_pages = PageDownloader.DownloadPages(pages);
         }
     }
 }
