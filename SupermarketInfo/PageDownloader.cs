@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using System;
 using System.Diagnostics;
 
 namespace SupermarketInfo
@@ -9,8 +10,7 @@ namespace SupermarketInfo
     /// The PageDownloader class provides methods to download
     /// web pages using the Selenium WebDriver.
     /// </summary>
-    public static
-    class PageDownloader
+    public static class PageDownloader
     {
         /// <summary>
         /// Downloads the HTML source of the given web page.
