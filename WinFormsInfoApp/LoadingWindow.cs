@@ -23,14 +23,7 @@ namespace WinFormsInfoApp
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += worker_DoWork;
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-            worker.ProgressChanged += worker_ProgressChanged;
-            worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync();
-        }
-
-        private void worker_ProgressChanged(object? sender, ProgressChangedEventArgs e)
-        {
-            Debug.WriteLine("Progress: " + e.ProgressPercentage + "%");
         }
 
         private void worker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
@@ -44,25 +37,21 @@ namespace WinFormsInfoApp
             Debug.WriteLine("BW loading database path...");
             string path = Path.GetFullPath(GlobalSettings.LocalDatabaseFile);
             Debug.WriteLine("Database path: " + path);
-            worker?.ReportProgress(10);
 
             if(File.Exists(path))
             {
                 Debug.WriteLine("Database exists");
-                worker?.ReportProgress(50);
             }
             else
             {
-                Debug.WriteLine("Database does not exist");
-                worker?.ReportProgress(25);
-                Debug.WriteLine("Creating database...");
-                
-                worker?.ReportProgress(50);
-                Debug.WriteLine("Database created");
+                Debug.WriteLine("Database being created for first run");
             }
 
-
-            worker?.ReportProgress(100);
+            Debug.WriteLine("Checking database context");
+            using (var context = new RecipeDbContext())
+            {
+                context.SaveChanges();
+            }
         }
     }
 }
