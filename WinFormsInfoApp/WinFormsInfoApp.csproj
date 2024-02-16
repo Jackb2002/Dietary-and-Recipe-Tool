@@ -9,9 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="LoadingWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.2" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
   </ItemGroup>
 
   <ItemGroup>
