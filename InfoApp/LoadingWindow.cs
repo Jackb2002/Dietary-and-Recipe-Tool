@@ -1,5 +1,6 @@
 ﻿using SupermarketInfo;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -70,9 +71,18 @@ namespace InfoApp
 
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var pages = url_list.Select(x => x.Link).ToArray();
+            List<string> tesco_urls = new List<string>();
+            foreach (SupermarketLink link in url_list)
+            {
+                switch (link.Store)
+                {
+                    case "Tesco":
+                        tesco_urls.Add(link.Link);
+                        break;
+                }
+            }
 
-            Tesco.download
+            Tesco.DownloadTescoURLs(tesco_urls.ToArray());
         }
     }
 }

@@ -5,12 +5,17 @@ namespace SupermarketInfo
 {
     public class Tesco
     {
-        public static List<FoodItem> DownloadTescoURL(string url)
+        public static List<FoodItem> DownloadTescoURLs(string[] urls)
         {
-            // Create a new instance of the HtmlWeb class
-            HtmlWeb web = new HtmlWeb();
-
-            // Use the DownloadData method of the HtmlWeb class to download
+            string[] page_1s = new string[urls.Length];
+            for (int i = 0; i < urls.Length; i++)
+            {
+                string url = urls[i];
+                var page_1 = url.Replace("PAGENUMBER", "1");
+                page_1s[i] = page_1;
+            }
+            var page_1_htmls = PageDownloader.DownloadPages(page_1s);
+            return null;
         }
 
         public static int GetMaxItems(string html)

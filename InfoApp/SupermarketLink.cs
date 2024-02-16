@@ -12,12 +12,8 @@ namespace InfoApp
         {
             Link = link;
             Store = store;
-            MaxItems = 0;
-            HTML = "";
         }
         internal string Link;
         internal string Store;
-        internal int MaxItems;
-        internal string HTML;
     }
 }
