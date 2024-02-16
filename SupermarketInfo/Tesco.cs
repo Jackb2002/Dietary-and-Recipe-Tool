@@ -1,9 +1,18 @@
 ﻿using HtmlAgilityPack;
+using System.Collections.Generic;
 
 namespace SupermarketInfo
 {
     public class Tesco
     {
+        public static List<FoodItem> DownloadTescoURL(string url)
+        {
+            // Create a new instance of the HtmlWeb class
+            HtmlWeb web = new HtmlWeb();
+
+            // Use the DownloadData method of the HtmlWeb class to download
+        }
+
         public static int GetMaxItems(string html)
         {
             // Load the HTML content into an HtmlDocument

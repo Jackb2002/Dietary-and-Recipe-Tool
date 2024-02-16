@@ -38,7 +38,7 @@ namespace InfoApp
             for (int i = 0; i < info.Length; i++)
             {
                 string[] line = info[i].Split(';');
-                int maxItems = SupermarketInfo.Tesco.GetMaxItems(line[0].Trim());
+                int maxItems = Tesco.GetMaxItems(line[0].Trim());
                 url_list[i] = new SupermarketLink(line[0].Trim(), line[1].Trim());
                 Debug.WriteLine(string.Format("Supermarket: {0}, URL: {1}", 
                     url_list[i].Store, url_list[i].Link));
@@ -71,7 +71,8 @@ namespace InfoApp
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             var pages = url_list.Select(x => x.Link).ToArray();
-            var html_pages = PageDownloader.DownloadPages(pages);
+
+            Tesco.download
         }
     }
 }
