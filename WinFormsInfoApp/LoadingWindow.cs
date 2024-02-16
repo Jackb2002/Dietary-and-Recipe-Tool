@@ -1,13 +1,7 @@
-﻿using SupermarketInfo;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
 
-namespace InfoApp
+namespace WinFormsInfoApp
 {
     public partial class LoadingWindow : Form
     {

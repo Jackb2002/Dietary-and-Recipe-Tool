@@ -1,4 +1,4 @@
-﻿namespace InfoApp
+﻿namespace WinFormsInfoApp
 {
     partial class LoadingWindow
     {
