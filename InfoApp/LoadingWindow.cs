@@ -23,10 +23,8 @@ namespace InfoApp
             url_list = ExtractSupermarketList();
 
             BackgroundWorker fileCheckerUpdater = new BackgroundWorker();
-            fileCheckerUpdater.DoWork += worker_DoWork;
-            fileCheckerUpdater.WorkerReportsProgress = true;
-            fileCheckerUpdater.ProgressChanged += worker_ProgressChanged;
-            fileCheckerUpdater.RunWorkerCompleted += worker_RunWorkerCompleted;
+            fileCheckerUpdater.DoWork += downloader_DoWork;
+            fileCheckerUpdater.RunWorkerCompleted += downloader_RunWorkerCompleted;
             fileCheckerUpdater.RunWorkerAsync();
         }
 
@@ -39,7 +37,6 @@ namespace InfoApp
             for (int i = 0; i < info.Length; i++)
             {
                 string[] line = info[i].Split(';');
-                int maxItems = Tesco.GetMaxItems(line[0].Trim());
                 url_list[i] = new SupermarketLink(line[0].Trim(), line[1].Trim());
                 Debug.WriteLine(string.Format("Supermarket: {0}, URL: {1}", 
                     url_list[i].Store, url_list[i].Link));
@@ -48,41 +45,54 @@ namespace InfoApp
             return url_list;
         }
 
-        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void downloader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if(e.Error != null)
             {
                 Debug.WriteLine("Error: " + e.Error.Message);
+                progressBar.BackColor = System.Drawing.Color.Red;
+                progressBar.Value = 100;
             }
             else if(e.Cancelled)
             {
                 Debug.WriteLine("Worker was cancelled");
+                progressBar.BackColor = System.Drawing.Color.Red;
+                progressBar.Value = 100;
+
             }
             else
             {
                 Debug.WriteLine("Worker completed, downloaded and checked all supermarket info");
-            }   
-        }
-
-        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            progressBar.Value = e.ProgressPercentage;
-        }
-
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            List<string> tesco_urls = new List<string>();
-            foreach (SupermarketLink link in url_list)
-            {
-                switch (link.Store)
-                {
-                    case "Tesco":
-                        tesco_urls.Add(link.Link);
-                        break;
-                }
+                progressBar.Value = 50;
             }
 
-            Tesco.DownloadTescoURLs(tesco_urls.ToArray());
+            BackgroundWorker fileLoader = new BackgroundWorker();
+            fileLoader.WorkerReportsProgress = true;
+            fileLoader.DoWork += loader_DoWork;
+            fileLoader.RunWorkerCompleted += lodaer_RunWorkerCompleted;
+            fileLoader.ProgressChanged += loader_ProgressChanged;
+        }
+
+        private void loader_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            int progress = (e.ProgressPercentage/100) * 50;
+            progressBar.Value = 50 + progress;
+        }
+
+        private void lodaer_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MessageBox.Show("Loading Completed!");
+        }
+
+        private void loader_DoWork(object sender, DoWorkEventArgs e)
+        {
+            string localDbPath = GlobalSettings.LocalDatabasePath;
+            Debug.WriteLine("Loading local database from: " + localDbPath);
+        }
+
+        private void downloader_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Debug.WriteLine("Downloader disabled, using a local test database");
         }
     }
 }

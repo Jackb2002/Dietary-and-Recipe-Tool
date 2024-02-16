@@ -45,8 +45,9 @@ namespace SupermarketInfo
         /// Downloads the HTML source of the given web pages.
         /// </summary>
         /// <param name="page_urls">The URLs of the web pages to download.</param>
+        /// <param name="delay">The delay between downloading each page, in seconds.</param>
         /// <returns>The HTML source of the web pages.</returns>
-        public static string[] DownloadPages(string[] page_urls)
+        public static string[] DownloadPages(string[] page_urls, double delay = 0.5)
         {
             try
             {
@@ -60,6 +61,7 @@ namespace SupermarketInfo
                         IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
                         js.ExecuteScript("return document.readyState").Equals("complete");
                         html_sources[url_id] = driver.PageSource;
+                        System.Threading.Thread.Sleep((int)(delay * 1000));
                     }
                     driver.Quit();
                     return html_sources;
@@ -71,7 +73,24 @@ namespace SupermarketInfo
                 Debug.WriteLine(error.Message);
                 return new string[0];
             }
-
+            catch (NoSuchWindowException error)
+            {
+                Debug.WriteLine("ChromeDriver window was closed before the page was downloaded.");
+                Debug.WriteLine(error.Message);
+                return new string[0];
+            }
+            catch (WebDriverException error)
+            {
+                Debug.WriteLine("ChromeDriver is not responding or has crashed.");
+                Debug.WriteLine(error.Message);
+                return new string[0];
+            }
+            catch (NullReferenceException error)
+            {
+                Debug.WriteLine("ChromeDriver is not responding or has crashed.");
+                Debug.WriteLine(error.Message);
+                return new string[0];
+            }
         }
     }
 }

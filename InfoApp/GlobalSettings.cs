@@ -8,6 +8,7 @@ namespace InfoApp
 {
     internal static class GlobalSettings
     {
-        public readonly static string SupermarketURLsFile = @"Pages.dat";
+        internal static readonly string SupermarketURLsFile = @"Pages.dat";
+        internal static readonly string LocalDatabasePath = "local_db_path";
     }
 }

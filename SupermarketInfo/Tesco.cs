@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SupermarketInfo
 {
@@ -14,7 +15,13 @@ namespace SupermarketInfo
                 var page_1 = url.Replace("PAGENUMBER", "1");
                 page_1s[i] = page_1;
             }
-            var page_1_htmls = PageDownloader.DownloadPages(page_1s);
+            var page_1_htmls = PageDownloader.DownloadPages(page_1s,5);
+            int[] max_items = new int[urls.Length];
+            for (int i = 0; i < urls.Length; i++)
+            {
+                //max_items[i] = GetMaxItems(page_1_htmls[i]);
+            }
+            Debug.WriteLine("URL " + page_1s[0] + " has max items: " + max_items[0]);
             return null;
         }
 
