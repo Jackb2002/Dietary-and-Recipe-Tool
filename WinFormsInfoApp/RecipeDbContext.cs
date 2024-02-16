@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WinFormsInfoApp.Models;
-using System;
-using System.Collections.Generic;
 
 namespace WinFormsInfoApp
 {

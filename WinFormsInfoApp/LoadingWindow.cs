@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data.SQLite;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace WinFormsInfoApp
 {
@@ -38,7 +30,7 @@ namespace WinFormsInfoApp
             string path = Path.GetFullPath(GlobalSettings.LocalDatabaseFile);
             Debug.WriteLine("Database path: " + path);
 
-            if(File.Exists(path))
+            if (File.Exists(path))
             {
                 Debug.WriteLine("Database exists");
             }
