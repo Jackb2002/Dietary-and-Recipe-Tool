@@ -29,16 +29,6 @@ namespace WinFormsInfoApp
             Debug.WriteLine("BW loading database path...");
             string path = Path.GetFullPath(GlobalSettings.LocalDatabaseFile);
             Debug.WriteLine("Database path: " + path);
-
-            if (File.Exists(path))
-            {
-                Debug.WriteLine("Database exists");
-            }
-            else
-            {
-                Debug.WriteLine("Database being created for first run");
-            }
-
             Debug.WriteLine("Checking database context");
             using (var context = new RecipeDbContext())
             {
