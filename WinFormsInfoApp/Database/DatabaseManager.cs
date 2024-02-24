@@ -33,16 +33,25 @@ namespace WinFormsInfoApp.Database
             }
         }
 
-        public bool InsertIngredient(int Id, string Name, string Description, double Fat, double Carbohydrates, double Protein, double Calories, double Sugar, double Fiber, double Product_Weight)
+        public bool InsertIngredient(Ingredient ingredient)
         {
+            int Id = ingredient.IngredientId;
+            string Name = ingredient.Name;
+            string Description = ingredient.Description;
+            double Fat = ingredient.Fat;
+            double Carbohydrates = ingredient.Carbohydrates;
+            double Protein = ingredient.Protein;
+            double Calories = ingredient.Calories;
+            double Sugar = ingredient.Sugar;
+            double Fiber = ingredient.Fiber;
+            double Product_Weight = ingredient.Product_Weight;
             int rows = 0;
             using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + filePath))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand(connection))
                 {
-                    command.CommandText = "INSERT INTO Ingredient (IngredientId, Name, Description, Fat, Carbohydrates, Protein, Calories, Sugar, Fiber, Product_Weight) VALUES (@Id, @Name, @Description, @Fat, @Carbohydrates, @Protein, @Calories, @Sugar, @Fiber, @Product_Weight)";
-                    command.Parameters.AddWithValue("@Id", Id);
+                    command.CommandText = "INSERT INTO Ingredient (Name, Description, Fat, Carbohydrates, Protein, Calories, Sugar, Fiber, Product_Weight) VALUES (@Name, @Description, @Fat, @Carbohydrates, @Protein, @Calories, @Sugar, @Fiber, @Product_Weight)";
                     command.Parameters.AddWithValue("@Name", Name);
                     command.Parameters.AddWithValue("@Description", Description);
                     command.Parameters.AddWithValue("@Fat", Fat);
@@ -59,8 +68,9 @@ namespace WinFormsInfoApp.Database
             return rows > 0;
         }
 
-        public bool DeleteIngredient(int Id)
+        public bool DeleteIngredient(Ingredient ingredient)
         {
+            int Id = ingredient.IngredientId;
             int rows = 0;
             using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + filePath))
             {
@@ -143,6 +153,29 @@ namespace WinFormsInfoApp.Database
                 connection.Close();
             }
             return ingredient;
+        }
+
+        public KeyValuePair<int, string>[] GetIngredientNameIdPairs()
+        {
+            KeyValuePair<int, string>[] pairs = new KeyValuePair<int, string>[0];
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + filePath))
+            {
+                connection.Open();
+                using (SQLiteCommand command = new SQLiteCommand(connection))
+                {
+                    command.CommandText = "SELECT IngredientId, Name FROM Ingredient";
+                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Array.Resize(ref pairs, pairs.Length + 1);
+                            pairs[pairs.Length - 1] = new KeyValuePair<int, string>(reader.GetInt32(0), reader.GetString(1));
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            return pairs;
         }
         #endregion
     }

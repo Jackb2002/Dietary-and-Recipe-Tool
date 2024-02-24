@@ -33,6 +33,12 @@ namespace WinFormsInfoApp
             Debug.WriteLine("Database path: " + path);
             DatabaseFileOpener databaseFile = new DatabaseFileOpener(path);
             DatabaseManager database = databaseFile.CreateOrOpen();
+
+            var ings_db = database.GetIngredientNameIdPairs();
+            foreach (var ing in ings_db)
+            {
+                Debug.WriteLine(ing);
+            }
         }
     }
 }
