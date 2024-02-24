@@ -15,24 +15,22 @@ namespace WinFormsInfoApp.Database
         {
             filePath = path;
 
-            Debug.WriteLineIf(CheckOrCreateIngredientTable(), "Ingredient table created");
+            CheckOrCreateIngredientTable();
         }
 
         #region Ingredient
-        private bool CheckOrCreateIngredientTable()
+        private void CheckOrCreateIngredientTable()
         {
-            int rows = 0;
             using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + filePath))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand(connection))
                 {
                     command.CommandText = "CREATE TABLE IF NOT EXISTS Ingredient (IngredientId INTEGER PRIMARY KEY, Name TEXT, Description TEXT, Fat REAL, Carbohydrates REAL, Protein REAL, Calories REAL, Sugar REAL, Fiber REAL, Product_Weight REAL)";
-                    rows = command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
                 }
                 connection.Close();
             }
-            return rows > 0;
         }
 
         public bool InsertIngredient(int Id, string Name, string Description, double Fat, double Carbohydrates, double Protein, double Calories, double Sugar, double Fiber, double Product_Weight)
