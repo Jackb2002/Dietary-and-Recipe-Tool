@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WinFormsInfoApp.Models;
 
-namespace WinFormsInfoApp
+namespace WinFormsInfoApp.LocalDB
 {
     public class RecipeDbContext : DbContext
     {
@@ -33,6 +33,7 @@ namespace WinFormsInfoApp
         // special "local" folder for your platform.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite($"Data Source={DbPath}");
+
     }
 
 }
