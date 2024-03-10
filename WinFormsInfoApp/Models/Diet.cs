@@ -1,11 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WinFormsInfoApp.Models
+﻿namespace WinFormsInfoApp.Models
 {
     public class Diet
     {
@@ -13,5 +6,13 @@ namespace WinFormsInfoApp.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string Priority { get; set; }
+
+        public Diet(int dietId, string name, string description, string priority)
+        {
+            DietId = dietId;
+            Name = name;
+            Description = description;
+            Priority = priority;
+        }
     }
 }

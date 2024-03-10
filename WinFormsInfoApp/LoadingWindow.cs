@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using WinFormsInfoApp.Database;
 using WinFormsInfoApp.Models;
 using WinFormsInfoApp.OpenFood;
 
@@ -31,6 +32,7 @@ namespace WinFormsInfoApp
             Debug.WriteLine("BW loading database path...");
             string path = Path.GetFullPath(GlobalSettings.LocalDatabaseFile);
             Debug.WriteLine("Database path: " + path);
+<<<<<<< HEAD
             Debug.WriteLine("Checking connection to API possible...");
             OpenFoodAPI apiConncetion = new OpenFoodAPI();
             apiConncetion.TestConnection();
@@ -45,6 +47,15 @@ namespace WinFormsInfoApp
             {
                 Debug.WriteLine("API connection successful");
                 Debug.WriteLine("Using remote database...");
+=======
+            DatabaseFileOpener databaseFile = new DatabaseFileOpener(path);
+            DatabaseManager database = databaseFile.CreateOrOpen();
+
+            var ings_db = database.GetIngredientNameIdPairs();
+            foreach (var ing in ings_db)
+            {
+                Debug.WriteLine(ing);
+>>>>>>> 6a0feb71ff2d5e4841c7e243d103d747f86beb02
             }
         }
     }

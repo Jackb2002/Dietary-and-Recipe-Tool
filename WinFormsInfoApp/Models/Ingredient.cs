@@ -1,5 +1,4 @@
-﻿
-namespace WinFormsInfoApp.Models
+﻿namespace WinFormsInfoApp.Models
 {
     public class Ingredient 
     {
