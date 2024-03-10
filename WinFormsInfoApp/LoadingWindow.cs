@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using WinFormsInfoApp.Models;
+using WinFormsInfoApp.OpenFood;
 
 namespace WinFormsInfoApp
 {
@@ -30,8 +31,21 @@ namespace WinFormsInfoApp
             Debug.WriteLine("BW loading database path...");
             string path = Path.GetFullPath(GlobalSettings.LocalDatabaseFile);
             Debug.WriteLine("Database path: " + path);
-            Debug.WriteLine("Checking database context");
-            
+            Debug.WriteLine("Checking connection to API possible...");
+            OpenFoodAPI apiConncetion = new OpenFoodAPI();
+            apiConncetion.TestConnection();
+            var result = apiConncetion.GetFirstIngredient("Salt");
+            if(result == null)
+            {
+                Debug.WriteLine("API connection failed");
+                Debug.WriteLine("Loading local database...");
+                MessageBox.Show("Remote conenction failed! Using local DB");
+            }
+            else
+            {
+                Debug.WriteLine("API connection successful");
+                Debug.WriteLine("Using remote database...");
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 namespace WinFormsInfoApp.Models
 {
-    public class Ingredient
+    public class Ingredient 
     {
         //Convert all these to properties
         public int IngredientId { get; set; }
