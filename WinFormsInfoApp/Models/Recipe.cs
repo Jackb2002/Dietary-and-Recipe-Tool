@@ -1,20 +1,49 @@
-﻿namespace WinFormsInfoApp.Models
+﻿using CsvHelper.Configuration.Attributes;
+
+public class Recipe
 {
-    public class Recipe
-    {
-        public string Title { get; set; }
-        public string Difficulty { get; set; }
-        public string Serves { get; set; }
-        public string Rating { get; set; }
-        public string Reviews { get; set; }
-        public bool Vegetarian { get; set; }
-        public bool Vegan { get; set; }
-        public bool DairyFree { get; set; }
-        public bool Keto { get; set; }
-        public bool GlutenFree { get; set; }
-        public string PrepTime { get; set; }
-        public string CookTime { get; set; }
-        public List<string> Ingredients { get; set; }
-        public string RecipeUrl { get; set; }
-    }
+    [Name("title")]
+    public string Title { get; set; }
+
+    [Name("difficulty")]
+    public string Difficulty { get; set; }
+
+    [Name("serves")]
+    public string Serves { get; set; }
+
+    [Name("rating")]
+    public string Rating { get; set; }
+
+    [Name("reviews")]
+    public string Reviews { get; set; }
+
+    [Name("vegetarian")]
+    public bool Vegetarian { get; set; }
+
+    [Name("vegan")]
+    public bool Vegan { get; set; }
+
+    [Name("dairy_free")]
+    public bool DairyFree { get; set; }
+
+    [Name("keto")]
+    public bool Keto { get; set; }
+
+    [Name("gluten_free")]
+    public bool GlutenFree { get; set; }
+
+    [Name("prep_time")]
+    public string PrepTime { get; set; }
+
+    [Name("cook_time")]
+    public string CookTime { get; set; }
+
+    [Name("ingredients")]
+    public string Ingredients { get; set; }
+
+    [Name("ingredient")]
+    public string Ingredient { get; set; }
+
+    [Name("recipe_urls")]
+    public string RecipeUrls { get; set; }
 }
