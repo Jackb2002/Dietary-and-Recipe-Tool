@@ -91,7 +91,7 @@ namespace WinFormsInfoApp.OpenFood
             double sugar = (double)product["nutriments"]["sugars_100g"];
             double fiber = (double)product["nutriments"]["fiber_100g"];
             double productWeight = (double)product["product_quantity"];
-            int code = (int)product["code"];
+            string code = (string)product["code"];
             return new Ingredient(code, name, "", fat, carbohydrates, protein, calories, sugar, fiber, productWeight);
         }
 
