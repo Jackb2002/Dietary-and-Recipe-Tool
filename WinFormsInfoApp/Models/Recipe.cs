@@ -1,25 +1,49 @@
-﻿namespace WinFormsInfoApp.Models
-{
-    [Serializable]
-    public class Recipe
-    {
-        public int RecipeId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string ImageURL { get; set; }
-        public string WebsiteURL { get; set; }
-        public List<Ingredient>? Ingredients { get; set; }
-        public List<Diet>? Diets { get; set; }
+﻿using CsvHelper.Configuration.Attributes;
 
-        public Recipe(int recipeId, string name, string description, string imageURL, string websiteURL, List<Ingredient> ingredients, List<Diet> diets)
-        {
-            RecipeId = recipeId;
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            Description = description ?? throw new ArgumentNullException(nameof(description));
-            ImageURL = imageURL ?? throw new ArgumentNullException(nameof(imageURL));
-            WebsiteURL = websiteURL ?? throw new ArgumentNullException(nameof(websiteURL));
-            Ingredients = ingredients ?? throw new ArgumentNullException(nameof(ingredients));
-            Diets = diets ?? throw new ArgumentNullException(nameof(diets));
-        }
-    }
+public class Recipe
+{
+    [Name("title")]
+    public string Title { get; set; }
+
+    [Name("difficulty")]
+    public string Difficulty { get; set; }
+
+    [Name("serves")]
+    public string Serves { get; set; }
+
+    [Name("rating")]
+    public string Rating { get; set; }
+
+    [Name("reviews")]
+    public string Reviews { get; set; }
+
+    [Name("vegetarian")]
+    public bool Vegetarian { get; set; }
+
+    [Name("vegan")]
+    public bool Vegan { get; set; }
+
+    [Name("dairy_free")]
+    public bool DairyFree { get; set; }
+
+    [Name("keto")]
+    public bool Keto { get; set; }
+
+    [Name("gluten_free")]
+    public bool GlutenFree { get; set; }
+
+    [Name("prep_time")]
+    public string PrepTime { get; set; }
+
+    [Name("cook_time")]
+    public string CookTime { get; set; }
+
+    [Name("ingredients")]
+    public string Ingredients { get; set; }
+
+    [Name("ingredient")]
+    public string Ingredient { get; set; }
+
+    [Name("recipe_urls")]
+    public string RecipeUrls { get; set; }
 }
