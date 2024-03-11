@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
-using WinFormsInfoApp.Database;
+using WinFormsInfoApp.LocalDatabase;
 using WinFormsInfoApp.Models;
 using WinFormsInfoApp.OpenFood;
 

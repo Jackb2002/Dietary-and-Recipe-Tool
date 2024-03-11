@@ -1,7 +1,7 @@
 ﻿using System.Data.SQLite;
 using WinFormsInfoApp.Models;
 
-namespace WinFormsInfoApp.Database
+namespace WinFormsInfoApp.LocalDatabase
 {
     internal class DatabaseManager : IIngredientContext
     {

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace WinFormsInfoApp.Database
+namespace WinFormsInfoApp.LocalDatabase
 {
     internal class DatabaseFileOpener
     {

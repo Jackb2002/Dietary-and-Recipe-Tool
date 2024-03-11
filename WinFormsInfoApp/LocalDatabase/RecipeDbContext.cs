@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WinFormsInfoApp.Models;
 
-namespace WinFormsInfoApp.LocalDB
+namespace WinFormsInfoApp.LocalDatabase
 {
     public class RecipeDbContext : DbContext
     {
