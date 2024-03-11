@@ -16,8 +16,9 @@ namespace WinFormsInfoApp
         private const string _recipe_FilePath = "recipe_cache.json";
         private const string _ingredient_FilePath = "ingredient_cache.json";
         private readonly IIngredientContext _ingredientContext;
-        private List<Recipe> _recipes;
-        private List<Ingredient> _ingredientCache;
+        private List<Recipe> _recipes = new List<Recipe>();
+        private List<Ingredient> _ingredientCache = new List<Ingredient>();
+        private Recipe? CurrentRecipeSelection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -66,6 +67,7 @@ namespace WinFormsInfoApp
         private void LoadRecipesCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
             Debug.WriteLine($"Loaded {_recipes.Count} recipes successfully");
+            recipeList.Items.AddRange(_recipes.Select(x => x.Title).ToArray());
         }
 
         /// <summary>
@@ -100,7 +102,6 @@ namespace WinFormsInfoApp
         public void ImportRecipes()
         {
             _recipes.AddRange(ImportLocalRecipes(_recipe_FilePath));
-            _recipes.AddRange(ImportCSVRecipes("recipe_data.csv"));
         }
 
         /// <summary>
@@ -117,30 +118,10 @@ namespace WinFormsInfoApp
         }
 
         /// <summary>
-        /// Imports recipes from a CSV file.
+        /// Handles closing the form, saves the current entries to cache.
         /// </summary>
-        /// <param name="filePath">The path to the CSV file containing recipes.</param>
-        /// <returns>A list of imported recipes.</returns>
-        private List<Recipe> ImportCSVRecipes(string filePath)
-        {
-            List<Recipe> recipes;
-            List<Recipe> filtered_recipes = new List<Recipe>();
-            using (var reader = new StreamReader(filePath))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                recipes = csv.GetRecords<Recipe>().ToList();
-            }
-            foreach (var recipe in recipes)
-            {
-                var recipeContained = recipes.Where(x => x.Title == recipe.Title).FirstOrDefault();
-                if(recipeContained == default)
-                {
-                    filtered_recipes.Add(recipe);
-                }
-            }
-            return filtered_recipes;
-        }
-
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             Debug.WriteLine("Form is closing, saving current entries to cache");
@@ -149,6 +130,14 @@ namespace WinFormsInfoApp
             helper.SerializeRecipes(_recipes, _recipe_FilePath);
             Debug.WriteLine($"Saved {_ingredientCache.Count} ingredients to cache");
             Debug.WriteLine($"Saved {_recipes.Count} recipes to cache");
+        }
+
+        private void recipeList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Recipe recipe = _recipes[recipeList.SelectedIndex];
+            CurrentRecipeSelection = recipe;
+            recipeTitle.Text = recipe.Title;
+            RecipeCookTime.Text = string.IsNullOrWhiteSpace(recipe.CookTime) ? "Unknown" : recipe.CookTime;
         }
     }
 }
