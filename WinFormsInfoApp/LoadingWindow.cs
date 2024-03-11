@@ -87,6 +87,7 @@ namespace WinFormsInfoApp
             Log("API connection successful");
             Log("Using remote database...");
             UpdateProgressBar(100);
+            MainWindow main = new(apiConnection);
         }
 
         /// <summary>
@@ -106,6 +107,7 @@ namespace WinFormsInfoApp
                 Log(ing.ToString());
             }
             UpdateProgressBar(100);
+            MainWindow main = new(database);
         }
 
         /// <summary>

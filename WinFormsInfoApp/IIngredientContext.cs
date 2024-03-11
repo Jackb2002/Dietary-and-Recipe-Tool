@@ -2,7 +2,7 @@
 
 namespace WinFormsInfoApp
 {
-    internal interface IIngredientContext
+    public interface IIngredientContext
     {
         public string AccessString { get; }
         public Ingredient GetFirstIngredient(string name);
