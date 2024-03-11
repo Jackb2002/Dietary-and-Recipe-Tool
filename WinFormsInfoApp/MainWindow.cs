@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static WinFormsInfoApp.IIngredientContext;
 
 namespace WinFormsInfoApp
 {
@@ -17,6 +18,21 @@ namespace WinFormsInfoApp
         {
             _ingredientContext = ingredientContext;
             InitializeComponent();
+        }
+
+        private void MainWindow_Load(object sender, EventArgs e)
+        {
+            if(_ingredientContext.connectionType == ConnectionType.Local)
+            {
+                ConnectionStatus.Text = "Connected to local DB";
+                MessageBox.Show("A local connection is being used, some functionality may be limited");
+                ConnectionStatus.ForeColor = Color.Orange;
+            }
+            else
+            {
+                ConnectionStatus.Text = "Connected to API";
+                ConnectionStatus.ForeColor = Color.Green;
+            }
         }
     }
 }

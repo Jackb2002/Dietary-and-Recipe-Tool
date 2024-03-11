@@ -28,12 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "MainWindow";
+            ConnectionStatus = new Label();
+            SuspendLayout();
+            // 
+            // ConnectionStatus
+            // 
+            ConnectionStatus.AutoSize = true;
+            ConnectionStatus.Font = new Font("Verdana", 15F);
+            ConnectionStatus.Location = new Point(12, 416);
+            ConnectionStatus.Name = "ConnectionStatus";
+            ConnectionStatus.Size = new Size(152, 25);
+            ConnectionStatus.TabIndex = 0;
+            ConnectionStatus.Text = "Connected to ";
+            // 
+            // MainWindow
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 450);
+            Controls.Add(ConnectionStatus);
+            Name = "MainWindow";
+            Text = "MainWindow";
+            Load += MainWindow_Load;
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
+
+        private Label ConnectionStatus;
     }
 }

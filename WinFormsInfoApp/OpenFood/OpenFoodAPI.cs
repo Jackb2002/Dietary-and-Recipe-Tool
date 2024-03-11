@@ -101,8 +101,25 @@ namespace WinFormsInfoApp.OpenFood
             using HttpClient client = new();
             string requestString = AccessString + @"search?fields=product_name&search_term=chocolate";
             client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
-            HttpResponseMessage response = client.GetAsync(requestString).Result;
-            return response.IsSuccessStatusCode;
+            try
+            {
+                HttpResponseMessage response = client.GetAsync(requestString).Result;
+                var statusCode = response.IsSuccessStatusCode;
+                if (statusCode)
+                {
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine($"Connection made but bad code recieved {response.StatusCode}");
+                    return false;
+                }
+            }
+            catch (AggregateException)
+            {
+                Debug.WriteLine("Likely failed due to no internet connection");
+                return false;
+            }
         }
     }
 }
