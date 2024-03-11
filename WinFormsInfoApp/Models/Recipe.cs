@@ -1,5 +1,6 @@
 ﻿namespace WinFormsInfoApp.Models
 {
+    [Serializable]
     public class Recipe
     {
         public int RecipeId { get; set; }
