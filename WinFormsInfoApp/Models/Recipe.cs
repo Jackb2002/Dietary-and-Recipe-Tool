@@ -2,23 +2,19 @@
 {
     public class Recipe
     {
-        public int RecipeId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string ImageURL { get; set; }
-        public string WebsiteURL { get; set; }
-        public List<Ingredient>? Ingredients { get; set; }
-        public List<Diet>? Diets { get; set; }
-
-        public Recipe(int recipeId, string name, string description, string imageURL, string websiteURL, List<Ingredient> ingredients, List<Diet> diets)
-        {
-            RecipeId = recipeId;
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            Description = description ?? throw new ArgumentNullException(nameof(description));
-            ImageURL = imageURL ?? throw new ArgumentNullException(nameof(imageURL));
-            WebsiteURL = websiteURL ?? throw new ArgumentNullException(nameof(websiteURL));
-            Ingredients = ingredients ?? throw new ArgumentNullException(nameof(ingredients));
-            Diets = diets ?? throw new ArgumentNullException(nameof(diets));
-        }
+        public string Title { get; set; }
+        public string Difficulty { get; set; }
+        public string Serves { get; set; }
+        public string Rating { get; set; }
+        public string Reviews { get; set; }
+        public bool Vegetarian { get; set; }
+        public bool Vegan { get; set; }
+        public bool DairyFree { get; set; }
+        public bool Keto { get; set; }
+        public bool GlutenFree { get; set; }
+        public string PrepTime { get; set; }
+        public string CookTime { get; set; }
+        public List<string> Ingredients { get; set; }
+        public string RecipeUrl { get; set; }
     }
 }
