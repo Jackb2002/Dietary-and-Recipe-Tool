@@ -17,12 +17,12 @@ namespace WinFormsInfoApp.LocalDB
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Recipe>()
+            _ = modelBuilder.Entity<Recipe>()
                 .HasMany(r => r.Ingredients)
                 .WithMany()
                 .UsingEntity(j => j.ToTable("RecipeIngredients"));
 
-            modelBuilder.Entity<Recipe>()
+            _ = modelBuilder.Entity<Recipe>()
                 .HasMany(r => r.Diets)
                 .WithMany()
                 .UsingEntity(j => j.ToTable("RecipeDiets"));
@@ -32,8 +32,9 @@ namespace WinFormsInfoApp.LocalDB
         // The following configures EF to create a Sqlite database file in the
         // special "local" folder for your platform.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite($"Data Source={DbPath}");
-
+        {
+            _ = options.UseSqlite($"Data Source={DbPath}");
+        }
     }
 
 }

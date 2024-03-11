@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
-using static WinFormsInfoApp.IIngredientContext;
 using System.Diagnostics;
 using WinFormsInfoApp.Models;
+using static WinFormsInfoApp.IIngredientContext;
 
 namespace WinFormsInfoApp.OpenFood
 {
@@ -23,7 +23,7 @@ namespace WinFormsInfoApp.OpenFood
         /// <summary>
         /// Custom user agent for HTTP requests.
         /// </summary>
-        private string customUserAgent = "Foodapp/Testing Nomail";
+        private readonly string customUserAgent = "Foodapp/Testing Nomail";
 
         /// <inheritdoc/>
         public List<Ingredient>? GetAllIngredients(string name)
@@ -46,30 +46,27 @@ namespace WinFormsInfoApp.OpenFood
                     $"nutriments,product_quantity&categories_tags={categoryName}&page_size=200&page=1&countries_tags_en=united-kingdom&states_tags=Complete&";
                 Debug.WriteLine($"Making request for {categoryName} using {apiUrl}");
 
-                using (HttpClient client = new HttpClient())
+                using HttpClient client = new();
+                client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
+                HttpResponseMessage response = client.GetAsync(apiUrl).Result;
+                if (!response.IsSuccessStatusCode)
                 {
-                    client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
-                    HttpResponseMessage response = client.GetAsync(apiUrl).Result;
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        Debug.WriteLine("Failed to get JSON from request");
-                        return null;
-                    }
+                    Debug.WriteLine("Failed to get JSON from request");
+                    return null;
+                }
 
-                    JObject responseJson = JObject.Parse(response.Content.ReadAsStringAsync().Result);
-                    Debug.WriteLine("Successfully got JSON from request");
+                JObject responseJson = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                Debug.WriteLine("Successfully got JSON from request");
 
-                    JArray? products = responseJson["products"] as JArray;
-                    if (products != null && products.Count > 0)
-                    {
-                        // Parse the first product and return the ingredient
-                        return ParseProduct(products[0]);
-                    }
-                    else
-                    {
-                        Debug.WriteLine("No products found in the response");
-                        return null;
-                    }
+                if (responseJson["products"] is JArray products && products.Count > 0)
+                {
+                    // Parse the first product and return the ingredient
+                    return ParseProduct(products[0]);
+                }
+                else
+                {
+                    Debug.WriteLine("No products found in the response");
+                    return null;
                 }
             }
             catch (Exception e)
@@ -101,13 +98,11 @@ namespace WinFormsInfoApp.OpenFood
         /// <inheritdoc/>
         public bool TestConnection()
         {
-            using (HttpClient client = new HttpClient())
-            {
-                string requestString = AccessString + @"search?fields=product_name&search_term=chocolate";
-                client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
-                HttpResponseMessage response = client.GetAsync(requestString).Result;
-                return response.IsSuccessStatusCode;
-            }
+            using HttpClient client = new();
+            string requestString = AccessString + @"search?fields=product_name&search_term=chocolate";
+            client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
+            HttpResponseMessage response = client.GetAsync(requestString).Result;
+            return response.IsSuccessStatusCode;
         }
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System.Diagnostics;
-using System.IO;
 
 namespace WinFormsInfoApp.Database
 {
     internal class DatabaseFileOpener
     {
-        private string Path; // Path to the database file
+        private readonly string Path; // Path to the database file
 
         public DatabaseFileOpener(string path)
         {

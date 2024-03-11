@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Windows.Forms;
 using WinFormsInfoApp.Database;
 using WinFormsInfoApp.Models;
 using WinFormsInfoApp.OpenFood;
@@ -134,7 +130,7 @@ namespace WinFormsInfoApp
             // Update the progress bar value safely
             if (LoadingBar.InvokeRequired)
             {
-                LoadingBar.Invoke(new Action<int>(UpdateProgressBar), value);
+                _ = LoadingBar.Invoke(new Action<int>(UpdateProgressBar), value);
             }
             else
             {
@@ -153,7 +149,7 @@ namespace WinFormsInfoApp
             // Update the log display safely
             if (progLog.InvokeRequired)
             {
-                progLog.Invoke(new Action<string>(UpdateProgLabel), text);
+                _ = progLog.Invoke(new Action<string>(UpdateProgLabel), text);
             }
             else
             {
