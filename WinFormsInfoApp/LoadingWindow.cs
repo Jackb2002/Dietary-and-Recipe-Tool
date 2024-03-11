@@ -15,7 +15,7 @@ namespace WinFormsInfoApp
 
         private void LoadingWindow_Load(object sender, EventArgs e)
         {
-            BackgroundWorker worker = new BackgroundWorker();
+            BackgroundWorker worker = new();
             worker.DoWork += worker_DoWork;
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
             worker.RunWorkerAsync();
@@ -23,21 +23,20 @@ namespace WinFormsInfoApp
 
         private void worker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
-            MessageBox.Show("Loading complete");
+            _ = MessageBox.Show("Loading complete");
         }
 
         private void worker_DoWork(object? sender, DoWorkEventArgs e)
         {
-            BackgroundWorker? worker = sender as BackgroundWorker;
             Debug.WriteLine("BW loading database path...");
             string path = Path.GetFullPath(GlobalSettings.LocalDatabaseFile);
             Debug.WriteLine("Database path: " + path);
             Debug.WriteLine("Checking connection to API possible...");
-            OpenFoodAPI apiConncetion = new OpenFoodAPI();
+            OpenFoodAPI apiConncetion = new();
             if (apiConncetion.TestConnection())
             {
-                var result = apiConncetion.GetFirstIngredient("chocolate");
-                if(result != null)
+                Ingredient? result = apiConncetion.GetFirstIngredient("chocolate");
+                if (result != null)
                 {
                     LaunchRemote(apiConncetion);
                 }
@@ -57,7 +56,7 @@ namespace WinFormsInfoApp
             // Launch with openfoodfacts API
             Debug.WriteLine("API connection successful");
             Debug.WriteLine("Using remote database...");
-            MessageBox.Show("Remote connection successful! Using remote DB");
+            _ = MessageBox.Show("Remote connection successful! Using remote DB");
 
         }
 
@@ -65,12 +64,12 @@ namespace WinFormsInfoApp
         {
             Debug.WriteLine("API connection failed");
             Debug.WriteLine("Loading local database...");
-            MessageBox.Show("Remote conenction failed! Using local DB");
-            DatabaseFileOpener databaseFile = new DatabaseFileOpener(path);
+            _ = MessageBox.Show("Remote conenction failed! Using local DB");
+            DatabaseFileOpener databaseFile = new(path);
             DatabaseManager database = databaseFile.CreateOrOpen();
 
-            var ings_db = database.GetIngredientNameIdPairs();
-            foreach (var ing in ings_db)
+            KeyValuePair<int, string>[] ings_db = database.GetIngredientNameIdPairs();
+            foreach (KeyValuePair<int, string> ing in ings_db)
             {
                 Debug.WriteLine(ing);
             }
