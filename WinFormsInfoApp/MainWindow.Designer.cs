@@ -49,6 +49,7 @@
             Controls.Add(ConnectionStatus);
             Name = "MainWindow";
             Text = "MainWindow";
+            FormClosing += MainWindow_FormClosing;
             Load += MainWindow_Load;
             ResumeLayout(false);
             PerformLayout();

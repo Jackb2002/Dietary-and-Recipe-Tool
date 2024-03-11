@@ -13,6 +13,8 @@ namespace WinFormsInfoApp
     /// </summary>
     public partial class MainWindow : Form
     {
+        private const string _recipe_FilePath = "recipe_cache.json";
+        private const string _ingredient_FilePath = "ingredient_cache.json";
         private readonly IIngredientContext _ingredientContext;
         private List<Recipe> _recipes;
         private List<Ingredient> _ingredientCache;
@@ -77,14 +79,14 @@ namespace WinFormsInfoApp
         /// <summary>
         /// Method to load recipes asynchronously.
         /// </summary>
-        private void LoadRecipes(object? sender, DoWorkEventArgs e) => _recipes = ImportRecipes("recipe_data.csv");
+        private void LoadRecipes(object? sender, DoWorkEventArgs e) => ImportRecipes();
 
         /// <summary>
         /// Method to load ingredients asynchronously.
         /// </summary>
         private void LoadIngredients(object? sender, DoWorkEventArgs e)
         {
-            string path = Path.Combine(Environment.CurrentDirectory, "ingredient_cache.json");
+            string path = Path.Combine(Environment.CurrentDirectory, _ingredient_FilePath);
             JsonSerializerHelper helper = new JsonSerializerHelper();
             var localIngredients = helper.DeserializeIngredients(path);
             _ingredientCache = localIngredients;
@@ -95,12 +97,10 @@ namespace WinFormsInfoApp
         /// </summary>
         /// <param name="filePath">The path to the file containing recipes.</param>
         /// <returns>A list of imported recipes.</returns>
-        public List<Recipe> ImportRecipes(string filePath)
+        public void ImportRecipes()
         {
-            List<Recipe> recipes = new List<Recipe>();
-            recipes.AddRange(ImportCSVRecipes(filePath));
-            recipes.AddRange(ImportLocalRecipes("recipe_cache.json"));
-            return recipes;
+            _recipes.AddRange(ImportLocalRecipes(_recipe_FilePath));
+            _recipes.AddRange(ImportCSVRecipes("recipe_data.csv"));
         }
 
         /// <summary>
@@ -113,11 +113,7 @@ namespace WinFormsInfoApp
             string path = Path.Combine(Environment.CurrentDirectory, fileName);
             JsonSerializerHelper helper = new JsonSerializerHelper();
             var localRecipes = helper.DeserializeRecipes(path);
-
-            // Iterate through local recipes and filter out duplicates based on title
-            var newRecipes = localRecipes.Where(localRecipe => !_recipes.Any(existingRecipe => existingRecipe.Title == localRecipe.Title));
-
-            return newRecipes;
+            return localRecipes;
         }
 
         /// <summary>
@@ -125,16 +121,34 @@ namespace WinFormsInfoApp
         /// </summary>
         /// <param name="filePath">The path to the CSV file containing recipes.</param>
         /// <returns>A list of imported recipes.</returns>
-        private static List<Recipe> ImportCSVRecipes(string filePath)
+        private List<Recipe> ImportCSVRecipes(string filePath)
         {
             List<Recipe> recipes;
+            List<Recipe> filtered_recipes = new List<Recipe>();
             using (var reader = new StreamReader(filePath))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 recipes = csv.GetRecords<Recipe>().ToList();
             }
+            foreach (var recipe in recipes)
+            {
+                var recipeContained = recipes.Where(x => x.Title == recipe.Title).FirstOrDefault();
+                if(recipeContained == default)
+                {
+                    filtered_recipes.Add(recipe);
+                }
+            }
+            return filtered_recipes;
+        }
 
-            return recipes;
+        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Debug.WriteLine("Form is closing, saving current entries to cache");
+            JsonSerializerHelper helper = new JsonSerializerHelper();
+            helper.SerializeIngredients(_ingredientCache, _ingredient_FilePath);
+            helper.SerializeRecipes(_recipes, _recipe_FilePath);
+            Debug.WriteLine($"Saved {_ingredientCache.Count} ingredients to cache");
+            Debug.WriteLine($"Saved {_recipes.Count} recipes to cache");
         }
     }
 }
