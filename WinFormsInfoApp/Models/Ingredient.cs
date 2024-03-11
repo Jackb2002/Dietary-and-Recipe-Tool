@@ -2,7 +2,7 @@
 {
     public class Ingredient 
     {
-        //Convert all these to properties
+        //All nutritional values are per 100g of the ingredient and the product weight is in weither grams or ML depending on the product
         public int IngredientId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

@@ -1,51 +1,76 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using static WinFormsInfoApp.IIngredientContext;
 using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using WinFormsInfoApp.Models;
 
 namespace WinFormsInfoApp.OpenFood
 {
+    /// <summary>
+    /// Implementation of IIngredientContext using the OpenFoodFacts API.
+    /// </summary>
     internal class OpenFoodAPI : IIngredientContext
     {
         /// <summary>
-        /// This class is a wrapper implementation for the OpenFoodFacts API. This 
-        /// API is found at the access string and is usable 
-        /// under the Open Database License (ODbL) v1.0.
-        /// Docs at https://openfoodfacts.github.io/openfoodfacts-server/api/
-        /// Ref at https://openfoodfacts.github.io/openfoodfacts-server/api/ref-v2/
+        /// Access string for the OpenFoodFacts API.
         /// </summary>
-        /// 
-        public string AccessString =>
-            @"https://world.openfoodfacts.net/api/v2/";
+        public string AccessString => @"https://world.openfoodfacts.net/api/v2/";
 
-        public IIngredientContext.ConnectionType connectionType => IIngredientContext.ConnectionType.Remote;
+        /// <summary>
+        /// Type of connection used by this context.
+        /// </summary>
+        public ConnectionType connectionType => ConnectionType.Remote;
 
+        /// <summary>
+        /// Custom user agent for HTTP requests.
+        /// </summary>
         private string customUserAgent = "Foodapp/Testing Nomail";
 
+        /// <inheritdoc/>
         public List<Ingredient>? GetAllIngredients(string name)
         {
             return null;
         }
 
-        public Ingredient? GetFirstIngredient(string catagory_name)
+        /// <inheritdoc/>
+        public Ingredient? GetFirstIngredient(string categoryName)
         {
-            catagory_name = catagory_name.Trim().ToLower();
-            if(string.IsNullOrEmpty(catagory_name))
+            categoryName = categoryName.Trim().ToLower();
+            if (string.IsNullOrEmpty(categoryName))
             {
                 return null;
             }
+
             try
             {
                 string apiUrl = $"{AccessString}search?fields=product_name,product_name_en,nutrient_levels," +
-                    $"nutriments&categories_tags={catagory_name}&page_size=200&page=1&countries_tags_en=united-kingdom&states_tags=Complete";
-                Debug.WriteLine($"Making request for {catagory_name} using {apiUrl}");
-                return null;
+                    $"nutriments,product_quantity&categories_tags={categoryName}&page_size=200&page=1&countries_tags_en=united-kingdom&states_tags=Complete&";
+                Debug.WriteLine($"Making request for {categoryName} using {apiUrl}");
+
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
+                    HttpResponseMessage response = client.GetAsync(apiUrl).Result;
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Debug.WriteLine("Failed to get JSON from request");
+                        return null;
+                    }
+
+                    JObject responseJson = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                    Debug.WriteLine("Successfully got JSON from request");
+
+                    JArray? products = responseJson["products"] as JArray;
+                    if (products != null && products.Count > 0)
+                    {
+                        // Parse the first product and return the ingredient
+                        return ParseProduct(products[0]);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("No products found in the response");
+                        return null;
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -54,6 +79,26 @@ namespace WinFormsInfoApp.OpenFood
             }
         }
 
+        /// <summary>
+        /// Parses a JSON object representing a product into an Ingredient object.
+        /// </summary>
+        /// <param name="product">JSON object representing a product.</param>
+        /// <returns>An Ingredient object parsed from the JSON data.</returns>
+        private Ingredient ParseProduct(JToken product)
+        {
+            string name = (string)product["product_name"];
+            double fat = (double)product["nutriments"]["fat_100g"];
+            double carbohydrates = (double)product["nutriments"]["carbohydrates_100g"];
+            double protein = (double)product["nutriments"]["proteins_100g"];
+            double calories = (double)product["nutriments"]["energy-kcal_100g"];
+            double sugar = (double)product["nutriments"]["sugars_100g"];
+            double fiber = (double)product["nutriments"]["fiber_100g"];
+            double productWeight = (double)product["product_quantity"];
+
+            return new Ingredient(0, name, "", fat, carbohydrates, protein, calories, sugar, fiber, productWeight);
+        }
+
+        /// <inheritdoc/>
         public bool TestConnection()
         {
             using (HttpClient client = new HttpClient())
@@ -61,14 +106,7 @@ namespace WinFormsInfoApp.OpenFood
                 string requestString = AccessString + @"search?fields=product_name&search_term=chocolate";
                 client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
                 HttpResponseMessage response = client.GetAsync(requestString).Result;
-                if (response.IsSuccessStatusCode)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return response.IsSuccessStatusCode;
             }
         }
     }
