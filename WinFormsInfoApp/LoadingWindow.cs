@@ -32,22 +32,40 @@ namespace WinFormsInfoApp
             Debug.WriteLine("BW loading database path...");
             string path = Path.GetFullPath(GlobalSettings.LocalDatabaseFile);
             Debug.WriteLine("Database path: " + path);
-<<<<<<< HEAD
             Debug.WriteLine("Checking connection to API possible...");
             OpenFoodAPI apiConncetion = new OpenFoodAPI();
-            apiConncetion.TestConnection();
-            var result = apiConncetion.GetFirstIngredient("Salt");
-            if(result == null)
+            if (apiConncetion.TestConnection())
             {
-                Debug.WriteLine("API connection failed");
-                Debug.WriteLine("Loading local database...");
-                MessageBox.Show("Remote conenction failed! Using local DB");
+                var result = apiConncetion.GetFirstIngredient("chocolate");
+                if(result != null)
+                {
+                    LaunchRemote(apiConncetion);
+                }
+                else
+                {
+                    LaunchLocal(path);
+                }
             }
             else
             {
-                Debug.WriteLine("API connection successful");
-                Debug.WriteLine("Using remote database...");
-=======
+                LaunchLocal(path);
+            }
+        }
+
+        private void LaunchRemote(OpenFoodAPI apiConncetion)
+        {
+            // Launch with openfoodfacts API
+            Debug.WriteLine("API connection successful");
+            Debug.WriteLine("Using remote database...");
+            MessageBox.Show("Remote connection successful! Using remote DB");
+
+        }
+
+        private static void LaunchLocal(string path)
+        {
+            Debug.WriteLine("API connection failed");
+            Debug.WriteLine("Loading local database...");
+            MessageBox.Show("Remote conenction failed! Using local DB");
             DatabaseFileOpener databaseFile = new DatabaseFileOpener(path);
             DatabaseManager database = databaseFile.CreateOrOpen();
 
@@ -55,7 +73,6 @@ namespace WinFormsInfoApp
             foreach (var ing in ings_db)
             {
                 Debug.WriteLine(ing);
->>>>>>> 6a0feb71ff2d5e4841c7e243d103d747f86beb02
             }
         }
     }

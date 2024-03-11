@@ -19,9 +19,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-=======
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
->>>>>>> 6a0feb71ff2d5e4841c7e243d103d747f86beb02
     <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.3" />
   </ItemGroup>

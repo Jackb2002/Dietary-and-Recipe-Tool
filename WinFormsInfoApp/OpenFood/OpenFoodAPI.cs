@@ -22,58 +22,30 @@ namespace WinFormsInfoApp.OpenFood
         /// </summary>
         /// 
         public string AccessString =>
-            @"https://world.openfoodfacts.net/api/";
+            @"https://world.openfoodfacts.net/api/v2/";
+
+        public IIngredientContext.ConnectionType connectionType => IIngredientContext.ConnectionType.Remote;
+
         private string customUserAgent = "Foodapp/Testing Nomail";
-        private string SearchString => AccessString + @"v2/search?q=";
 
         public List<Ingredient>? GetAllIngredients(string name)
         {
             return null;
         }
 
-        public Ingredient? GetFirstIngredient(string name)
+        public Ingredient? GetFirstIngredient(string catagory_name)
         {
-            name = name.Trim().ToLower();
-            if(string.IsNullOrEmpty(name))
+            catagory_name = catagory_name.Trim().ToLower();
+            if(string.IsNullOrEmpty(catagory_name))
             {
                 return null;
             }
             try
             {
-                HttpResponseMessage response;
-                using (HttpClient client = new HttpClient())
-                {
-                    string request = SearchString + string.Format("fields=product_name&search_term={0}",name);
-                    client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
-                    response = client.GetAsync(request).Result;
-                }
-                if (response.IsSuccessStatusCode)
-                {
-                    string jsonRes = response.Content.ReadAsStringAsync().Result;
-
-                    if (response.Content.Headers.ContentType.MediaType == "application/json") { 
-                        JObject jObject = JObject.Parse(jsonRes);
-                        string product = jObject["products"].First.ToString();
-                        if (product == null)
-                        {
-                            return null;
-                        }
-                        string tmp_path = Directory.GetCurrentDirectory() + @"\json.txt";
-                        Debug.WriteLine("Saving json test to " + tmp_path);
-                        File.WriteAllText(tmp_path, product);
-                        return default; //string.IsNullOrWhiteSpace(product);
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Error in JSON response, not application/json type.");
-                        return null;
-                    }
-                }
-                else
-                {
-                    Debug.WriteLine("Error in response, not successful.");
-                    return null;
-                }
+                string apiUrl = $"{AccessString}search?fields=product_name,product_name_en,nutrient_levels," +
+                    $"nutriments&categories_tags={catagory_name}&page_size=200&page=1&countries_tags_en=united-kingdom&states_tags=Complete";
+                Debug.WriteLine($"Making request for {catagory_name} using {apiUrl}");
+                return null;
             }
             catch (Exception e)
             {
@@ -86,7 +58,7 @@ namespace WinFormsInfoApp.OpenFood
         {
             using (HttpClient client = new HttpClient())
             {
-                string requestString = SearchString + @"fields=product_name&search_term=chocolate";
+                string requestString = AccessString + @"search?fields=product_name&search_term=chocolate";
                 client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
                 HttpResponseMessage response = client.GetAsync(requestString).Result;
                 if (response.IsSuccessStatusCode)
@@ -99,33 +71,6 @@ namespace WinFormsInfoApp.OpenFood
                 }
             }
         }
-
-        /*private Ingredient? ConvertProduct(ProductBaseItem product, 
-            ProductMiscItem? productMiscItem, ProductNutritionItem? productNutritionItem)
-        {
-            try
-            {
-                // Convert the product into an Ingredient
-                Ingredient ingredient = new Ingredient(
-                    ingredientId: int.Parse(product.code),
-                    name: product.product_name,
-                    description: product.generic_name,
-                    fat: productNutritionItem?.nutriments.fat ?? 0,
-                    carbohydrates: productNutritionItem?.nutriments.carbohydrates ?? 0,
-                    protein: productNutritionItem?.nutriments.proteins ?? 0,
-                    calories: productNutritionItem?.nutriments.energy ?? 0,
-                    sugar: productNutritionItem?.nutriments.sugars ?? 0,
-                    fiber: -1, //Unimplemented as of yet in the API
-                    product_Weight: double.Parse(product.product_quantity)
-                    );
-                return ingredient;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return null;
-            }
-        }*/
     }
 }
 

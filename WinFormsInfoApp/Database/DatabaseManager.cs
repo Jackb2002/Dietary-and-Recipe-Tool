@@ -5,15 +5,17 @@ using WinFormsInfoApp.Models;
 
 namespace WinFormsInfoApp.Database
 {
-    internal class DatabaseManager
+    internal class DatabaseManager : IIngredientContext
     {
-        private string filePath;
-        
+        public string AccessString { get; private set; }
+
+        public IIngredientContext.ConnectionType connectionType => IIngredientContext.ConnectionType.Local;
+
 
         // Constructor
         public DatabaseManager(string path)
         {
-            filePath = path;
+            AccessString = path;
 
             CheckOrCreateIngredientTable();
         }
@@ -21,7 +23,7 @@ namespace WinFormsInfoApp.Database
         #region Ingredient
         private void CheckOrCreateIngredientTable()
         {
-            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + filePath))
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + AccessString))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand(connection))
@@ -46,7 +48,7 @@ namespace WinFormsInfoApp.Database
             double Fiber = ingredient.Fiber;
             double Product_Weight = ingredient.Product_Weight;
             int rows = 0;
-            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + filePath))
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + AccessString))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand(connection))
@@ -72,7 +74,7 @@ namespace WinFormsInfoApp.Database
         {
             int Id = ingredient.IngredientId;
             int rows = 0;
-            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + filePath))
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + AccessString))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand(connection))
@@ -86,10 +88,10 @@ namespace WinFormsInfoApp.Database
             return rows > 0;
         }
 
-        public Ingredient[] GetIngredients(string name)
+        public List<Ingredient> GetAllIngredients(string name)
         {
             Ingredient[] ingredients = new Ingredient[0];
-            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + filePath))
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + AccessString))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand(connection))
@@ -118,19 +120,19 @@ namespace WinFormsInfoApp.Database
                 }
                 connection.Close();
             }
-            return ingredients;
+            return ingredients.ToList();
         }
 
-        public Ingredient GetIngredient(int Id)
+        public Ingredient GetFirstIngredient(string name)
         {
             Ingredient ingredient = new Ingredient(0, "", "", 0, 0, 0, 0, 0, 0, 0);
-            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + filePath))
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + AccessString))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand(connection))
                 {
-                    command.CommandText = "SELECT * FROM Ingredient WHERE IngredientId = @Id";
-                    command.Parameters.AddWithValue("@Id", Id);
+                    command.CommandText = "SELECT * FROM Ingredient WHERE Name = @Id";
+                    command.Parameters.AddWithValue("@Id", name);
                     using (SQLiteDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -158,7 +160,7 @@ namespace WinFormsInfoApp.Database
         public KeyValuePair<int, string>[] GetIngredientNameIdPairs()
         {
             KeyValuePair<int, string>[] pairs = new KeyValuePair<int, string>[0];
-            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + filePath))
+            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + AccessString))
             {
                 connection.Open();
                 using (SQLiteCommand command = new SQLiteCommand(connection))
@@ -176,6 +178,11 @@ namespace WinFormsInfoApp.Database
                 connection.Close();
             }
             return pairs;
+        }
+
+        public bool TestConnection()
+        {
+            return File.Exists(AccessString);
         }
         #endregion
     }
