@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using System.ComponentModel;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Diagnostics;
 using System.Globalization;
 using WinFormsInfoApp.Models;
 using static WinFormsInfoApp.IIngredientContext;
@@ -49,6 +50,12 @@ namespace WinFormsInfoApp
             recipeLoader.DoWork += new DoWorkEventHandler(LoadRecipes);
             recipeLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadRecipesCompleted);
             recipeLoader.RunWorkerAsync();
+
+            // Load ingredients asynchronously
+            BackgroundWorker ingredientLoader = new();
+            ingredientLoader.DoWork += new DoWorkEventHandler(LoadIngredients);
+            ingredientLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadIngredientsCompleted);
+            ingredientLoader.RunWorkerAsync();
         }
 
         /// <summary>
@@ -56,13 +63,32 @@ namespace WinFormsInfoApp
         /// </summary>
         private void LoadRecipesCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
-            MessageBox.Show($"Loaded {_recipes.Count} recipes successfully");
+            Debug.WriteLine($"Loaded {_recipes.Count} recipes successfully");
+        }
+
+        /// <summary>
+        /// Event handler for the completion of ingredient loading.
+        /// </summary>
+        private void LoadIngredientsCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            Debug.WriteLine($"Loaded {_ingredientCache.Count} ingredients successfully");
         }
 
         /// <summary>
         /// Method to load recipes asynchronously.
         /// </summary>
         private void LoadRecipes(object? sender, DoWorkEventArgs e) => _recipes = ImportRecipes("recipe_data.csv");
+
+        /// <summary>
+        /// Method to load ingredients asynchronously.
+        /// </summary>
+        private void LoadIngredients(object? sender, DoWorkEventArgs e)
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, "ingredient_cache.json");
+            JsonSerializerHelper helper = new JsonSerializerHelper();
+            var localIngredients = helper.DeserializeIngredients(path);
+            _ingredientCache = localIngredients;
+        }
 
         /// <summary>
         /// Imports recipes from a file.
@@ -90,9 +116,6 @@ namespace WinFormsInfoApp
 
             // Iterate through local recipes and filter out duplicates based on title
             var newRecipes = localRecipes.Where(localRecipe => !_recipes.Any(existingRecipe => existingRecipe.Title == localRecipe.Title));
-
-            // Add non-duplicate recipes to the _recipes list
-            _recipes.AddRange(newRecipes);
 
             return newRecipes;
         }
