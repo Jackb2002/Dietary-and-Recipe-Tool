@@ -5,7 +5,12 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupermarketInfo", "SupermarketInfo\SupermarketInfo.csproj", "{654ED460-FFB8-4B77-B49E-A28A311E502F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsInfoApp", "WinFormsInfoApp\WinFormsInfoApp.csproj", "{2049C78E-7853-47A2-99D9-CB80A7E18666}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsInfoApp", "WinFormsInfoApp\WinFormsInfoApp.csproj", "{2049C78E-7853-47A2-99D9-CB80A7E18666}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C753B10-75F9-41AD-AA01-8EE77FC6DE1F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,51 +1,57 @@
 ﻿using CsvHelper.Configuration.Attributes;
 using System.Text.Json.Serialization;
-
-[JsonSerializable(typeof(Recipe))]
-public class Recipe
+namespace WinFormsInfoApp.Models
 {
-    [Name("title")]
-    public string Title { get; set; }
+    [JsonSerializable(typeof(Recipe))]
+    public class Recipe
+    {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        [Name("title")]
+        public string Title { get; set; }
 
-    [Name("difficulty")]
-    public string Difficulty { get; set; }
+        [Name("difficulty")]
+        public string Difficulty { get; set; }
 
-    [Name("serves")]
-    public string Serves { get; set; }
 
-    [Name("rating")]
-    public string Rating { get; set; }
+        [Name("serves")]
+        public string Serves { get; set; }
 
-    [Name("reviews")]
-    public string Reviews { get; set; }
+        [Name("rating")]
+        public string Rating { get; set; }
 
-    [Name("vegetarian")]
-    public bool Vegetarian { get; set; }
+        [Name("reviews")]
+        public string Reviews { get; set; }
 
-    [Name("vegan")]
-    public bool Vegan { get; set; }
+        [Name("vegetarian")]
+        public bool Vegetarian { get; set; }
 
-    [Name("dairy_free")]
-    public bool DairyFree { get; set; }
+        [Name("vegan")]
+        public bool Vegan { get; set; }
 
-    [Name("keto")]
-    public bool Keto { get; set; }
+        [Name("dairy_free")]
+        public bool DairyFree { get; set; }
 
-    [Name("gluten_free")]
-    public bool GlutenFree { get; set; }
+        [Name("keto")]
+        public bool Keto { get; set; }
 
-    [Name("prep_time")]
-    public string PrepTime { get; set; }
+        [Name("gluten_free")]
+        public bool GlutenFree { get; set; }
 
-    [Name("cook_time")]
-    public string CookTime { get; set; }
+        [Name("prep_time")]
+        public string PrepTime { get; set; }
 
-    [Name("ingredients")]
-    public string Ingredients { get; set; }
+        [Name("cook_time")]
+        public string CookTime { get; set; }
 
-    [Name("ingredient")]
-    public string Ingredient { get; set; }
+        [Name("ingredients")]
+        public string Ingredients { get; set; }
 
-    [Name("recipe_urls")]
-    public string RecipeUrls { get; set; }
+        [Name("ingredient")]
+        public string Ingredient { get; set; }
+
+        [Name("recipe_urls")]
+        public string RecipeUrls { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    }
+
 }
