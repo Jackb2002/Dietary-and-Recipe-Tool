@@ -42,7 +42,7 @@ namespace WinFormsInfoApp.OpenFood
 
             try
             {
-                string apiUrl = $"{AccessString}search?fields=product_name,product_name_en,nutrient_levels," +
+                string apiUrl = $"{AccessString}search?fields=code,product_name,product_name_en,nutrient_levels," +
                     $"nutriments,product_quantity&categories_tags={categoryName}&page_size=200&page=1&countries_tags_en=united-kingdom&states_tags=Complete&";
                 Debug.WriteLine($"Making request for {categoryName} using {apiUrl}");
 
@@ -91,8 +91,8 @@ namespace WinFormsInfoApp.OpenFood
             double sugar = (double)product["nutriments"]["sugars_100g"];
             double fiber = (double)product["nutriments"]["fiber_100g"];
             double productWeight = (double)product["product_quantity"];
-
-            return new Ingredient(0, name, "", fat, carbohydrates, protein, calories, sugar, fiber, productWeight);
+            int code = (int)product["code"];
+            return new Ingredient(code, name, "", fat, carbohydrates, protein, calories, sugar, fiber, productWeight);
         }
 
         /// <inheritdoc/>
