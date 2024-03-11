@@ -68,7 +68,7 @@ namespace WinFormsInfoApp.LocalDatabase
 
         public bool DeleteIngredient(Ingredient ingredient)
         {
-            int Id = ingredient.IngredientId;
+            string Id = ingredient.IngredientId;
             int rows = 0;
             using (SQLiteConnection connection = new("Data Source=" + AccessString))
             {
@@ -99,7 +99,7 @@ namespace WinFormsInfoApp.LocalDatabase
                     {
                         Array.Resize(ref ingredients, ingredients.Length + 1);
                         ingredients[^1] = new Ingredient(
-                        reader.GetInt32(0),
+                        reader.GetString(0),
                         reader.GetString(1),
                         reader.GetString(2),
                         reader.GetDouble(4),
@@ -119,7 +119,7 @@ namespace WinFormsInfoApp.LocalDatabase
 
         public Ingredient GetFirstIngredient(string name)
         {
-            Ingredient ingredient = new(0, "", "", 0, 0, 0, 0, 0, 0, 0);
+            Ingredient ingredient = new("", "", "", 0, 0, 0, 0, 0, 0, 0);
             using (SQLiteConnection connection = new("Data Source=" + AccessString))
             {
                 connection.Open();
@@ -131,7 +131,7 @@ namespace WinFormsInfoApp.LocalDatabase
                     while (reader.Read())
                     {
                         ingredient = new Ingredient(
-                        reader.GetInt32(0),
+                        reader.GetString(0),
                         reader.GetString(1),
                         reader.GetString(2),
                         reader.GetDouble(4),

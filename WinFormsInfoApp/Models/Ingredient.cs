@@ -3,7 +3,7 @@
     public class Ingredient
     {
         //All nutritional values are per 100g of the ingredient and the product weight is in weither grams or ML depending on the product
-        public int IngredientId { get; set; }
+        public string IngredientId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public double Fat { get; set; }
@@ -14,7 +14,7 @@
         public double Fiber { get; set; }
         public double Product_Weight { get; set; }
 
-        public Ingredient(int ingredientId, string name, string description, double fat, double carbohydrates, double protein, double calories, double sugar, double fiber, double product_Weight)
+        public Ingredient(string ingredientId, string name, string description, double fat, double carbohydrates, double protein, double calories, double sugar, double fiber, double product_Weight)
         {
             IngredientId = ingredientId;
             Name = name ?? throw new ArgumentNullException(nameof(name));
