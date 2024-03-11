@@ -1,5 +1,8 @@
-﻿namespace WinFormsInfoApp.Models
+﻿using System.Text.Json.Serialization;
+
+namespace WinFormsInfoApp.Models
 {
+    [JsonSerializable(typeof(Diet))]
     public class Diet
     {
         public int DietId { get; set; }

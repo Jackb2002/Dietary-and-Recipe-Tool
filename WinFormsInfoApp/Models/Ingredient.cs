@@ -1,6 +1,8 @@
-﻿namespace WinFormsInfoApp.Models
+﻿using System.Text.Json.Serialization;
+
+namespace WinFormsInfoApp.Models
 {
-    [Serializable]
+    [JsonSerializable(typeof(Ingredient))]
     public class Ingredient
     {
         //All nutritional values are per 100g of the ingredient and the product weight is in weither grams or ML depending on the product

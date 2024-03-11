@@ -1,5 +1,7 @@
 ﻿using CsvHelper.Configuration.Attributes;
+using System.Text.Json.Serialization;
 
+[JsonSerializable(typeof(Recipe))]
 public class Recipe
 {
     [Name("title")]
