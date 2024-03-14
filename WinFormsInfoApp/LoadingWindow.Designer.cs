@@ -68,7 +68,9 @@
             Controls.Add(progLog);
             Controls.Add(label1);
             Controls.Add(LoadingBar);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Margin = new Padding(3, 2, 3, 2);
+            MaximizeBox = false;
             Name = "LoadingWindow";
             Text = "LoadingWindow";
             Load += LoadingWindow_Load;

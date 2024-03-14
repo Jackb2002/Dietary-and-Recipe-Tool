@@ -13,7 +13,7 @@ namespace WinFormsInfoApp.OpenFood
         /// <summary>
         /// Access string for the OpenFoodFacts API.
         /// </summary>
-        public string AccessString => @"https://world.openfoodfacts.net/api/v2/";
+        public string AccessString => @"https://world.openfoodfacts.org/api/v2/";
 
         /// <summary>
         /// Type of connection used by this context.

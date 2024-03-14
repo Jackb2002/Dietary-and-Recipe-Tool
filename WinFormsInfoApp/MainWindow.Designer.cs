@@ -93,6 +93,8 @@
             Controls.Add(label1);
             Controls.Add(recipeList);
             Controls.Add(ConnectionStatus);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             Name = "MainWindow";
             Text = "MainWindow";
             FormClosing += MainWindow_FormClosing;

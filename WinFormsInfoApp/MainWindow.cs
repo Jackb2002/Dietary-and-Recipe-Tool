@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using RecipeExtractor;
 using System.ComponentModel;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Diagnostics;
@@ -59,6 +60,8 @@ namespace WinFormsInfoApp
             ingredientLoader.DoWork += new DoWorkEventHandler(LoadIngredients);
             ingredientLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadIngredientsCompleted);
             ingredientLoader.RunWorkerAsync();
+
+            CollectRecipe();
         }
 
         /// <summary>
@@ -132,12 +135,23 @@ namespace WinFormsInfoApp
             Debug.WriteLine($"Saved {_recipes.Count} recipes to cache");
         }
 
+        /// <summary>
+        /// Event handler for the recipe list selection change event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void recipeList_SelectedIndexChanged(object sender, EventArgs e)
         {
             Recipe recipe = _recipes[recipeList.SelectedIndex];
             CurrentRecipeSelection = recipe;
             recipeTitle.Text = recipe.Title;
             RecipeCookTime.Text = string.IsNullOrWhiteSpace(recipe.CookTime) ? "Unknown" : recipe.CookTime;
+        }
+
+        private void CollectRecipe()
+        {
+            string url = @"https://www.bbcgoodfood.com/recipes/spicy-cauliflower-halloumi-rice";
+            string output = GoodFood.ParseRecipeFromUrl(url);
         }
     }
 }

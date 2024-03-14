@@ -26,6 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RecipeExtractor\RecipeExtractor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Pages.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
