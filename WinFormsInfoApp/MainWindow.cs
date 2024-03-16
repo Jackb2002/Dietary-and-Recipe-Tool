@@ -1,9 +1,6 @@
-﻿using CsvHelper;
-using RecipeExtractor;
+﻿using RecipeExtractor;
 using System.ComponentModel;
-using System.Data.Entity.Core.Metadata.Edm;
 using System.Diagnostics;
-using System.Globalization;
 using WinFormsInfoApp.Models;
 using static WinFormsInfoApp.IIngredientContext;
 
@@ -17,8 +14,8 @@ namespace WinFormsInfoApp
         private const string _recipe_FilePath = "recipe_cache.json";
         private const string _ingredient_FilePath = "ingredient_cache.json";
         private readonly IIngredientContext _ingredientContext;
-        private List<Recipe> _recipes = new List<Recipe>();
-        private List<Ingredient> _ingredientCache = new List<Ingredient>();
+        private readonly List<Recipe> _recipes = [];
+        private List<Ingredient> _ingredientCache = [];
         private Recipe? CurrentRecipeSelection;
 
         /// <summary>
@@ -40,7 +37,7 @@ namespace WinFormsInfoApp
             if (_ingredientContext.connectionType == ConnectionType.Local)
             {
                 ConnectionStatus.Text = "Connected to local DB";
-                MessageBox.Show("A local connection is being used, some functionality may be limited");
+                _ = MessageBox.Show("A local connection is being used, some functionality may be limited");
                 ConnectionStatus.ForeColor = Color.Orange;
             }
             else
@@ -84,7 +81,10 @@ namespace WinFormsInfoApp
         /// <summary>
         /// Method to load recipes asynchronously.
         /// </summary>
-        private void LoadRecipes(object? sender, DoWorkEventArgs e) => ImportRecipes();
+        private void LoadRecipes(object? sender, DoWorkEventArgs e)
+        {
+            ImportRecipes();
+        }
 
         /// <summary>
         /// Method to load ingredients asynchronously.
@@ -92,8 +92,8 @@ namespace WinFormsInfoApp
         private void LoadIngredients(object? sender, DoWorkEventArgs e)
         {
             string path = Path.Combine(Environment.CurrentDirectory, _ingredient_FilePath);
-            JsonSerializerHelper helper = new JsonSerializerHelper();
-            var localIngredients = helper.DeserializeIngredients(path);
+            JsonSerializerHelper helper = new();
+            List<Ingredient> localIngredients = helper.DeserializeIngredients(path);
             _ingredientCache = localIngredients;
         }
 
@@ -115,8 +115,8 @@ namespace WinFormsInfoApp
         private IEnumerable<Recipe> ImportLocalRecipes(string fileName)
         {
             string path = Path.Combine(Environment.CurrentDirectory, fileName);
-            JsonSerializerHelper helper = new JsonSerializerHelper();
-            var localRecipes = helper.DeserializeRecipes(path);
+            JsonSerializerHelper helper = new();
+            List<Recipe> localRecipes = helper.DeserializeRecipes(path);
             return localRecipes;
         }
 
@@ -128,7 +128,7 @@ namespace WinFormsInfoApp
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             Debug.WriteLine("Form is closing, saving current entries to cache");
-            JsonSerializerHelper helper = new JsonSerializerHelper();
+            JsonSerializerHelper helper = new();
             helper.SerializeIngredients(_ingredientCache, _ingredient_FilePath);
             helper.SerializeRecipes(_recipes, _recipe_FilePath);
             Debug.WriteLine($"Saved {_ingredientCache.Count} ingredients to cache");
@@ -151,7 +151,7 @@ namespace WinFormsInfoApp
         private void CollectRecipe()
         {
             string url = @"https://www.bbcgoodfood.com/recipes/spicy-cauliflower-halloumi-rice";
-            string output = GoodFood.ParseRecipeFromUrl(url);
+            _ = GoodFood.ParseRecipeFromUrl(url);
         }
     }
 }

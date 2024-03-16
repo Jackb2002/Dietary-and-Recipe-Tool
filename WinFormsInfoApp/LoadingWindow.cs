@@ -87,13 +87,13 @@ namespace WinFormsInfoApp
             Log("API connection successful");
             Log("Using remote database...");
             UpdateProgressBar(100);
-            Invoke((MethodInvoker)delegate
+            _ = Invoke((MethodInvoker)delegate
             {
                 Hide();
             });
-            var mw = new MainWindow(apiConnection);
-            mw.ShowDialog();
-            Invoke((MethodInvoker)delegate
+            MainWindow mw = new(apiConnection);
+            _ = mw.ShowDialog();
+            _ = Invoke((MethodInvoker)delegate
             {
                 Close();
             });
@@ -116,13 +116,13 @@ namespace WinFormsInfoApp
                 Log(ing.ToString());
             }
             UpdateProgressBar(100);
-            var mw = new MainWindow(database);
-            Invoke((MethodInvoker)delegate
+            MainWindow mw = new(database);
+            _ = Invoke((MethodInvoker)delegate
             {
                 Hide();
             });
-            mw.ShowDialog();
-            Invoke((MethodInvoker)delegate
+            _ = mw.ShowDialog();
+            _ = Invoke((MethodInvoker)delegate
             {
                 Close();
             });

@@ -104,7 +104,7 @@ namespace WinFormsInfoApp.OpenFood
             try
             {
                 HttpResponseMessage response = client.GetAsync(requestString).Result;
-                var statusCode = response.IsSuccessStatusCode;
+                bool statusCode = response.IsSuccessStatusCode;
                 if (statusCode)
                 {
                     return true;

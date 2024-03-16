@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using WinFormsInfoApp.Models;
 
 namespace WinFormsInfoApp.Models
 {
@@ -13,9 +12,9 @@ namespace WinFormsInfoApp.Models
 
         public List<Recipe> DeserializeRecipes(string filePath)
         {
-            if(!File.Exists(filePath))
+            if (!File.Exists(filePath))
             {
-                return new List<Recipe>();
+                return [];
             }
             string jsonString = File.ReadAllText(filePath);
             return JsonSerializer.Deserialize<List<Recipe>>(jsonString);
@@ -31,7 +30,7 @@ namespace WinFormsInfoApp.Models
         {
             if (!File.Exists(filePath))
             {
-                return new List<Ingredient>();
+                return [];
             }
             string jsonString = File.ReadAllText(filePath);
             return JsonSerializer.Deserialize<List<Ingredient>>(jsonString);
