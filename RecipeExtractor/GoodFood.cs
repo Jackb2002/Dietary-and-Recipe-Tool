@@ -1,4 +1,7 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.VisualBasic;
+using System;
+using System.Linq;
 using System.Text;
 
 namespace RecipeExtractor
@@ -11,7 +14,8 @@ namespace RecipeExtractor
             {
                 var web = new HtmlWeb();
                 var doc = web.Load(url);
-
+                string rawHtml = doc.DocumentNode.OuterHtml;
+                File.WriteAllText("goodfood.html", rawHtml);
                 string name = ExtractRecipeName(doc);
                 string description = ExtractRecipeDescription(doc);
                 int rating = ExtractRecipeRating(doc);
@@ -43,73 +47,80 @@ namespace RecipeExtractor
 
         private static string ExtractRecipeName(HtmlDocument doc)
         {
-            return doc.DocumentNode.SelectSingleNode("//h1[@class='heading-1']").InnerText.Trim();
+            var nameNode = doc.DocumentNode.SelectSingleNode("//h1[@class='heading-1']");
+            return nameNode?.InnerText.Trim();
         }
 
         private static string ExtractRecipeDescription(HtmlDocument doc)
         {
-            return doc.DocumentNode.SelectSingleNode("//div[@class='editor-content']").InnerText.Trim();
+            var descriptionNode = doc.DocumentNode.SelectSingleNode("//div[@class='editor-content mt-sm pr-xxs hidden-print']/p");
+            return descriptionNode?.InnerText.Trim();
         }
 
-        private static int ExtractRecipeRating(HtmlDocument doc)
+        private static double ExtractRecipeRating(HtmlDocument doc)
         {
-            var ratingNode = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'rating__count-text')]");
-            if (ratingNode != null)
-            {
-                string ratingText = ratingNode.InnerText.Trim();
-                if (int.TryParse(ratingText.Split(' ')[0], out int rating))
-                {
-                    return rating;
-                }
-            }
-            return 0;
+            var ratingNode = doc.DocumentNode.SelectSingleNode("//div[@class='rating__values']");
+            var stars = ratingNode?.SelectNodes(".//i[contains(@class, 'rating__icon')]") ?? new HtmlNodeCollection(null);
+
+            // Calculate the average rating based on the filled stars
+            double totalStars = stars.Count;
+            double filledStars = stars.Count(icon => icon.Attributes["style"].Value.Contains("fill"));
+            double rating = filledStars / totalStars * 5; // Assuming a 5-star rating system
+
+            return rating;
         }
 
         private static string ExtractCookTime(HtmlDocument doc)
         {
-            var prepTimeNode = doc.DocumentNode.SelectSingleNode("//time[@datetime]");
-            var cookTimeNode = prepTimeNode?.NextSibling;
-            if (cookTimeNode != null)
+            var timeNode = doc.DocumentNode.SelectSingleNode("//ul[@class='recipe__cook-and-prep list list--horizontal']/li/div/ul/li[2]/span/time");
+            return timeNode?.InnerText.Trim();
+        }
+
+        private static string ExtractDifficulty(HtmlDocument doc)
+        {
+            var difficultyNode = doc.DocumentNode.SelectSingleNode("//li[@class='mt-sm mr-xl list-item']/div/div[contains(text(), 'Difficulty')]");
+            return difficultyNode?.NextSibling.InnerText.Trim();
+        }
+
+        private static string ExtractAllergyInfo(HtmlDocument doc)
+        {
+            var allergyNodes = doc.DocumentNode.SelectNodes("//div[@class='allergy-info-container']/ul/li/span");
+            if (allergyNodes != null)
             {
-                return cookTimeNode.InnerText.Trim();
+                return string.Join(", ", allergyNodes.Select(node => node.InnerText.Trim()));
             }
-            return string.Empty;
+            return "Not specified";
         }
 
-        private static string? ExtractDifficulty(HtmlDocument doc)
+        private static string ExtractNutritionInfo(HtmlDocument doc)
         {
-            return doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'icon-with-text__children')][contains(text(),'Easy')]")?.InnerText;
+            var nutritionNodes = doc.DocumentNode.SelectNodes("//tbody[@class='key-value-blocks__batch body-copy-extra-small']");
+            if (nutritionNodes != null)
+            {
+                var nutritionInfo = nutritionNodes.Select(node => $"{node.SelectSingleNode("./tr[1]/td[2]").InnerText.Trim()}: {node.SelectSingleNode("./tr[1]/td[3]").InnerText.Trim()}");
+                return string.Join(", ", nutritionInfo);
+            }
+            return "Not specified";
         }
 
-        private static string? ExtractAllergyInfo(HtmlDocument doc)
+        private static string ExtractMethod(HtmlDocument doc)
         {
-            return doc.DocumentNode.SelectSingleNode("//span[contains(text(),'High-fibre')]")?.InnerText;
-        }
-
-        private static string? ExtractNutritionInfo(HtmlDocument doc)
-        {
-            return doc.DocumentNode.SelectSingleNode("//table[@class='key-value-blocks']//tbody")?.InnerText;
-        }
-
-        private static string? ExtractMethod(HtmlDocument doc)
-        {
-            return doc.DocumentNode.SelectSingleNode("//div[@class='editor-content']")?.InnerText;
+            var methodNodes = doc.DocumentNode.SelectNodes("//div[@class='js-piano-recipe-method col-12 pa-reset col-lg-6']//div[@class='grouped-list']//ul[@class='grouped-list__list list']//li[@class='pb-xs pt-xs list-item']");
+            if (methodNodes != null)
+            {
+                return string.Join("\n", methodNodes.Select(node => $"{node.SelectSingleNode(".//span[@class='mb-xxs heading-6']")?.InnerText.Trim()}: {node.SelectSingleNode("./div[@class='editor-content']")?.InnerText.Trim()}"));
+            }
+            return "Not specified";
         }
 
         private static string ExtractIngredients(HtmlDocument doc)
         {
-            var ingredientNodes = doc.DocumentNode.SelectNodes("//ul[@class='recipe-ingredients__list']//li");
+            var ingredientNodes = doc.DocumentNode.SelectNodes("//section[@class='recipe__ingredients col-12 mt-md col-lg-6']//ul[@class='list']//li[@class='pb-xxs pt-xxs list-item list-item--separator']");
             if (ingredientNodes != null)
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (var ingredientNode in ingredientNodes)
-                {
-                    string ingredient = ingredientNode.InnerText.Trim();
-                    sb.AppendLine(ingredient);
-                }
-                return sb.ToString();
+                return string.Join("\n", ingredientNodes.Select(node => node.InnerText.Trim()));
             }
-            return "Ingredients: not found";
+            return "Not specified";
         }
 
     }
