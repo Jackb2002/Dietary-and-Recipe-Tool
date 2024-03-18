@@ -5,8 +5,8 @@ namespace WinFormsInfoApp
     public interface IIngredientContext
     {
         public string AccessString { get; }
-        public Ingredient GetFirstIngredient(string name);
-        public List<Ingredient> GetAllIngredients(string name);
+        public Ingredient? GetFirstIngredient(string name);
+        public List<Ingredient>? GetAllIngredients(params string[] ingredients);
         public bool TestConnection();
         public ConnectionType connectionType { get; }
 

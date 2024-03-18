@@ -57,8 +57,6 @@ namespace WinFormsInfoApp
             ingredientLoader.DoWork += new DoWorkEventHandler(LoadIngredients);
             ingredientLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadIngredientsCompleted);
             ingredientLoader.RunWorkerAsync();
-
-            CollectRecipe();
         }
 
         /// <summary>

@@ -40,6 +40,11 @@ namespace WinFormsInfoApp.OpenFood
             return Ingredients;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="categoryName"></param>
+        /// <returns></returns>
         public Ingredient? GetFirstIngredient(string categoryName)
         {
             categoryName = categoryName.Trim().ToLower();
