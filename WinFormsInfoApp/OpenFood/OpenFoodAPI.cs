@@ -25,13 +25,21 @@ namespace WinFormsInfoApp.OpenFood
         /// </summary>
         private readonly string customUserAgent = "Foodapp/Testing Nomail";
 
-        /// <inheritdoc/>
-        public List<Ingredient>? GetAllIngredients(string name)
+        /// <summary>
+        /// Gets all ingredients from the OpenFoodFacts API.
+        /// </summary>
+        /// <param name="ingredients">List of ingredient names you want to look up</param>
+        /// <returns>C# List object of Ingredient objects containing OpenFood Information</returns>
+        public List<Ingredient>? GetAllIngredients(params string[] ingredients)
         {
-            return null;
+            var Ingredients = new List<Ingredient>();
+            foreach (string ingredient in ingredients)
+            {
+                Ingredients.Add(GetFirstIngredient(ingredient));
+            }
+            return Ingredients;
         }
 
-        /// <inheritdoc/>
         public Ingredient? GetFirstIngredient(string categoryName)
         {
             categoryName = categoryName.Trim().ToLower();
@@ -74,6 +82,11 @@ namespace WinFormsInfoApp.OpenFood
                 Console.WriteLine(e.Message);
                 return null;
             }
+        }
+
+        public Ingredient? GetIngredientByCode(int code)
+        {
+
         }
 
         /// <summary>
