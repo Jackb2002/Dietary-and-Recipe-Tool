@@ -125,8 +125,9 @@ namespace WinFormsInfoApp
             //Filter out duplicates and empty titles
             localRecipes = localRecipes.Where(x => x.Title != "").ToList();
             
-            //Filter out recipes with no ingredients
-            localRecipes = localRecipes.Where(x => x.Ingredients != "").ToList();
+            //Filter out recipes with no ingredients or unspecified ingredients
+            localRecipes = localRecipes.Where(x => x.Ingredients != ""
+                && x.Ingredients != "Not specified").ToList();
 
             return localRecipes;
         }
