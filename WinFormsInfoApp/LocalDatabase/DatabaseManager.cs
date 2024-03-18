@@ -1,4 +1,5 @@
 ﻿using System.Data.SQLite;
+using System.Windows.Forms.VisualStyles;
 using WinFormsInfoApp.Models;
 
 namespace WinFormsInfoApp.LocalDatabase
@@ -84,37 +85,15 @@ namespace WinFormsInfoApp.LocalDatabase
             return rows > 0;
         }
 
-        public List<Ingredient> GetAllIngredients(string name)
+        public List<Ingredient> GetAllIngredients(params string[] names)
         {
-            Ingredient[] ingredients = new Ingredient[0];
-            using (SQLiteConnection connection = new("Data Source=" + AccessString))
+            List<Ingredient> ingredients = new();
+            foreach (var name in names)
             {
-                connection.Open();
-                using (SQLiteCommand command = new(connection))
-                {
-                    command.CommandText = "SELECT * FROM Ingredient WHERE Name = @Name";
-                    _ = command.Parameters.AddWithValue("@Name", name);
-                    using SQLiteDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Array.Resize(ref ingredients, ingredients.Length + 1);
-                        ingredients[^1] = new Ingredient(
-                        reader.GetString(0),
-                        reader.GetString(1),
-                        reader.GetString(2),
-                        reader.GetDouble(4),
-                        reader.GetDouble(5),
-                        reader.GetDouble(3),
-                        reader.GetDouble(6),
-                        reader.GetDouble(7),
-                        reader.GetDouble(8),
-                        reader.GetDouble(9)
-                        );
-                    }
-                }
-                connection.Close();
+                ingredients.Add(GetFirstIngredient(name));
             }
-            return ingredients.ToList();
+
+            return ingredients;
         }
 
         public Ingredient GetFirstIngredient(string name)
