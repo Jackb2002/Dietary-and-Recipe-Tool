@@ -11,7 +11,6 @@ namespace WinFormsInfoApp.Models
         [Name("difficulty")]
         public string Difficulty { get; set; }
 
-
         [Name("serves")]
         public string Serves { get; set; }
 
@@ -44,9 +43,6 @@ namespace WinFormsInfoApp.Models
 
         [Name("ingredients")]
         public string Ingredients { get; set; }
-
-        [Name("ingredient")]
-        public string Ingredient { get; set; }
 
         [Name("recipe_urls")]
         public string RecipeUrls { get; set; }

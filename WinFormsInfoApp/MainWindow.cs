@@ -151,7 +151,27 @@ namespace WinFormsInfoApp
         private void CollectRecipe()
         {
             string url = @"https://www.bbcgoodfood.com/recipes/spicy-cauliflower-halloumi-rice";
-            _ = GoodFood.ParseRecipeFromUrl(url);
+            string[] recipeRaw = GoodFood.ParseRecipeFromUrl(url);
+#pragma warning disable CS8601 // Possible null reference assignment.
+            Recipe recipe = new()
+            {
+                Title = recipeRaw[0]?.ToString(),
+                Difficulty = recipeRaw[1]?.ToString(),
+                Serves = recipeRaw[2]?.ToString(),
+                Rating = recipeRaw[3]?.ToString(),
+                Reviews = recipeRaw[4]?.ToString(),
+                Vegetarian = recipeRaw[5] == "true" ? true : false,
+                Vegan = recipeRaw[6] == "true" ? true : false,
+                DairyFree = recipeRaw[7] == "true" ? true : false,
+                Keto = recipeRaw[8] == "true" ? true : false,
+                GlutenFree = recipeRaw[9] == "true" ? true : false,
+                PrepTime = recipeRaw[10]?.ToString(),
+                CookTime = recipeRaw[11]?.ToString(),
+                Ingredients = recipeRaw[12]?.ToString(),
+                RecipeUrls = recipeRaw[13]?.ToString()
+            };
+#pragma warning restore CS8601 // Possible null reference assignment.
+            Debug.WriteLine("Got recipe from URL: " + recipe.Title);
         }
     }
 }
