@@ -148,9 +148,13 @@ namespace WinFormsInfoApp
             RecipeCookTime.Text = string.IsNullOrWhiteSpace(recipe.CookTime) ? "Unknown" : recipe.CookTime;
         }
 
-        private void CollectRecipe()
+        /// <summary>
+        /// Uses the RecipeExtractor to extract a recipe from a URL, using a good food URL
+        /// </summary>
+        /// <param name="url">URL to a good food web page with a recipe</param>
+        /// <returns>Recipe object or null in case of error</returns>
+        private static Recipe ExtractRecipeFromURL(string url)
         {
-            string url = @"https://www.bbcgoodfood.com/recipes/spicy-cauliflower-halloumi-rice";
             string[] recipeRaw = GoodFood.ParseRecipeFromUrl(url);
 #pragma warning disable CS8601 // Possible null reference assignment.
             Recipe recipe = new()
@@ -170,8 +174,7 @@ namespace WinFormsInfoApp
                 Ingredients = recipeRaw[12]?.ToString(),
                 RecipeUrls = recipeRaw[13]?.ToString()
             };
-#pragma warning restore CS8601 // Possible null reference assignment.
-            Debug.WriteLine("Got recipe from URL: " + recipe.Title);
+            return recipe;
         }
     }
 }
