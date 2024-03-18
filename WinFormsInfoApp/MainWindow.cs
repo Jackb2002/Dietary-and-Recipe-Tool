@@ -57,6 +57,8 @@ namespace WinFormsInfoApp
             ingredientLoader.DoWork += new DoWorkEventHandler(LoadIngredients);
             ingredientLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadIngredientsCompleted);
             ingredientLoader.RunWorkerAsync();
+
+            Debug.WriteLine("Loaded recipes and ingredients");
         }
 
         /// <summary>
@@ -115,6 +117,17 @@ namespace WinFormsInfoApp
             string path = Path.Combine(Environment.CurrentDirectory, fileName);
             JsonSerializerHelper helper = new();
             List<Recipe> localRecipes = helper.DeserializeRecipes(path);
+
+
+            //Filter out duplicates
+            localRecipes = localRecipes.Distinct().ToList();
+
+            //Filter out duplicates and empty titles
+            localRecipes = localRecipes.Where(x => x.Title != "").ToList();
+            
+            //Filter out recipes with no ingredients
+            localRecipes = localRecipes.Where(x => x.Ingredients != "").ToList();
+
             return localRecipes;
         }
 
@@ -154,7 +167,15 @@ namespace WinFormsInfoApp
         private static Recipe ExtractRecipeFromURL(string url)
         {
             string[] recipeRaw = GoodFood.ParseRecipeFromUrl(url);
-#pragma warning disable CS8601 // Possible null reference assignment.
+            if (recipeRaw != null)
+            {
+                return ExtractRecipeFromString(recipeRaw);
+            }
+            return null;
+        }
+
+        private static Recipe ExtractRecipeFromString(string[] recipeRaw)
+        {
             Recipe recipe = new()
             {
                 Title = recipeRaw[0]?.ToString(),
