@@ -20,6 +20,8 @@ namespace WinFormsInfoApp.OpenFood
         /// </summary>
         public ConnectionType connectionType => ConnectionType.Remote;
 
+        public string BarcodeEndpoint => @"product/";
+
         /// <summary>
         /// Custom user agent for HTTP requests.
         /// </summary>
@@ -89,9 +91,37 @@ namespace WinFormsInfoApp.OpenFood
             }
         }
 
+        /// <summary>
+        /// Return a single ingredient from the OpenFoodFacts API using a barcode.
+        /// </summary>
+        /// <param name="code">Barcode returned by the initial search</param>
+        /// <returns>Ingredient object</returns>
         public Ingredient? GetIngredientByCode(int code)
         {
+            string apiUrl = $"{AccessString}{BarcodeEndpoint}{code}";
 
+            using HttpClient client = new();
+            client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
+            HttpResponseMessage response = client.GetAsync(apiUrl).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.WriteLine("Failed to get JSON from request");
+                return null;
+            }
+
+            JObject responseJson = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+            Debug.WriteLine("Successfully got JSON from request");
+
+            if (responseJson["products"] is JArray products && products.Count > 0)
+            {
+                // Parse the first product and return the ingredient
+                return ParseProduct(products[0]);
+            }
+            else
+            {
+                Debug.WriteLine("No products found in the response");
+                return null;
+            }
         }
 
         /// <summary>
