@@ -1,6 +1,7 @@
 ﻿using RecipeExtractor;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using WinFormsInfoApp.Models;
 using static WinFormsInfoApp.IIngredientContext;
 
@@ -156,8 +157,16 @@ namespace WinFormsInfoApp
         {
             Recipe recipe = _recipes[recipeList.SelectedIndex];
             CurrentRecipeSelection = recipe;
-            recipeTitle.Text = recipe.Title;
-            RecipeCookTime.Text = string.IsNullOrWhiteSpace(recipe.CookTime) ? "Unknown" : recipe.CookTime;
+            recipeTitle.Text = "Recipe Name: " + recipe.Title;
+            recipeLink.Text = "Recipe Link: Here";
+            recipeLink.Click += LaunchRecipeOnClick(recipe.RecipeUrls);
+            recipeIng.Text = "Recipe Ingredients: " + 
+                Environment.NewLine + recipe.Ingredients;
+        }
+
+        private EventHandler LaunchRecipeOnClick(string url)
+        {
+            return (sender, e) => Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
         }
 
         /// <summary>
