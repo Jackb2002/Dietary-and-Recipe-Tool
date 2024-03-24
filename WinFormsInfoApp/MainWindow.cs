@@ -106,6 +106,24 @@ namespace WinFormsInfoApp
         public void ImportRecipes()
         {
             _recipes.AddRange(ImportLocalRecipes(_recipe_FilePath));
+            foreach (Recipe recipe in _recipes)
+            {
+                if(recipe.Kcal == default)
+                {
+                    Recipe newRecipe = ExtractRecipeFromURL(recipe.RecipeUrls);
+                    if (newRecipe != null)
+                    {
+                        recipe.Kcal = newRecipe.Kcal;
+                        recipe.Fat = newRecipe.Fat;
+                        recipe.Saturates = newRecipe.Saturates;
+                        recipe.Carbs = newRecipe.Carbs;
+                        recipe.Sugars = newRecipe.Sugars;
+                        recipe.Fibre = newRecipe.Fibre;
+                        recipe.Protein = newRecipe.Protein;
+                        recipe.Salt = newRecipe.Salt;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -201,7 +219,15 @@ namespace WinFormsInfoApp
                 PrepTime = recipeRaw[10]?.ToString(),
                 CookTime = recipeRaw[11]?.ToString(),
                 Ingredients = recipeRaw[12]?.ToString(),
-                RecipeUrls = recipeRaw[13]?.ToString()
+                RecipeUrls = recipeRaw[13]?.ToString(),
+                Kcal = recipeRaw[14] == "" ? 0 : int.Parse(recipeRaw[14]),
+                Fat = recipeRaw[15] == "" ? 0 : int.Parse(recipeRaw[15]),
+                Saturates = recipeRaw[16] == "" ? 0 : int.Parse(recipeRaw[16]),
+                Carbs = recipeRaw[17] == "" ? 0 : int.Parse(recipeRaw[17]),
+                Sugars = recipeRaw[18] == "" ? 0 : int.Parse(recipeRaw[18]),
+                Fibre = recipeRaw[19] == "" ? 0 : int.Parse(recipeRaw[19]),
+                Protein = recipeRaw[20] == "" ? 0 : int.Parse(recipeRaw[20]),
+                Salt = recipeRaw[21] == "" ? 0 : int.Parse(recipeRaw[21])
             };
             return recipe;
         }

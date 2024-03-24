@@ -167,9 +167,9 @@ namespace RecipeExtractor
                     var nutInf = nutritionNodes.Select(node =>
                     {
                         string nutrientNode = node.SelectSingleNode("./tr[1]/td[2]").InnerText;
-                        int.TryParse(node.SelectSingleNode("./tr[1]/td[3]").InnerText, out int valueNode);
                         try
                         {
+                            int.TryParse(node.SelectSingleNode("./tr[1]/td[3]").InnerText, out int valueNode);
                             return new KeyValuePair<string, int>(nutrientNode, valueNode);
                         }
                         catch
