@@ -162,6 +162,7 @@ namespace WinFormsInfoApp
             recipeLink.Click += LaunchRecipeOnClick(recipe.RecipeUrls);
             recipeIng.Text = "Recipe Ingredients: " + 
                 Environment.NewLine + recipe.Ingredients;
+            CookingConverter.ParseRecipeIngredientString(recipe.Ingredients, _ingredientContext);
         }
 
         private EventHandler LaunchRecipeOnClick(string url)

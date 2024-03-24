@@ -46,6 +46,30 @@ namespace WinFormsInfoApp.Models
 
         [Name("recipe_urls")]
         public string RecipeUrls { get; set; }
+
+        [Name("kcal")]
+        public string Kcal { get; set; }
+
+        [Name("fat")]
+        public int Fat { get; set; }
+
+        [Name("saturates")]
+        public int Saturates { get; set; }
+
+        [Name("carbs")]
+        public int Carbs { get; set; }
+
+        [Name("sugars")]
+        public int Sugars { get; set; }
+
+        [Name("fibre")]
+        public int Fibre { get; set; }
+
+        [Name("protein")]
+        public int Protein { get; set; }
+
+        [Name("salt")]
+        public int Salt { get; set; }
     }
 
 }
