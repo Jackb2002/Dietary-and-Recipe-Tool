@@ -22,7 +22,7 @@ namespace RecipeExtractor
                 string cookTime = ExtractCookTime(doc);
                 string difficulty = ExtractDifficulty(doc);
                 string allergyInfo = ExtractAllergyInfo(doc);
-                string nutritionInfo = ExtractNutritionInfo(doc);
+                var nutritionInfo = ExtractNutritionInfo(doc);
                 string method = ExtractMethod(doc);
                 string ingredients = ExtractIngredients(doc);
                 bool dairyFree= allergyInfo.Contains("Dairy");
@@ -30,6 +30,14 @@ namespace RecipeExtractor
                 bool vegetarian = allergyInfo.Contains("Vegetarian");
                 bool keto = allergyInfo.Contains("Keto");
                 bool vegan = allergyInfo.Contains("Vegan");
+                int kcal = nutritionInfo.Where(x => x.Key.Contains("kcal")).Select(x => x.Value).FirstOrDefault();
+                int fat = nutritionInfo.Where(x => x.Key.Contains("fat")).Select(x => x.Value).FirstOrDefault();
+                int saturates = nutritionInfo.Where(x => x.Key.Contains("saturates")).Select(x => x.Value).FirstOrDefault();
+                int carbs = nutritionInfo.Where(x => x.Key.Contains("carbs")).Select(x => x.Value).FirstOrDefault();
+                int sugars = nutritionInfo.Where(x => x.Key.Contains("sugars")).Select(x => x.Value).FirstOrDefault();
+                int fibre = nutritionInfo.Where(x => x.Key.Contains("fibre")).Select(x => x.Value).FirstOrDefault();
+                int protein = nutritionInfo.Where(x => x.Key.Contains("protein")).Select(x => x.Value).FirstOrDefault();
+                int salt = nutritionInfo.Where(x => x.Key.Contains("salt")).Select(x => x.Value).FirstOrDefault();
 
                 string[] recipe = new string[]{
                     name,
@@ -46,7 +54,9 @@ namespace RecipeExtractor
                     cookTime,
                     ingredients,
                     url,
-                    method };
+                    method 
+                    
+                };
 
                 return recipe;
             }
@@ -146,31 +156,34 @@ namespace RecipeExtractor
             }
         }
 
-        private static string ExtractNutritionInfo(HtmlDocument doc)
+        private static List<KeyValuePair<string,int>> ExtractNutritionInfo(HtmlDocument doc)
         {
+            List<KeyValuePair<string, int>> nutritionInfo = new();
             try
             {
                 var nutritionNodes = doc.DocumentNode.SelectNodes("//tbody[@class='key-value-blocks__batch body-copy-extra-small']");
                 if (nutritionNodes != null)
                 {
-                    var nutritionInfo = nutritionNodes.Select(node =>
+                    var nutInf = nutritionNodes.Select(node =>
                     {
-                        var nutrientNode = node.SelectSingleNode("./tr[1]/td[2]");
-                        var valueNode = node.SelectSingleNode("./tr[1]/td[3]");
-                        if (nutrientNode != null && valueNode != null)
+                        string nutrientNode = node.SelectSingleNode("./tr[1]/td[2]").InnerText;
+                        int.TryParse(node.SelectSingleNode("./tr[1]/td[3]").InnerText, out int valueNode);
+                        try
                         {
-                            return $"{nutrientNode.InnerText.Trim()}: {valueNode.InnerText.Trim()}";
+                            return new KeyValuePair<string, int>(nutrientNode, valueNode);
                         }
-                        return null;
-                    }).Where(info => info != null);
-
-                    return string.Join(", ", nutritionInfo).Replace("&amp", "&");
+                        catch
+                        {
+                            return new KeyValuePair<string, int>("Not specified", 0);
+                        }
+                    });
+                    nutritionInfo.AddRange(nutInf);
                 }
-                return "Not specified";
+            return nutritionInfo;
             }
             catch
             {
-                return string.Empty;
+                return nutritionInfo;
             }
         }
 

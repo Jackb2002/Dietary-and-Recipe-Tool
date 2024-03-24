@@ -48,7 +48,7 @@ namespace WinFormsInfoApp.Models
         public string RecipeUrls { get; set; }
 
         [Name("kcal")]
-        public string Kcal { get; set; }
+        public int Kcal { get; set; }
 
         [Name("fat")]
         public int Fat { get; set; }
