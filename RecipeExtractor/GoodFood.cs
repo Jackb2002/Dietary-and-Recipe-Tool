@@ -9,7 +9,7 @@ namespace RecipeExtractor
 {
     public class GoodFood
     {
-        public static string[]? ParseRecipeFromUrl(string url)
+        public static List<KeyValuePair<string, object>>? ParseRecipeFromUrl(string url)
         {
             try
             {
@@ -25,44 +25,51 @@ namespace RecipeExtractor
                 var nutritionInfo = ExtractNutritionInfo(doc);
                 string method = ExtractMethod(doc);
                 string ingredients = ExtractIngredients(doc);
-                bool dairyFree= allergyInfo.Contains("Dairy");
+                bool dairyFree = allergyInfo.Contains("Dairy");
                 bool glutenFree = allergyInfo.Contains("Gluten");
                 bool vegetarian = allergyInfo.Contains("Vegetarian");
                 bool keto = allergyInfo.Contains("Keto");
                 bool vegan = allergyInfo.Contains("Vegan");
-                int kcal = nutritionInfo.Where(x => x.Key.Contains("kcal")).Select(x => x.Value).FirstOrDefault();
-                int fat = nutritionInfo.Where(x => x.Key.Contains("fat")).Select(x => x.Value).FirstOrDefault();
-                int saturates = nutritionInfo.Where(x => x.Key.Contains("saturates")).Select(x => x.Value).FirstOrDefault();
-                int carbs = nutritionInfo.Where(x => x.Key.Contains("carbs")).Select(x => x.Value).FirstOrDefault();
-                int sugars = nutritionInfo.Where(x => x.Key.Contains("sugars")).Select(x => x.Value).FirstOrDefault();
-                int fibre = nutritionInfo.Where(x => x.Key.Contains("fibre")).Select(x => x.Value).FirstOrDefault();
-                int protein = nutritionInfo.Where(x => x.Key.Contains("protein")).Select(x => x.Value).FirstOrDefault();
-                int salt = nutritionInfo.Where(x => x.Key.Contains("salt")).Select(x => x.Value).FirstOrDefault();
+                string kcal = nutritionInfo.FirstOrDefault(x => x.Key.Contains("kcal")).Value;
+                string fat = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fat")).Value;
+                string saturates = nutritionInfo.FirstOrDefault(x => x.Key.Contains("saturates")).Value;
+                string carbs = nutritionInfo.FirstOrDefault(x => x.Key.Contains("carbs")).Value;
+                string sugars = nutritionInfo.FirstOrDefault(x => x.Key.Contains("sugars")).Value;
+                string fibre = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fibre")).Value;
+                string protein = nutritionInfo.FirstOrDefault(x => x.Key.Contains("protein")).Value;
+                string salt = nutritionInfo.FirstOrDefault(x => x.Key.Contains("salt")).Value;
 
-                string[] recipe = new string[]{
-                    name,
-                    difficulty,
-                    "",
-                    rating.ToString(),
-                    "",
-                    vegetarian.ToString(),
-                    vegan.ToString(),
-                    dairyFree.ToString(),
-                    keto.ToString(),
-                    glutenFree.ToString(),
-                    "",
-                    cookTime,
-                    ingredients,
-                    url,
-                    method 
-                    
-                };
+                var recipeData = new List<KeyValuePair<string, object>>()
+        {
+            new KeyValuePair<string, object>("Name", name),
+            new KeyValuePair<string, object>("Description", description),
+            new KeyValuePair<string, object>("Rating", rating),
+            new KeyValuePair<string, object>("CookTime", cookTime),
+            new KeyValuePair<string, object>("Difficulty", difficulty),
+            new KeyValuePair<string, object>("AllergyInfo", allergyInfo),
+            new KeyValuePair<string, object>("DairyFree", dairyFree),
+            new KeyValuePair<string, object>("GlutenFree", glutenFree),
+            new KeyValuePair<string, object>("Vegetarian", vegetarian),
+            new KeyValuePair<string, object>("Keto", keto),
+            new KeyValuePair<string, object>("Vegan", vegan),
+            new KeyValuePair<string, object>("Kcal", kcal),
+            new KeyValuePair<string, object>("Fat", fat),
+            new KeyValuePair<string, object>("Saturates", saturates),
+            new KeyValuePair<string, object>("Carbs", carbs),
+            new KeyValuePair<string, object>("Sugars", sugars),
+            new KeyValuePair<string, object>("Fibre", fibre),
+            new KeyValuePair<string, object>("Protein", protein),
+            new KeyValuePair<string, object>("Salt", salt),
+            new KeyValuePair<string, object>("Ingredients", ingredients),
+            new KeyValuePair<string, object>("Url", url),
+            new KeyValuePair<string, object>("Method", method)
+        };
 
-                return recipe;
+                return recipeData;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"An error occurred: {ex.Message}");
+                Console.WriteLine("Error parsing recipe from URL: " + ex.Message);
                 return null;
             }
         }
@@ -156,36 +163,42 @@ namespace RecipeExtractor
             }
         }
 
-        private static List<KeyValuePair<string,int>> ExtractNutritionInfo(HtmlDocument doc)
+        private static List<KeyValuePair<string, string>> ExtractNutritionInfo(HtmlDocument doc)
         {
-            List<KeyValuePair<string, int>> nutritionInfo = new();
+            List<KeyValuePair<string, string>> nutritionInfo = new List<KeyValuePair<string, string>>();
+
             try
             {
-                var nutritionNodes = doc.DocumentNode.SelectNodes("//tbody[@class='key-value-blocks__batch body-copy-extra-small']");
+                HtmlNodeCollection nutritionNodes = doc.DocumentNode.SelectNodes("//tbody[@class='key-value-blocks__batch body-copy-extra-small']");
                 if (nutritionNodes != null)
                 {
-                    var nutInf = nutritionNodes.Select(node =>
+                    foreach (HtmlNode node in nutritionNodes)
                     {
-                        string nutrientNode = node.SelectSingleNode("./tr[1]/td[2]").InnerText;
-                        try
+                        var rows = node.SelectNodes("./tr");
+                        if (rows != null)
                         {
-                            int.TryParse(node.SelectSingleNode("./tr[1]/td[3]").InnerText, out int valueNode);
-                            return new KeyValuePair<string, int>(nutrientNode, valueNode);
+                            foreach (HtmlNode row in rows)
+                            {
+                                string nutrient = row.SelectSingleNode("./td[1]").InnerText.Trim();
+                                string value = row.SelectSingleNode("./td[2]").InnerText.Trim();
+
+                                // Remove any comments (e.g., <!-- -->) from the value
+                                value = System.Text.RegularExpressions.Regex.Replace(value, "<!--(.*?)-->", "").Trim();
+
+                                nutritionInfo.Add(new KeyValuePair<string, string>(nutrient, value));
+                            }
                         }
-                        catch
-                        {
-                            return new KeyValuePair<string, int>("Not specified", 0);
-                        }
-                    });
-                    nutritionInfo.AddRange(nutInf);
+                    }
                 }
-            return nutritionInfo;
             }
-            catch
+            catch (Exception ex)
             {
-                return nutritionInfo;
+                Console.WriteLine("Error while extracting nutrition info: " + ex.Message);
             }
+
+            return nutritionInfo;
         }
+
 
 
         private static string ExtractMethod(HtmlDocument doc)

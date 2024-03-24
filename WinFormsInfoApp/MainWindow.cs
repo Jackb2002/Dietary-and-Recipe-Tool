@@ -175,11 +175,11 @@ namespace WinFormsInfoApp
         {
             Recipe recipe = _recipes[recipeList.SelectedIndex];
             CurrentRecipeSelection = recipe;
-            recipeTitle.Text = "Recipe Name: " + recipe.Title;
+            recipeTitle.Text = "Recipe Name: " + CurrentRecipeSelection.Title;
             recipeLink.Text = "Recipe Link: Here";
-            recipeLink.Click += LaunchRecipeOnClick(recipe.RecipeUrls);
+            recipeLink.Click += LaunchRecipeOnClick(CurrentRecipeSelection.RecipeUrls);
             recipeIng.Text = "Recipe Ingredients: " + 
-                Environment.NewLine + recipe.Ingredients;
+                Environment.NewLine + CurrentRecipeSelection.Ingredients;
         }
 
         private EventHandler LaunchRecipeOnClick(string url)
