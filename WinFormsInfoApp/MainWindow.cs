@@ -17,6 +17,7 @@ namespace WinFormsInfoApp
         private readonly List<Recipe> _recipes = [];
         private List<Ingredient> _ingredientCache = [];
         private Recipe? CurrentRecipeSelection;
+        private Family currentFamily;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -317,6 +318,10 @@ namespace WinFormsInfoApp
             }
         }
 
+        private void editFamilyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Opening family edit form");
+        }
 
         private static T? GetValue<T>(List<KeyValuePair<string, object>> recipeRaw, string key)
         {

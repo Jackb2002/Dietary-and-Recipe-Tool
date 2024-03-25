@@ -37,7 +37,12 @@
             recipeBox = new GroupBox();
             servingsLabel = new Label();
             recipeInfoPanel = new Panel();
+            menuStrip1 = new MenuStrip();
+            optionsToolStripMenuItem = new ToolStripMenuItem();
+            editFamilyToolStripMenuItem = new ToolStripMenuItem();
+            settingsToolStripMenuItem = new ToolStripMenuItem();
             recipeBox.SuspendLayout();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // ConnectionStatus
@@ -108,9 +113,9 @@
             recipeBox.Controls.Add(label1);
             recipeBox.Controls.Add(recipeLink);
             recipeBox.Controls.Add(recipeTitle);
-            recipeBox.Location = new Point(12, 12);
+            recipeBox.Location = new Point(12, 28);
             recipeBox.Name = "recipeBox";
-            recipeBox.Size = new Size(602, 559);
+            recipeBox.Size = new Size(602, 543);
             recipeBox.TabIndex = 6;
             recipeBox.TabStop = false;
             recipeBox.Text = "Recipes";
@@ -133,6 +138,35 @@
             recipeInfoPanel.TabIndex = 6;
             recipeInfoPanel.Paint += recipeInfoPanel_Paint;
             // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { optionsToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(1060, 24);
+            menuStrip1.TabIndex = 7;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // optionsToolStripMenuItem
+            // 
+            optionsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { editFamilyToolStripMenuItem, settingsToolStripMenuItem });
+            optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            optionsToolStripMenuItem.Size = new Size(61, 20);
+            optionsToolStripMenuItem.Text = "Options";
+            // 
+            // editFamilyToolStripMenuItem
+            // 
+            editFamilyToolStripMenuItem.Name = "editFamilyToolStripMenuItem";
+            editFamilyToolStripMenuItem.Size = new Size(180, 22);
+            editFamilyToolStripMenuItem.Text = "Edit Family";
+            editFamilyToolStripMenuItem.Click += editFamilyToolStripMenuItem_Click;
+            // 
+            // settingsToolStripMenuItem
+            // 
+            settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            settingsToolStripMenuItem.Size = new Size(180, 22);
+            settingsToolStripMenuItem.Text = "Settings";
+            // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -140,6 +174,7 @@
             ClientSize = new Size(1060, 608);
             Controls.Add(recipeBox);
             Controls.Add(ConnectionStatus);
+            Controls.Add(menuStrip1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "MainWindow";
@@ -148,6 +183,8 @@
             Load += MainWindow_Load;
             recipeBox.ResumeLayout(false);
             recipeBox.PerformLayout();
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -163,5 +200,9 @@
         private GroupBox recipeBox;
         private Panel recipeInfoPanel;
         private Label servingsLabel;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem optionsToolStripMenuItem;
+        private ToolStripMenuItem editFamilyToolStripMenuItem;
+        private ToolStripMenuItem settingsToolStripMenuItem;
     }
 }
