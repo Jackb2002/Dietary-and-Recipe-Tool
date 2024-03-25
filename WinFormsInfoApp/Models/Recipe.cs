@@ -6,7 +6,6 @@ namespace WinFormsInfoApp.Models
     {
         public string Title { get; set; }
         public string Difficulty { get; set; }
-        public string Serves { get; set; }
         public string Rating { get; set; }
         public string Reviews { get; set; }
         public bool Vegetarian { get; set; }

@@ -104,37 +104,10 @@ namespace WinFormsInfoApp
         /// <returns>A list of imported recipes.</returns>
         public void ImportRecipes()
         {
-            _recipes.AddRange(ImportLocalRecipes(_recipe_FilePath));
-            int counter = 0;
-            int total = _recipes.Count;
-            foreach (Recipe recipe in _recipes)
-            {
-                counter++;
-                if (recipe.Kcal == default)
-                {
-                    Debug.WriteLine($"Looking for recipe nutrition information for new recipe number {counter} of {total}");
-                    Recipe newRecipe = ExtractRecipeFromURL(recipe.RecipeUrls);
-                    if (newRecipe != null)
-                    {
-                        if (newRecipe.Kcal == default)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            Debug.WriteLine($"Found recipe nutrition information for new recipe number {counter} of {total}");
-                            recipe.Kcal = newRecipe.Kcal;
-                            recipe.Fat = newRecipe.Fat;
-                            recipe.Saturates = newRecipe.Saturates;
-                            recipe.Carbs = newRecipe.Carbs;
-                            recipe.Sugars = newRecipe.Sugars;
-                            recipe.Fibre = newRecipe.Fibre;
-                            recipe.Protein = newRecipe.Protein;
-                            recipe.Salt = newRecipe.Salt;
-                        }
-                    }
-                }
-            }
+            var recipes = ImportLocalRecipes(_recipe_FilePath);
+            var valid_recipes = recipes.Where(x => x.Kcal > 0 && x.Serving > 0).ToList();
+            Debug.WriteLine("Counted " + valid_recipes.Count + " recipes with kcal and serving");
+            _recipes.AddRange(valid_recipes);
         }
 
         /// <summary>
@@ -215,7 +188,6 @@ namespace WinFormsInfoApp
             {
                 Title = GetValue<string>(recipeRaw, "name"),
                 Difficulty = GetValue<string>(recipeRaw, "difficulty"),
-                Serves = GetValue<string>(recipeRaw, "serves"),
                 Rating = GetValue<string>(recipeRaw, "rating"),
                 Reviews = GetValue<string>(recipeRaw, "reviews"),
                 Vegetarian = GetValue<bool>(recipeRaw, "vegetarian"),
@@ -226,7 +198,7 @@ namespace WinFormsInfoApp
                 PrepTime = GetValue<string>(recipeRaw, "prep_time"),
                 CookTime = GetValue<string>(recipeRaw, "cook_time"),
                 Ingredients = GetValue<string>(recipeRaw, "ingredients"),
-                RecipeUrls = GetValue<string>(recipeRaw, "recipe_urls")
+                RecipeUrls = GetValue<string>(recipeRaw, "recipe_urls"),
             };
 
             if (float.TryParse(GetValue<string>(recipeRaw, "kcal"), out float kcal))
@@ -268,10 +240,13 @@ namespace WinFormsInfoApp
             {
                 recipe.Salt = salt;
             }
+            if(int.TryParse(GetValue<string>(recipeRaw, "serving"),out int serves))
+            {
+                recipe.Serving = serves;
+            }
 
             recipe.Description = GetValue<string>(recipeRaw, "description");
             recipe.Method = GetValue<string>(recipeRaw, "method");
-
             return recipe;
         }
 

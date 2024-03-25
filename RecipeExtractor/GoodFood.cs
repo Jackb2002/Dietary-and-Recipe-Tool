@@ -25,18 +25,19 @@ namespace RecipeExtractor
                 bool vegetarian = allergyInfo.Contains("Vegetarian");
                 bool keto = allergyInfo.Contains("Keto");
                 bool vegan = allergyInfo.Contains("Vegan");
+                string serving = ExtractServingPeople(doc);
+
+
                 string? kcal = nutritionInfo.FirstOrDefault(x => x.Key.Contains("kcal")).Value;
                 if (kcal != default)
                 {
                     kcal = kcal.Replace("g", "") ?? "";
                 }
-
                 string? fat = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fat")).Value;
                 if (fat != default)
                 {
                     fat = fat.Replace("g", "") ?? "";
                 }
-
                 string? saturates = nutritionInfo.FirstOrDefault(x => x.Key.Contains("saturates")).Value;
                 if (saturates != default)
                 {
@@ -96,7 +97,8 @@ namespace RecipeExtractor
             new KeyValuePair<string, object>("Salt", salt),
             new KeyValuePair<string, object>("Ingredients", ingredients),
             new KeyValuePair<string, object>("Url", url),
-            new KeyValuePair<string, object>("Method", method)
+            new KeyValuePair<string, object>("Method", method),
+            new KeyValuePair<string, object>("Serving", serving)
         ];
 
                 return recipeData;
@@ -107,6 +109,31 @@ namespace RecipeExtractor
                 return null;
             }
         }
+
+        private static string ExtractServingPeople(HtmlDocument doc)
+        {
+            try
+            {
+                HtmlNode servingNode = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'icon-with-text') and contains(., 'Serves')]");
+                string servingText = servingNode?.InnerText.Trim() ?? string.Empty;
+
+                // Split the serving text to extract the number of servings
+                string[] parts = servingText.Split(' ');
+                if (parts.Length >= 2)
+                {
+                    return parts[1]; // Assuming the number of servings is always at index 1
+                }
+                else
+                {
+                    return string.Empty; // If serving text is not in the expected format
+                }
+            }
+            catch
+            {
+                return string.Empty; // In case of any error
+            }
+        }
+
 
         private static string ExtractRecipeName(HtmlDocument doc)
         {
