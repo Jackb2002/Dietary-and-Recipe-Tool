@@ -17,7 +17,7 @@ namespace WinFormsInfoApp
         private readonly List<Recipe> _recipes = [];
         private List<Ingredient> _ingredientCache = [];
         private Recipe? CurrentRecipeSelection;
-        private Family currentFamily;
+        private Family.Family currentFamily;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
