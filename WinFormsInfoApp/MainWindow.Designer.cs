@@ -41,6 +41,8 @@
             optionsToolStripMenuItem = new ToolStripMenuItem();
             editFamilyToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
+            IngredientBox = new GroupBox();
+            DietBox = new GroupBox();
             recipeBox.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -167,11 +169,31 @@
             settingsToolStripMenuItem.Size = new Size(180, 22);
             settingsToolStripMenuItem.Text = "Settings";
             // 
+            // IngredientBox
+            // 
+            IngredientBox.Location = new Point(634, 28);
+            IngredientBox.Name = "IngredientBox";
+            IngredientBox.Size = new Size(414, 263);
+            IngredientBox.TabIndex = 8;
+            IngredientBox.TabStop = false;
+            IngredientBox.Text = "Ingredients";
+            // 
+            // DietBox
+            // 
+            DietBox.Location = new Point(634, 297);
+            DietBox.Name = "DietBox";
+            DietBox.Size = new Size(414, 274);
+            DietBox.TabIndex = 9;
+            DietBox.TabStop = false;
+            DietBox.Text = "Diets";
+            // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1060, 608);
+            Controls.Add(DietBox);
+            Controls.Add(IngredientBox);
             Controls.Add(recipeBox);
             Controls.Add(ConnectionStatus);
             Controls.Add(menuStrip1);
@@ -204,5 +226,7 @@
         private ToolStripMenuItem optionsToolStripMenuItem;
         private ToolStripMenuItem editFamilyToolStripMenuItem;
         private ToolStripMenuItem settingsToolStripMenuItem;
+        private GroupBox IngredientBox;
+        private GroupBox DietBox;
     }
 }

@@ -2,8 +2,8 @@
 {
     internal class Family
     {
-        public int Count => People.Length;
-        public Person[] People { get; set; }
+        public int? Count => People.Count;
+        public List<Person> People { get; set; }  = new List<Person>();
 
         internal float GetTotalKcal()
         {

@@ -321,6 +321,13 @@ namespace WinFormsInfoApp
         private void editFamilyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Debug.WriteLine("Opening family edit form");
+            FamilyEditor familyEditor = new(currentFamily);
+            familyEditor.ShowDialog();
+            if(familyEditor.DialogResult == DialogResult.OK)
+            {
+                currentFamily = familyEditor.family;
+                Debug.WriteLine($"Family updated, family is now {currentFamily.Count} people!");
+            }
         }
 
         private static T? GetValue<T>(List<KeyValuePair<string, object>> recipeRaw, string key)

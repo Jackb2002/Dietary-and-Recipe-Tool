@@ -31,5 +31,10 @@ namespace WinFormsInfoApp.Family
         internal abstract float Max_Fibre { get; set; }
         internal abstract float Max_Protein { get; set; }
         internal abstract float Max_Salt { get; set; }
+
+        public override string? ToString()
+        {
+            return $"{Gender} - {AgeGroup}";
+        }
     }
 }
