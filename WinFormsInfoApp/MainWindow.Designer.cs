@@ -43,6 +43,7 @@
             settingsToolStripMenuItem = new ToolStripMenuItem();
             IngredientBox = new GroupBox();
             DietBox = new GroupBox();
+            label2 = new Label();
             recipeBox.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -63,7 +64,7 @@
             recipeList.ItemHeight = 15;
             recipeList.Location = new Point(6, 22);
             recipeList.Name = "recipeList";
-            recipeList.Size = new Size(209, 529);
+            recipeList.Size = new Size(209, 514);
             recipeList.TabIndex = 1;
             recipeList.SelectedIndexChanged += recipeList_SelectedIndexChanged;
             // 
@@ -102,12 +103,13 @@
             recipeIng.Font = new Font("Verdana", 12F);
             recipeIng.Location = new Point(221, 128);
             recipeIng.Name = "recipeIng";
-            recipeIng.Size = new Size(375, 296);
+            recipeIng.Size = new Size(375, 251);
             recipeIng.TabIndex = 5;
             recipeIng.Text = "Recipe Ingredients:  ";
             // 
             // recipeBox
             // 
+            recipeBox.Controls.Add(label2);
             recipeBox.Controls.Add(servingsLabel);
             recipeBox.Controls.Add(recipeInfoPanel);
             recipeBox.Controls.Add(recipeList);
@@ -136,7 +138,7 @@
             // 
             recipeInfoPanel.Location = new Point(221, 427);
             recipeInfoPanel.Name = "recipeInfoPanel";
-            recipeInfoPanel.Size = new Size(375, 126);
+            recipeInfoPanel.Size = new Size(375, 110);
             recipeInfoPanel.TabIndex = 6;
             recipeInfoPanel.Paint += recipeInfoPanel_Paint;
             // 
@@ -159,14 +161,14 @@
             // editFamilyToolStripMenuItem
             // 
             editFamilyToolStripMenuItem.Name = "editFamilyToolStripMenuItem";
-            editFamilyToolStripMenuItem.Size = new Size(180, 22);
+            editFamilyToolStripMenuItem.Size = new Size(132, 22);
             editFamilyToolStripMenuItem.Text = "Edit Family";
             editFamilyToolStripMenuItem.Click += editFamilyToolStripMenuItem_Click;
             // 
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(180, 22);
+            settingsToolStripMenuItem.Size = new Size(132, 22);
             settingsToolStripMenuItem.Text = "Settings";
             // 
             // IngredientBox
@@ -186,6 +188,16 @@
             DietBox.TabIndex = 9;
             DietBox.TabStop = false;
             DietBox.Text = "Diets";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Verdana", 10F);
+            label2.Location = new Point(238, 407);
+            label2.Name = "label2";
+            label2.Size = new Size(341, 17);
+            label2.TabIndex = 8;
+            label2.Text = "Nutritional information if made for whole family ";
             // 
             // MainWindow
             // 
@@ -228,5 +240,6 @@
         private ToolStripMenuItem settingsToolStripMenuItem;
         private GroupBox IngredientBox;
         private GroupBox DietBox;
+        private Label label2;
     }
 }
