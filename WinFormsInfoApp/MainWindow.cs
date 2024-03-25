@@ -1,8 +1,11 @@
 ﻿using RecipeExtractor;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
 using WinFormsInfoApp.Models;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using static WinFormsInfoApp.IIngredientContext;
 
 namespace WinFormsInfoApp
@@ -106,21 +109,33 @@ namespace WinFormsInfoApp
         public void ImportRecipes()
         {
             _recipes.AddRange(ImportLocalRecipes(_recipe_FilePath));
+            int counter = 0;
+            int total = _recipes.Count;
             foreach (Recipe recipe in _recipes)
             {
+                counter++;
                 if(recipe.Kcal == default)
                 {
+                    Debug.WriteLine($"Looking for recipe nutrition information for new recipe number {counter} of {total}");
                     Recipe newRecipe = ExtractRecipeFromURL(recipe.RecipeUrls);
                     if (newRecipe != null)
                     {
-                        recipe.Kcal = newRecipe.Kcal;
-                        recipe.Fat = newRecipe.Fat;
-                        recipe.Saturates = newRecipe.Saturates;
-                        recipe.Carbs = newRecipe.Carbs;
-                        recipe.Sugars = newRecipe.Sugars;
-                        recipe.Fibre = newRecipe.Fibre;
-                        recipe.Protein = newRecipe.Protein;
-                        recipe.Salt = newRecipe.Salt;
+                        if(newRecipe.Kcal == default)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"Found recipe nutrition information for new recipe number {counter} of {total}");
+                            recipe.Kcal = newRecipe.Kcal;
+                            recipe.Fat = newRecipe.Fat;
+                            recipe.Saturates = newRecipe.Saturates;
+                            recipe.Carbs = newRecipe.Carbs;
+                            recipe.Sugars = newRecipe.Sugars;
+                            recipe.Fibre = newRecipe.Fibre;
+                            recipe.Protein = newRecipe.Protein;
+                            recipe.Salt = newRecipe.Salt;
+                        }
                     }
                 }
             }
@@ -194,42 +209,54 @@ namespace WinFormsInfoApp
         /// <returns>Recipe object or null in case of error</returns>
         private static Recipe ExtractRecipeFromURL(string url)
         {
-            string[] recipeRaw = GoodFood.ParseRecipeFromUrl(url);
+            var recipeRaw = GoodFood.ParseRecipeFromUrl(url);
             if (recipeRaw != null)
             {
-                return ExtractRecipeFromString(recipeRaw);
+                return CreateRecipeFromParsedKeyvalues(recipeRaw);
             }
             return null;
         }
 
-        private static Recipe ExtractRecipeFromString(string[] recipeRaw)
+        private static Recipe CreateRecipeFromParsedKeyvalues(List<KeyValuePair<string, object>> recipeRaw)
         {
-            Recipe recipe = new()
+            Recipe recipe = new Recipe
             {
-                Title = recipeRaw[0]?.ToString(),
-                Difficulty = recipeRaw[1]?.ToString(),
-                Serves = recipeRaw[2]?.ToString(),
-                Rating = recipeRaw[3]?.ToString(),
-                Reviews = recipeRaw[4]?.ToString(),
-                Vegetarian = recipeRaw[5] == "true" ? true : false,
-                Vegan = recipeRaw[6] == "true" ? true : false,
-                DairyFree = recipeRaw[7] == "true" ? true : false,
-                Keto = recipeRaw[8] == "true" ? true : false,
-                GlutenFree = recipeRaw[9] == "true" ? true : false,
-                PrepTime = recipeRaw[10]?.ToString(),
-                CookTime = recipeRaw[11]?.ToString(),
-                Ingredients = recipeRaw[12]?.ToString(),
-                RecipeUrls = recipeRaw[13]?.ToString(),
-                Kcal = recipeRaw[14] == "" ? 0 : int.Parse(recipeRaw[14]),
-                Fat = recipeRaw[15] == "" ? 0 : int.Parse(recipeRaw[15]),
-                Saturates = recipeRaw[16] == "" ? 0 : int.Parse(recipeRaw[16]),
-                Carbs = recipeRaw[17] == "" ? 0 : int.Parse(recipeRaw[17]),
-                Sugars = recipeRaw[18] == "" ? 0 : int.Parse(recipeRaw[18]),
-                Fibre = recipeRaw[19] == "" ? 0 : int.Parse(recipeRaw[19]),
-                Protein = recipeRaw[20] == "" ? 0 : int.Parse(recipeRaw[20]),
-                Salt = recipeRaw[21] == "" ? 0 : int.Parse(recipeRaw[21])
+                Title = GetValue<string>(recipeRaw, "title"),
+                Difficulty = GetValue<string>(recipeRaw, "difficulty"),
+                Serves = GetValue<string>(recipeRaw, "serves"),
+                Rating = GetValue<string>(recipeRaw, "rating"),
+                Reviews = GetValue<string>(recipeRaw, "reviews"),
+                Vegetarian = GetValue<bool>(recipeRaw, "vegetarian"),
+                Vegan = GetValue<bool>(recipeRaw, "vegan"),
+                DairyFree = GetValue<bool>(recipeRaw, "dairy_free"),
+                Keto = GetValue<bool>(recipeRaw, "keto"),
+                GlutenFree = GetValue<bool>(recipeRaw, "gluten_free"),
+                PrepTime = GetValue<string>(recipeRaw, "prep_time"),
+                CookTime = GetValue<string>(recipeRaw, "cook_time"),
+                Ingredients = GetValue<string>(recipeRaw, "ingredients"),
+                RecipeUrls = GetValue<string>(recipeRaw, "recipe_urls"),
+                Kcal = GetValue<int>(recipeRaw, "kcal"),
+                Fat = GetValue<int>(recipeRaw, "fat"),
+                Saturates = GetValue<int>(recipeRaw, "saturates"),
+                Carbs = GetValue<int>(recipeRaw, "carbs"),
+                Sugars = GetValue<int>(recipeRaw, "sugars"),
+                Fibre = GetValue<int>(recipeRaw, "fibre"),
+                Protein = GetValue<int>(recipeRaw, "protein"),
+                Salt = GetValue<int>(recipeRaw, "salt"),
+                Description = GetValue<string>(recipeRaw, "description"),
+                Method = GetValue<string>(recipeRaw, "method")
             };
             return recipe;
+        }
+
+        private static T GetValue<T>(List<KeyValuePair<string, object>> recipeRaw, string key)
+        {
+            var pair = recipeRaw.FirstOrDefault(x => x.Key.ToLower().Trim() == key.ToLower().Trim());
+            if (pair.Value != null && pair.Value is T)
+            {
+                return (T)pair.Value;
+            }
+            return default(T);
         }
     }
 }

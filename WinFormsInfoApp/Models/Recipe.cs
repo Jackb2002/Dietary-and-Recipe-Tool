@@ -70,6 +70,12 @@ namespace WinFormsInfoApp.Models
 
         [Name("salt")]
         public int Salt { get; set; }
+
+        [Name("method")]
+        public string Method { get; set; }
+
+        [Name("description")]
+        public string Description { get; set; }
     }
 
 }
