@@ -249,14 +249,14 @@ namespace WinFormsInfoApp
             return recipe;
         }
 
-        private static T GetValue<T>(List<KeyValuePair<string, object>> recipeRaw, string key)
+        private static T? GetValue<T>(List<KeyValuePair<string, object>> recipeRaw, string key)
         {
-            var pair = recipeRaw.FirstOrDefault(x => x.Key.ToLower().Trim() == key.ToLower().Trim());
+            var pair = recipeRaw.Where(x => x.Key == key).FirstOrDefault();
             if (pair.Value != null && pair.Value is T)
             {
                 return (T)pair.Value;
             }
-            return default(T);
+            return default;
         }
     }
 }
