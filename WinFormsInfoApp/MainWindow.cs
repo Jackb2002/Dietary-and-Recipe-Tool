@@ -219,39 +219,42 @@ namespace WinFormsInfoApp
 
         private static Recipe CreateRecipeFromParsedKeyvalues(List<KeyValuePair<string, object>> recipeRaw)
         {
-            Recipe recipe = new Recipe
-            {
-                Title = GetValue<string>(recipeRaw, "title"),
-                Difficulty = GetValue<string>(recipeRaw, "difficulty"),
-                Serves = GetValue<string>(recipeRaw, "serves"),
-                Rating = GetValue<string>(recipeRaw, "rating"),
-                Reviews = GetValue<string>(recipeRaw, "reviews"),
-                Vegetarian = GetValue<bool>(recipeRaw, "vegetarian"),
-                Vegan = GetValue<bool>(recipeRaw, "vegan"),
-                DairyFree = GetValue<bool>(recipeRaw, "dairy_free"),
-                Keto = GetValue<bool>(recipeRaw, "keto"),
-                GlutenFree = GetValue<bool>(recipeRaw, "gluten_free"),
-                PrepTime = GetValue<string>(recipeRaw, "prep_time"),
-                CookTime = GetValue<string>(recipeRaw, "cook_time"),
-                Ingredients = GetValue<string>(recipeRaw, "ingredients"),
-                RecipeUrls = GetValue<string>(recipeRaw, "recipe_urls"),
-                Kcal = GetValue<int>(recipeRaw, "kcal"),
-                Fat = GetValue<int>(recipeRaw, "fat"),
-                Saturates = GetValue<int>(recipeRaw, "saturates"),
-                Carbs = GetValue<int>(recipeRaw, "carbs"),
-                Sugars = GetValue<int>(recipeRaw, "sugars"),
-                Fibre = GetValue<int>(recipeRaw, "fibre"),
-                Protein = GetValue<int>(recipeRaw, "protein"),
-                Salt = GetValue<int>(recipeRaw, "salt"),
-                Description = GetValue<string>(recipeRaw, "description"),
-                Method = GetValue<string>(recipeRaw, "method")
-            };
+            Recipe recipe = new Recipe();
+
+            recipe.Title = GetValue<string>(recipeRaw, "name");
+            recipe.Difficulty = GetValue<string>(recipeRaw, "difficulty");
+            recipe.Serves = GetValue<string>(recipeRaw, "serves");
+            recipe.Rating = GetValue<string>(recipeRaw, "rating");
+            recipe.Reviews = GetValue<string>(recipeRaw, "reviews");
+            recipe.Vegetarian = GetValue<bool>(recipeRaw, "vegetarian");
+            recipe.Vegan = GetValue<bool>(recipeRaw, "vegan");
+            recipe.DairyFree = GetValue<bool>(recipeRaw, "dairy_free");
+            recipe.Keto = GetValue<bool>(recipeRaw, "keto");
+            recipe.GlutenFree = GetValue<bool>(recipeRaw, "gluten_free");
+            recipe.PrepTime = GetValue<string>(recipeRaw, "prep_time");
+            recipe.CookTime = GetValue<string>(recipeRaw, "cook_time");
+            recipe.Ingredients = GetValue<string>(recipeRaw, "ingredients");
+            recipe.RecipeUrls = GetValue<string>(recipeRaw, "recipe_urls");
+
+            if (float.TryParse(GetValue<string>(recipeRaw, "kcal"), out float kcal)) recipe.Kcal = kcal;
+            if (float.TryParse(GetValue<string>(recipeRaw, "fat"), out float fat)) recipe.Fat = fat;
+            if (float.TryParse(GetValue<string>(recipeRaw, "saturates"), out float saturates)) recipe.Saturates = saturates;
+            if (float.TryParse(GetValue<string>(recipeRaw, "carbs"), out float carbs)) recipe.Carbs = carbs;
+            if (float.TryParse(GetValue<string>(recipeRaw, "sugars"), out float sugars)) recipe.Sugars = sugars;
+            if (float.TryParse(GetValue<string>(recipeRaw, "fibre"), out float fibre)) recipe.Fibre = fibre;
+            if (float.TryParse(GetValue<string>(recipeRaw, "protein"), out float protein)) recipe.Protein = protein;
+            if (float.TryParse(GetValue<string>(recipeRaw, "salt"), out float salt)) recipe.Salt = salt;
+
+            recipe.Description = GetValue<string>(recipeRaw, "description");
+            recipe.Method = GetValue<string>(recipeRaw, "method");
+
             return recipe;
         }
 
+
         private static T? GetValue<T>(List<KeyValuePair<string, object>> recipeRaw, string key)
         {
-            var pair = recipeRaw.Where(x => x.Key == key).FirstOrDefault();
+            var pair = recipeRaw.Where(x => x.Key.ToLower() == key).FirstOrDefault();
             if (pair.Value != null && pair.Value is T)
             {
                 return (T)pair.Value;

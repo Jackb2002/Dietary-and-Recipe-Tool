@@ -30,14 +30,22 @@ namespace RecipeExtractor
                 bool vegetarian = allergyInfo.Contains("Vegetarian");
                 bool keto = allergyInfo.Contains("Keto");
                 bool vegan = allergyInfo.Contains("Vegan");
-                string kcal = nutritionInfo.FirstOrDefault(x => x.Key.Contains("kcal")).Value;
-                string fat = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fat")).Value;
-                string saturates = nutritionInfo.FirstOrDefault(x => x.Key.Contains("saturates")).Value;
-                string carbs = nutritionInfo.FirstOrDefault(x => x.Key.Contains("carbs")).Value;
-                string sugars = nutritionInfo.FirstOrDefault(x => x.Key.Contains("sugars")).Value;
-                string fibre = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fibre")).Value;
-                string protein = nutritionInfo.FirstOrDefault(x => x.Key.Contains("protein")).Value;
-                string salt = nutritionInfo.FirstOrDefault(x => x.Key.Contains("salt")).Value;
+                string? kcal = nutritionInfo.FirstOrDefault(x => x.Key.Contains("kcal")).Value;
+                if(kcal != default) kcal = kcal.Replace("g", "") ?? "";
+                string? fat = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fat")).Value;
+                if(fat != default) fat = fat.Replace("g", "") ?? "";
+                string? saturates = nutritionInfo.FirstOrDefault(x => x.Key.Contains("saturates")).Value;
+                if(saturates != default) saturates = saturates.Replace("g", "") ?? "";
+                string? carbs = nutritionInfo.FirstOrDefault(x => x.Key.Contains("carbs")).Value;
+                if(carbs != default) carbs = carbs.Replace("g", "") ?? "";
+                string? sugars = nutritionInfo.FirstOrDefault(x => x.Key.Contains("sugars")).Value;
+                if(sugars != default) sugars = sugars.Replace("g", "") ?? "";
+                string? fibre = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fibre")).Value;
+                if(fibre != default) fibre = fibre.Replace("g", "") ?? "";
+                string? protein = nutritionInfo.FirstOrDefault(x => x.Key.Contains("protein")).Value;
+                if(protein != default) protein = protein.Replace("g", "") ?? "";
+                string? salt = nutritionInfo.FirstOrDefault(x => x.Key.Contains("salt")).Value;
+                if(salt != default) salt = salt.Replace("g", "") ?? "";
 
                 var recipeData = new List<KeyValuePair<string, object>>()
         {
