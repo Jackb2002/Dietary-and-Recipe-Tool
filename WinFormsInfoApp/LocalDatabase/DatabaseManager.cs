@@ -1,5 +1,4 @@
 ﻿using System.Data.SQLite;
-using System.Windows.Forms.VisualStyles;
 using WinFormsInfoApp.Models;
 
 namespace WinFormsInfoApp.LocalDatabase
@@ -87,8 +86,8 @@ namespace WinFormsInfoApp.LocalDatabase
 
         public List<Ingredient> GetAllIngredients(params string[] names)
         {
-            List<Ingredient> ingredients = new();
-            foreach (var name in names)
+            List<Ingredient> ingredients = [];
+            foreach (string name in names)
             {
                 ingredients.Add(GetFirstIngredient(name));
             }

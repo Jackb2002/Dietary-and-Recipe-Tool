@@ -25,8 +25,8 @@ namespace SupermarketInfo
                 using (WebDriver driver = new ChromeDriver(@"C:\Users\jackb\source\repos\Jackb2002\SupermarketInfo\SupermarketInfo\chromedriver.exe"))
                 {
                     driver.Navigate().GoToUrl(page_url);
-                    IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-                    js.ExecuteScript("return document.readyState").Equals("complete");
+                    IJavaScriptExecutor js = driver;
+                    _ = js.ExecuteScript("return document.readyState").Equals("complete");
                     string htmlSource = driver.PageSource;
                     driver.Quit();
                     return htmlSource;
@@ -58,8 +58,8 @@ namespace SupermarketInfo
                     {
                         string url = page_urls[url_id];
                         driver.Navigate().GoToUrl(url);
-                        IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-                        js.ExecuteScript("return document.readyState").Equals("complete");
+                        IJavaScriptExecutor js = driver;
+                        _ = js.ExecuteScript("return document.readyState").Equals("complete");
                         html_sources[url_id] = driver.PageSource;
                         System.Threading.Thread.Sleep((int)(delay * 1000));
                     }

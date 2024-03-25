@@ -1,11 +1,7 @@
 ﻿using RecipeExtractor;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Xml.Linq;
 using WinFormsInfoApp.Models;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using static WinFormsInfoApp.IIngredientContext;
 
 namespace WinFormsInfoApp
@@ -114,13 +110,13 @@ namespace WinFormsInfoApp
             foreach (Recipe recipe in _recipes)
             {
                 counter++;
-                if(recipe.Kcal == default)
+                if (recipe.Kcal == default)
                 {
                     Debug.WriteLine($"Looking for recipe nutrition information for new recipe number {counter} of {total}");
                     Recipe newRecipe = ExtractRecipeFromURL(recipe.RecipeUrls);
                     if (newRecipe != null)
                     {
-                        if(newRecipe.Kcal == default)
+                        if (newRecipe.Kcal == default)
                         {
                             continue;
                         }
@@ -158,10 +154,10 @@ namespace WinFormsInfoApp
 
             //Filter out duplicates and empty titles
             localRecipes = localRecipes.Where(x => x.Title != "").ToList();
-            
+
             //Filter out recipes with no ingredients or unspecified ingredients
-            localRecipes = localRecipes.Where(x => x.Ingredients != ""
-                && x.Ingredients != "Not specified").ToList();
+            localRecipes = localRecipes.Where(x => x.Ingredients is not ""
+                and not "Not specified").ToList();
 
             return localRecipes;
         }
@@ -193,7 +189,7 @@ namespace WinFormsInfoApp
             recipeTitle.Text = "Recipe Name: " + CurrentRecipeSelection.Title;
             recipeLink.Text = "Recipe Link: Here";
             recipeLink.Click += LaunchRecipeOnClick(CurrentRecipeSelection.RecipeUrls);
-            recipeIng.Text = "Recipe Ingredients: " + 
+            recipeIng.Text = "Recipe Ingredients: " +
                 Environment.NewLine + CurrentRecipeSelection.Ingredients;
         }
 
@@ -207,43 +203,71 @@ namespace WinFormsInfoApp
         /// </summary>
         /// <param name="url">URL to a good food web page with a recipe</param>
         /// <returns>Recipe object or null in case of error</returns>
-        private static Recipe ExtractRecipeFromURL(string url)
+        private static Recipe? ExtractRecipeFromURL(string url)
         {
-            var recipeRaw = GoodFood.ParseRecipeFromUrl(url);
-            if (recipeRaw != null)
-            {
-                return CreateRecipeFromParsedKeyvalues(recipeRaw);
-            }
-            return null;
+            List<KeyValuePair<string, object>>? recipeRaw = GoodFood.ParseRecipeFromUrl(url);
+            return recipeRaw != null ? CreateRecipeFromParsedKeyvalues(recipeRaw) : null;
         }
 
         private static Recipe CreateRecipeFromParsedKeyvalues(List<KeyValuePair<string, object>> recipeRaw)
         {
-            Recipe recipe = new Recipe();
+            Recipe recipe = new()
+            {
+                Title = GetValue<string>(recipeRaw, "name"),
+                Difficulty = GetValue<string>(recipeRaw, "difficulty"),
+                Serves = GetValue<string>(recipeRaw, "serves"),
+                Rating = GetValue<string>(recipeRaw, "rating"),
+                Reviews = GetValue<string>(recipeRaw, "reviews"),
+                Vegetarian = GetValue<bool>(recipeRaw, "vegetarian"),
+                Vegan = GetValue<bool>(recipeRaw, "vegan"),
+                DairyFree = GetValue<bool>(recipeRaw, "dairy_free"),
+                Keto = GetValue<bool>(recipeRaw, "keto"),
+                GlutenFree = GetValue<bool>(recipeRaw, "gluten_free"),
+                PrepTime = GetValue<string>(recipeRaw, "prep_time"),
+                CookTime = GetValue<string>(recipeRaw, "cook_time"),
+                Ingredients = GetValue<string>(recipeRaw, "ingredients"),
+                RecipeUrls = GetValue<string>(recipeRaw, "recipe_urls")
+            };
 
-            recipe.Title = GetValue<string>(recipeRaw, "name");
-            recipe.Difficulty = GetValue<string>(recipeRaw, "difficulty");
-            recipe.Serves = GetValue<string>(recipeRaw, "serves");
-            recipe.Rating = GetValue<string>(recipeRaw, "rating");
-            recipe.Reviews = GetValue<string>(recipeRaw, "reviews");
-            recipe.Vegetarian = GetValue<bool>(recipeRaw, "vegetarian");
-            recipe.Vegan = GetValue<bool>(recipeRaw, "vegan");
-            recipe.DairyFree = GetValue<bool>(recipeRaw, "dairy_free");
-            recipe.Keto = GetValue<bool>(recipeRaw, "keto");
-            recipe.GlutenFree = GetValue<bool>(recipeRaw, "gluten_free");
-            recipe.PrepTime = GetValue<string>(recipeRaw, "prep_time");
-            recipe.CookTime = GetValue<string>(recipeRaw, "cook_time");
-            recipe.Ingredients = GetValue<string>(recipeRaw, "ingredients");
-            recipe.RecipeUrls = GetValue<string>(recipeRaw, "recipe_urls");
+            if (float.TryParse(GetValue<string>(recipeRaw, "kcal"), out float kcal))
+            {
+                recipe.Kcal = kcal;
+            }
 
-            if (float.TryParse(GetValue<string>(recipeRaw, "kcal"), out float kcal)) recipe.Kcal = kcal;
-            if (float.TryParse(GetValue<string>(recipeRaw, "fat"), out float fat)) recipe.Fat = fat;
-            if (float.TryParse(GetValue<string>(recipeRaw, "saturates"), out float saturates)) recipe.Saturates = saturates;
-            if (float.TryParse(GetValue<string>(recipeRaw, "carbs"), out float carbs)) recipe.Carbs = carbs;
-            if (float.TryParse(GetValue<string>(recipeRaw, "sugars"), out float sugars)) recipe.Sugars = sugars;
-            if (float.TryParse(GetValue<string>(recipeRaw, "fibre"), out float fibre)) recipe.Fibre = fibre;
-            if (float.TryParse(GetValue<string>(recipeRaw, "protein"), out float protein)) recipe.Protein = protein;
-            if (float.TryParse(GetValue<string>(recipeRaw, "salt"), out float salt)) recipe.Salt = salt;
+            if (float.TryParse(GetValue<string>(recipeRaw, "fat"), out float fat))
+            {
+                recipe.Fat = fat;
+            }
+
+            if (float.TryParse(GetValue<string>(recipeRaw, "saturates"), out float saturates))
+            {
+                recipe.Saturates = saturates;
+            }
+
+            if (float.TryParse(GetValue<string>(recipeRaw, "carbs"), out float carbs))
+            {
+                recipe.Carbs = carbs;
+            }
+
+            if (float.TryParse(GetValue<string>(recipeRaw, "sugars"), out float sugars))
+            {
+                recipe.Sugars = sugars;
+            }
+
+            if (float.TryParse(GetValue<string>(recipeRaw, "fibre"), out float fibre))
+            {
+                recipe.Fibre = fibre;
+            }
+
+            if (float.TryParse(GetValue<string>(recipeRaw, "protein"), out float protein))
+            {
+                recipe.Protein = protein;
+            }
+
+            if (float.TryParse(GetValue<string>(recipeRaw, "salt"), out float salt))
+            {
+                recipe.Salt = salt;
+            }
 
             recipe.Description = GetValue<string>(recipeRaw, "description");
             recipe.Method = GetValue<string>(recipeRaw, "method");
@@ -254,12 +278,8 @@ namespace WinFormsInfoApp
 
         private static T? GetValue<T>(List<KeyValuePair<string, object>> recipeRaw, string key)
         {
-            var pair = recipeRaw.Where(x => x.Key.ToLower() == key).FirstOrDefault();
-            if (pair.Value != null && pair.Value is T)
-            {
-                return (T)pair.Value;
-            }
-            return default;
+            KeyValuePair<string, object> pair = recipeRaw.Where(x => x.Key.ToLower() == key).FirstOrDefault();
+            return pair.Value is not null and T ? (T)pair.Value : default;
         }
     }
 }

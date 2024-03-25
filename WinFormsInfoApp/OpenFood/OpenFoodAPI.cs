@@ -34,7 +34,7 @@ namespace WinFormsInfoApp.OpenFood
         /// <returns>C# List object of Ingredient objects containing OpenFood Information</returns>
         public List<Ingredient>? GetAllIngredients(params string[] ingredients)
         {
-            var Ingredients = new List<Ingredient>();
+            List<Ingredient> Ingredients = [];
             foreach (string ingredient in ingredients)
             {
                 Ingredients.Add(GetFirstIngredient(ingredient));

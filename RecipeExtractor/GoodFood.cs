@@ -1,9 +1,4 @@
 ﻿using HtmlAgilityPack;
-using Microsoft.VisualBasic;
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace RecipeExtractor
 {
@@ -13,8 +8,8 @@ namespace RecipeExtractor
         {
             try
             {
-                var web = new HtmlWeb();
-                var doc = web.Load(url);
+                HtmlWeb web = new();
+                HtmlDocument doc = web.Load(url);
 
                 string name = ExtractRecipeName(doc);
                 string description = ExtractRecipeDescription(doc);
@@ -22,7 +17,7 @@ namespace RecipeExtractor
                 string cookTime = ExtractCookTime(doc);
                 string difficulty = ExtractDifficulty(doc);
                 string allergyInfo = ExtractAllergyInfo(doc);
-                var nutritionInfo = ExtractNutritionInfo(doc);
+                List<KeyValuePair<string, string>> nutritionInfo = ExtractNutritionInfo(doc);
                 string method = ExtractMethod(doc);
                 string ingredients = ExtractIngredients(doc);
                 bool dairyFree = allergyInfo.Contains("Dairy");
@@ -31,24 +26,55 @@ namespace RecipeExtractor
                 bool keto = allergyInfo.Contains("Keto");
                 bool vegan = allergyInfo.Contains("Vegan");
                 string? kcal = nutritionInfo.FirstOrDefault(x => x.Key.Contains("kcal")).Value;
-                if(kcal != default) kcal = kcal.Replace("g", "") ?? "";
-                string? fat = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fat")).Value;
-                if(fat != default) fat = fat.Replace("g", "") ?? "";
-                string? saturates = nutritionInfo.FirstOrDefault(x => x.Key.Contains("saturates")).Value;
-                if(saturates != default) saturates = saturates.Replace("g", "") ?? "";
-                string? carbs = nutritionInfo.FirstOrDefault(x => x.Key.Contains("carbs")).Value;
-                if(carbs != default) carbs = carbs.Replace("g", "") ?? "";
-                string? sugars = nutritionInfo.FirstOrDefault(x => x.Key.Contains("sugars")).Value;
-                if(sugars != default) sugars = sugars.Replace("g", "") ?? "";
-                string? fibre = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fibre")).Value;
-                if(fibre != default) fibre = fibre.Replace("g", "") ?? "";
-                string? protein = nutritionInfo.FirstOrDefault(x => x.Key.Contains("protein")).Value;
-                if(protein != default) protein = protein.Replace("g", "") ?? "";
-                string? salt = nutritionInfo.FirstOrDefault(x => x.Key.Contains("salt")).Value;
-                if(salt != default) salt = salt.Replace("g", "") ?? "";
+                if (kcal != default)
+                {
+                    kcal = kcal.Replace("g", "") ?? "";
+                }
 
-                var recipeData = new List<KeyValuePair<string, object>>()
-        {
+                string? fat = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fat")).Value;
+                if (fat != default)
+                {
+                    fat = fat.Replace("g", "") ?? "";
+                }
+
+                string? saturates = nutritionInfo.FirstOrDefault(x => x.Key.Contains("saturates")).Value;
+                if (saturates != default)
+                {
+                    saturates = saturates.Replace("g", "") ?? "";
+                }
+
+                string? carbs = nutritionInfo.FirstOrDefault(x => x.Key.Contains("carbs")).Value;
+                if (carbs != default)
+                {
+                    carbs = carbs.Replace("g", "") ?? "";
+                }
+
+                string? sugars = nutritionInfo.FirstOrDefault(x => x.Key.Contains("sugars")).Value;
+                if (sugars != default)
+                {
+                    sugars = sugars.Replace("g", "") ?? "";
+                }
+
+                string? fibre = nutritionInfo.FirstOrDefault(x => x.Key.Contains("fibre")).Value;
+                if (fibre != default)
+                {
+                    fibre = fibre.Replace("g", "") ?? "";
+                }
+
+                string? protein = nutritionInfo.FirstOrDefault(x => x.Key.Contains("protein")).Value;
+                if (protein != default)
+                {
+                    protein = protein.Replace("g", "") ?? "";
+                }
+
+                string? salt = nutritionInfo.FirstOrDefault(x => x.Key.Contains("salt")).Value;
+                if (salt != default)
+                {
+                    salt = salt.Replace("g", "") ?? "";
+                }
+
+                List<KeyValuePair<string, object>> recipeData =
+        [
             new KeyValuePair<string, object>("Name", name),
             new KeyValuePair<string, object>("Description", description),
             new KeyValuePair<string, object>("Rating", rating),
@@ -71,7 +97,7 @@ namespace RecipeExtractor
             new KeyValuePair<string, object>("Ingredients", ingredients),
             new KeyValuePair<string, object>("Url", url),
             new KeyValuePair<string, object>("Method", method)
-        };
+        ];
 
                 return recipeData;
             }
@@ -86,7 +112,7 @@ namespace RecipeExtractor
         {
             try
             {
-                var nameNode = doc.DocumentNode.SelectSingleNode("//h1[@class='heading-1']");
+                HtmlNode nameNode = doc.DocumentNode.SelectSingleNode("//h1[@class='heading-1']");
                 return nameNode?.InnerText.Trim().Replace("&amp", "&") ?? string.Empty;
             }
             catch
@@ -99,7 +125,7 @@ namespace RecipeExtractor
         {
             try
             {
-                var descriptionNode = doc.DocumentNode.SelectSingleNode("//div[@class='editor-content mt-sm pr-xxs hidden-print']/p");
+                HtmlNode descriptionNode = doc.DocumentNode.SelectSingleNode("//div[@class='editor-content mt-sm pr-xxs hidden-print']/p");
                 return descriptionNode?.InnerText.Trim().Replace("&amp", "&") ?? string.Empty;
             }
             catch
@@ -112,8 +138,8 @@ namespace RecipeExtractor
         {
             try
             {
-                var ratingNode = doc.DocumentNode.SelectSingleNode("//div[@class='rating__values']");
-                var stars = ratingNode?.SelectNodes(".//i[contains(@class, 'rating__icon')]") ?? new HtmlNodeCollection(null);
+                HtmlNode ratingNode = doc.DocumentNode.SelectSingleNode("//div[@class='rating__values']");
+                HtmlNodeCollection stars = ratingNode?.SelectNodes(".//i[contains(@class, 'rating__icon')]") ?? new HtmlNodeCollection(null);
 
                 // Calculate the average rating based on the filled stars
                 double totalStars = stars.Count;
@@ -132,7 +158,7 @@ namespace RecipeExtractor
         {
             try
             {
-                var timeNode = doc.DocumentNode.SelectSingleNode("//ul[@class='recipe__cook-and-prep list list--horizontal']/li/div/ul/li[2]/span/time");
+                HtmlNode timeNode = doc.DocumentNode.SelectSingleNode("//ul[@class='recipe__cook-and-prep list list--horizontal']/li/div/ul/li[2]/span/time");
                 return timeNode?.InnerText.Trim().Replace("&amp", "&") ?? string.Empty;
             }
             catch
@@ -145,7 +171,7 @@ namespace RecipeExtractor
         {
             try
             {
-                var difficultyNode = doc.DocumentNode.SelectSingleNode("//li[@class='mt-sm mr-xl list-item']/div/div[contains(text(), 'Difficulty')]");
+                HtmlNode difficultyNode = doc.DocumentNode.SelectSingleNode("//li[@class='mt-sm mr-xl list-item']/div/div[contains(text(), 'Difficulty')]");
                 return difficultyNode?.NextSibling.InnerText.Trim().Replace("&amp", "&") ?? string.Empty;
             }
             catch
@@ -158,12 +184,10 @@ namespace RecipeExtractor
         {
             try
             {
-                var allergyNodes = doc.DocumentNode.SelectNodes("//div[@class='allergy-info-container']/ul/li/span");
-                if (allergyNodes != null)
-                {
-                    return string.Join(", ", allergyNodes.Select(node => node.InnerText.Trim())).Replace("&amp", "&");
-                }
-                return "Not specified";
+                HtmlNodeCollection allergyNodes = doc.DocumentNode.SelectNodes("//div[@class='allergy-info-container']/ul/li/span");
+                return allergyNodes != null
+                    ? string.Join(", ", allergyNodes.Select(node => node.InnerText.Trim())).Replace("&amp", "&")
+                    : "Not specified";
             }
             catch
             {
@@ -173,7 +197,7 @@ namespace RecipeExtractor
 
         private static List<KeyValuePair<string, string>> ExtractNutritionInfo(HtmlDocument doc)
         {
-            List<KeyValuePair<string, string>> nutritionInfo = new List<KeyValuePair<string, string>>();
+            List<KeyValuePair<string, string>> nutritionInfo = [];
 
             try
             {
@@ -182,7 +206,7 @@ namespace RecipeExtractor
                 {
                     foreach (HtmlNode node in nutritionNodes)
                     {
-                        var rows = node.SelectNodes("./tr");
+                        HtmlNodeCollection rows = node.SelectNodes("./tr");
                         if (rows != null)
                         {
                             foreach (HtmlNode row in rows)
@@ -213,12 +237,10 @@ namespace RecipeExtractor
         {
             try
             {
-                var methodNodes = doc.DocumentNode.SelectNodes("//div[@class='js-piano-recipe-method col-12 pa-reset col-lg-6']//div[@class='grouped-list']//ul[@class='grouped-list__list list']//li[@class='pb-xs pt-xs list-item']");
-                if (methodNodes != null)
-                {
-                    return string.Join("\n", methodNodes.Select(node => $"{node.SelectSingleNode(".//span[@class='mb-xxs heading-6']")?.InnerText.Trim()}: {node.SelectSingleNode("./div[@class='editor-content']")?.InnerText.Trim()}")).Replace("&amp", "&");
-                }
-                return "Not specified";
+                HtmlNodeCollection methodNodes = doc.DocumentNode.SelectNodes("//div[@class='js-piano-recipe-method col-12 pa-reset col-lg-6']//div[@class='grouped-list']//ul[@class='grouped-list__list list']//li[@class='pb-xs pt-xs list-item']");
+                return methodNodes != null
+                    ? string.Join("\n", methodNodes.Select(node => $"{node.SelectSingleNode(".//span[@class='mb-xxs heading-6']")?.InnerText.Trim()}: {node.SelectSingleNode("./div[@class='editor-content']")?.InnerText.Trim()}")).Replace("&amp", "&")
+                    : "Not specified";
             }
             catch
             {
@@ -230,12 +252,10 @@ namespace RecipeExtractor
         {
             try
             {
-                var ingredientNodes = doc.DocumentNode.SelectNodes("//section[@class='recipe__ingredients col-12 mt-md col-lg-6']//ul[@class='list']//li[@class='pb-xxs pt-xxs list-item list-item--separator']");
-                if (ingredientNodes != null)
-                {
-                    return string.Join("\n", ingredientNodes.Select(node => node.InnerText.Trim())).Replace("&amp", "&");
-                }
-                return "Not specified";
+                HtmlNodeCollection ingredientNodes = doc.DocumentNode.SelectNodes("//section[@class='recipe__ingredients col-12 mt-md col-lg-6']//ul[@class='list']//li[@class='pb-xxs pt-xxs list-item list-item--separator']");
+                return ingredientNodes != null
+                    ? string.Join("\n", ingredientNodes.Select(node => node.InnerText.Trim())).Replace("&amp", "&")
+                    : "Not specified";
             }
             catch
             {

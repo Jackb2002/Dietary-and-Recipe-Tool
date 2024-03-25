@@ -12,10 +12,11 @@ namespace SupermarketInfo
             for (int i = 0; i < urls.Length; i++)
             {
                 string url = urls[i];
-                var page_1 = url.Replace("PAGENUMBER", "1");
+                string page_1 = url.Replace("PAGENUMBER", "1");
                 page_1s[i] = page_1;
             }
-            var page_1_htmls = PageDownloader.DownloadPages(page_1s,5);
+
+            _ = PageDownloader.DownloadPages(page_1s, 5);
             int[] max_items = new int[urls.Length];
             for (int i = 0; i < urls.Length; i++)
             {

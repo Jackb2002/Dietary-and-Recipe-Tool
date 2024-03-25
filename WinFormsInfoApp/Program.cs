@@ -1,6 +1,3 @@
-
-using System.Diagnostics;
-
 namespace WinFormsInfoApp
 {
     internal static class Program
