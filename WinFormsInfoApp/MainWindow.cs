@@ -164,6 +164,8 @@ namespace WinFormsInfoApp
             recipeLink.Click += LaunchRecipeOnClick(CurrentRecipeSelection.RecipeUrls);
             recipeIng.Text = "Recipe Ingredients: " +
                 Environment.NewLine + CurrentRecipeSelection.Ingredients;
+            servingsLabel.Text = "Recipe Servings: " + CurrentRecipeSelection.Serving;
+            recipeInfoPanel.Invalidate();
         }
 
         private EventHandler LaunchRecipeOnClick(string url)
@@ -240,7 +242,7 @@ namespace WinFormsInfoApp
             {
                 recipe.Salt = salt;
             }
-            if(int.TryParse(GetValue<string>(recipeRaw, "serving"),out int serves))
+            if (int.TryParse(GetValue<string>(recipeRaw, "serving"), out int serves))
             {
                 recipe.Serving = serves;
             }
@@ -248,6 +250,71 @@ namespace WinFormsInfoApp
             recipe.Description = GetValue<string>(recipeRaw, "description");
             recipe.Method = GetValue<string>(recipeRaw, "method");
             return recipe;
+        }
+        private void recipeInfoPanel_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            Pen pen = new Pen(Color.Black, 2);
+            Font font = new Font("Arial", 10);
+            Size size = recipeInfoPanel.ClientSize; // Use ClientSize for size calculations
+            int boxWidth = size.Width / 4;
+            int boxHeight = size.Height / 2;
+            int padding_x = 10;
+            int padding_y = 10;
+
+            if (CurrentRecipeSelection != null)
+            {
+                using (StringFormat stringFormat = new StringFormat())
+                {
+                    stringFormat.Alignment = StringAlignment.Near;
+                    stringFormat.LineAlignment = StringAlignment.Center;
+
+                    // Draw a box with padding 2 rows 4 columns 
+                    for (int row = 0; row < 2; row++)
+                    {
+                        for (int col = 0; col < 4; col++)
+                        {
+                            int x = col * boxWidth + padding_x;
+                            int y = row * boxHeight + padding_y;
+
+                            // Define the rectangle for the text
+                            RectangleF textRect = new RectangleF(x + 5, y + 5, boxWidth - 2 * padding_x, boxHeight - 2 * padding_y);
+
+                            // Draw the rectangle
+                            g.DrawRectangle(pen, x, y, boxWidth - padding_x, boxHeight - padding_y);
+
+                            // Draw the nutrient information with text wrapping
+                            switch (row * 4 + col)
+                            {
+                                case 0:
+                                    g.DrawString("Kcal: " + CurrentRecipeSelection.Kcal, font, Brushes.Black, textRect, stringFormat);
+                                    break;
+                                case 1:
+                                    g.DrawString("Fat: " + CurrentRecipeSelection.Fat, font, Brushes.Black, textRect, stringFormat);
+                                    break;
+                                case 2:
+                                    g.DrawString("Saturates: " + CurrentRecipeSelection.Saturates, font, Brushes.Black, textRect, stringFormat);
+                                    break;
+                                case 3:
+                                    g.DrawString("Carbs: " + CurrentRecipeSelection.Carbs, font, Brushes.Black, textRect, stringFormat);
+                                    break;
+                                case 4:
+                                    g.DrawString("Sugars: " + CurrentRecipeSelection.Sugars, font, Brushes.Black, textRect, stringFormat);
+                                    break;
+                                case 5:
+                                    g.DrawString("Fibre: " + CurrentRecipeSelection.Fibre, font, Brushes.Black, textRect, stringFormat);
+                                    break;
+                                case 6:
+                                    g.DrawString("Protein: " + CurrentRecipeSelection.Protein, font, Brushes.Black, textRect, stringFormat);
+                                    break;
+                                case 7:
+                                    g.DrawString("Salt: " + CurrentRecipeSelection.Salt, font, Brushes.Black, textRect, stringFormat);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
 

@@ -34,25 +34,29 @@
             recipeTitle = new Label();
             recipeLink = new Label();
             recipeIng = new Label();
+            recipeBox = new GroupBox();
+            servingsLabel = new Label();
+            recipeInfoPanel = new Panel();
+            recipeBox.SuspendLayout();
             SuspendLayout();
             // 
             // ConnectionStatus
             // 
             ConnectionStatus.AutoSize = true;
             ConnectionStatus.Font = new Font("Verdana", 15F);
-            ConnectionStatus.Location = new Point(14, 555);
+            ConnectionStatus.Location = new Point(12, 574);
             ConnectionStatus.Name = "ConnectionStatus";
-            ConnectionStatus.Size = new Size(190, 31);
+            ConnectionStatus.Size = new Size(152, 25);
             ConnectionStatus.TabIndex = 0;
             ConnectionStatus.Text = "Connected to ";
             // 
             // recipeList
             // 
             recipeList.FormattingEnabled = true;
-            recipeList.Location = new Point(14, 16);
-            recipeList.Margin = new Padding(3, 4, 3, 4);
+            recipeList.ItemHeight = 15;
+            recipeList.Location = new Point(6, 22);
             recipeList.Name = "recipeList";
-            recipeList.Size = new Size(238, 524);
+            recipeList.Size = new Size(209, 529);
             recipeList.TabIndex = 1;
             recipeList.SelectedIndexChanged += recipeList_SelectedIndexChanged;
             // 
@@ -60,60 +64,90 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Verdana", 15F);
-            label1.Location = new Point(259, 16);
+            label1.Location = new Point(300, 15);
             label1.Name = "label1";
-            label1.Size = new Size(95, 31);
+            label1.Size = new Size(204, 25);
             label1.TabIndex = 2;
-            label1.Text = "Recipe";
+            label1.Text = "Recipe Information";
             // 
             // recipeTitle
             // 
             recipeTitle.AutoSize = true;
             recipeTitle.Font = new Font("Verdana", 12F);
-            recipeTitle.Location = new Point(259, 83);
+            recipeTitle.Location = new Point(221, 47);
             recipeTitle.Name = "recipeTitle";
-            recipeTitle.Size = new Size(143, 25);
+            recipeTitle.Size = new Size(122, 18);
             recipeTitle.TabIndex = 3;
-            recipeTitle.Text = "Recipe Name";
+            recipeTitle.Text = "Recipe Name:";
             // 
             // recipeLink
             // 
             recipeLink.AutoSize = true;
             recipeLink.Font = new Font("Verdana", 12F);
-            recipeLink.Location = new Point(259, 120);
+            recipeLink.Location = new Point(221, 100);
             recipeLink.Name = "recipeLink";
-            recipeLink.Size = new Size(143, 25);
+            recipeLink.Size = new Size(114, 18);
             recipeLink.TabIndex = 4;
             recipeLink.Text = "Recipe Link: ";
             // 
             // recipeIng
             // 
-            recipeIng.AutoSize = true;
             recipeIng.Font = new Font("Verdana", 12F);
-            recipeIng.Location = new Point(259, 157);
+            recipeIng.Location = new Point(221, 128);
             recipeIng.Name = "recipeIng";
-            recipeIng.Size = new Size(223, 25);
+            recipeIng.Size = new Size(375, 296);
             recipeIng.TabIndex = 5;
             recipeIng.Text = "Recipe Ingredients:  ";
             // 
+            // recipeBox
+            // 
+            recipeBox.Controls.Add(servingsLabel);
+            recipeBox.Controls.Add(recipeInfoPanel);
+            recipeBox.Controls.Add(recipeList);
+            recipeBox.Controls.Add(recipeIng);
+            recipeBox.Controls.Add(label1);
+            recipeBox.Controls.Add(recipeLink);
+            recipeBox.Controls.Add(recipeTitle);
+            recipeBox.Location = new Point(12, 12);
+            recipeBox.Name = "recipeBox";
+            recipeBox.Size = new Size(602, 559);
+            recipeBox.TabIndex = 6;
+            recipeBox.TabStop = false;
+            recipeBox.Text = "Recipes";
+            // 
+            // servingsLabel
+            // 
+            servingsLabel.AutoSize = true;
+            servingsLabel.Font = new Font("Verdana", 12F);
+            servingsLabel.Location = new Point(220, 76);
+            servingsLabel.Name = "servingsLabel";
+            servingsLabel.Size = new Size(144, 18);
+            servingsLabel.TabIndex = 7;
+            servingsLabel.Text = "Recipe Servings:";
+            // 
+            // recipeInfoPanel
+            // 
+            recipeInfoPanel.Location = new Point(221, 427);
+            recipeInfoPanel.Name = "recipeInfoPanel";
+            recipeInfoPanel.Size = new Size(375, 126);
+            recipeInfoPanel.TabIndex = 6;
+            recipeInfoPanel.Paint += recipeInfoPanel_Paint;
+            // 
             // MainWindow
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(914, 600);
-            Controls.Add(recipeIng);
-            Controls.Add(recipeLink);
-            Controls.Add(recipeTitle);
-            Controls.Add(label1);
-            Controls.Add(recipeList);
+            ClientSize = new Size(1060, 608);
+            Controls.Add(recipeBox);
             Controls.Add(ConnectionStatus);
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            Margin = new Padding(3, 4, 3, 4);
             MaximizeBox = false;
             Name = "MainWindow";
             Text = "MainWindow";
             FormClosing += MainWindow_FormClosing;
             Load += MainWindow_Load;
+            recipeBox.ResumeLayout(false);
+            recipeBox.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -126,5 +160,8 @@
         private Label recipeTitle;
         private Label recipeLink;
         private Label recipeIng;
+        private GroupBox recipeBox;
+        private Panel recipeInfoPanel;
+        private Label servingsLabel;
     }
 }
