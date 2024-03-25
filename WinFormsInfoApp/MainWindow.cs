@@ -166,16 +166,15 @@ namespace WinFormsInfoApp
             CurrentRecipeSelection = recipe;
             recipeTitle.Text = "Recipe Name: " + CurrentRecipeSelection.Title;
             recipeLink.Text = "Recipe Link: Here";
-            recipeLink.Click += LaunchRecipeOnClick(CurrentRecipeSelection.RecipeUrls);
             recipeIng.Text = "Recipe Ingredients: " +
                 Environment.NewLine + CurrentRecipeSelection.Ingredients;
             servingsLabel.Text = "Recipe Servings: " + CurrentRecipeSelection.Serving;
             recipeInfoPanel.Invalidate();
         }
 
-        private EventHandler LaunchRecipeOnClick(string url)
+        private void LaunchRecipeOnClick(string url)
         {
-            return (sender, e) => Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
         }
 
         /// <summary>
@@ -463,6 +462,14 @@ namespace WinFormsInfoApp
             {
                 currentFamily = familyEditor.family;
                 Debug.WriteLine($"Family updated, family is now {currentFamily.Count} people!");
+            }
+        }
+
+        private void recipeLink_Click(object sender, EventArgs e)
+        {
+            if(CurrentRecipeSelection != null)
+            {
+                LaunchRecipeOnClick(CurrentRecipeSelection.RecipeUrls);
             }
         }
 

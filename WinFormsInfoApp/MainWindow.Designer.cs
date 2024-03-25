@@ -35,6 +35,7 @@
             recipeLink = new Label();
             recipeIng = new Label();
             recipeBox = new GroupBox();
+            label2 = new Label();
             servingsLabel = new Label();
             recipeInfoPanel = new Panel();
             menuStrip1 = new MenuStrip();
@@ -43,7 +44,6 @@
             settingsToolStripMenuItem = new ToolStripMenuItem();
             IngredientBox = new GroupBox();
             DietBox = new GroupBox();
-            label2 = new Label();
             recipeBox.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -97,6 +97,7 @@
             recipeLink.Size = new Size(114, 18);
             recipeLink.TabIndex = 4;
             recipeLink.Text = "Recipe Link: ";
+            recipeLink.Click += recipeLink_Click;
             // 
             // recipeIng
             // 
@@ -123,6 +124,16 @@
             recipeBox.TabIndex = 6;
             recipeBox.TabStop = false;
             recipeBox.Text = "Recipes";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Verdana", 10F);
+            label2.Location = new Point(238, 407);
+            label2.Name = "label2";
+            label2.Size = new Size(341, 17);
+            label2.TabIndex = 8;
+            label2.Text = "Nutritional information if made for whole family ";
             // 
             // servingsLabel
             // 
@@ -188,16 +199,6 @@
             DietBox.TabIndex = 9;
             DietBox.TabStop = false;
             DietBox.Text = "Diets";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Verdana", 10F);
-            label2.Location = new Point(238, 407);
-            label2.Name = "label2";
-            label2.Size = new Size(341, 17);
-            label2.TabIndex = 8;
-            label2.Text = "Nutritional information if made for whole family ";
             // 
             // MainWindow
             // 
