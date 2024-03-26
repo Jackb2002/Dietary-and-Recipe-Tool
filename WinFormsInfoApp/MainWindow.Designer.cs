@@ -43,9 +43,14 @@
             editFamilyToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
             IngredientBox = new GroupBox();
+            label3 = new Label();
+            ingOutputBox = new RichTextBox();
+            ingSearch = new Button();
+            ingName = new TextBox();
             DietBox = new GroupBox();
             recipeBox.SuspendLayout();
             menuStrip1.SuspendLayout();
+            IngredientBox.SuspendLayout();
             SuspendLayout();
             // 
             // ConnectionStatus
@@ -184,12 +189,53 @@
             // 
             // IngredientBox
             // 
+            IngredientBox.Controls.Add(label3);
+            IngredientBox.Controls.Add(ingOutputBox);
+            IngredientBox.Controls.Add(ingSearch);
+            IngredientBox.Controls.Add(ingName);
             IngredientBox.Location = new Point(634, 28);
             IngredientBox.Name = "IngredientBox";
             IngredientBox.Size = new Size(414, 263);
             IngredientBox.TabIndex = 8;
             IngredientBox.TabStop = false;
             IngredientBox.Text = "Ingredients";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Verdana", 12F);
+            label3.Location = new Point(31, 47);
+            label3.Name = "label3";
+            label3.Size = new Size(55, 18);
+            label3.TabIndex = 5;
+            label3.Text = "Name";
+            // 
+            // richTextBox1
+            // 
+            ingOutputBox.Location = new Point(6, 128);
+            ingOutputBox.Name = "richTextBox1";
+            ingOutputBox.ReadOnly = true;
+            ingOutputBox.Size = new Size(402, 129);
+            ingOutputBox.TabIndex = 2;
+            ingOutputBox.TabStop = false;
+            ingOutputBox.Text = "";
+            // 
+            // ingSearch
+            // 
+            ingSearch.Location = new Point(6, 85);
+            ingSearch.Name = "ingSearch";
+            ingSearch.Size = new Size(109, 23);
+            ingSearch.TabIndex = 1;
+            ingSearch.Text = "Find Ingredients";
+            ingSearch.UseVisualStyleBackColor = true;
+            ingSearch.Click += ingSearch_Click;
+            // 
+            // ingName
+            // 
+            ingName.Location = new Point(121, 42);
+            ingName.Name = "ingName";
+            ingName.Size = new Size(287, 23);
+            ingName.TabIndex = 0;
             // 
             // DietBox
             // 
@@ -220,6 +266,8 @@
             recipeBox.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            IngredientBox.ResumeLayout(false);
+            IngredientBox.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -242,5 +290,9 @@
         private GroupBox IngredientBox;
         private GroupBox DietBox;
         private Label label2;
+        private Button ingSearch;
+        private TextBox ingName;
+        private RichTextBox ingOutputBox;
+        private Label label3;
     }
 }

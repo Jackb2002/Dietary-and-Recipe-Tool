@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using System.Windows.Forms.VisualStyles;
 using WinFormsInfoApp.Models;
 using static WinFormsInfoApp.IIngredientContext;
 
@@ -32,12 +33,12 @@ namespace WinFormsInfoApp.OpenFood
         /// </summary>
         /// <param name="ingredients">List of ingredient names you want to look up</param>
         /// <returns>C# List object of Ingredient objects containing OpenFood Information</returns>
-        public List<Ingredient>? GetAllIngredients(params string[] ingredients)
+        public List<Ingredient>? GetAllIngredients(string[] ingredients, string location = "All")
         {
-            List<Ingredient> Ingredients = [];
-            foreach (string ingredient in ingredients)
+            List<Ingredient>? Ingredients = [];
+            foreach (var item in ingredients)
             {
-                Ingredients.Add(GetFirstIngredient(ingredient));
+                GetFirstIngredient(item, location);
             }
             return Ingredients;
         }
@@ -47,7 +48,7 @@ namespace WinFormsInfoApp.OpenFood
         /// </summary>
         /// <param name="categoryName"></param>
         /// <returns></returns>
-        public Ingredient? GetFirstIngredient(string categoryName)
+        public Ingredient? GetFirstIngredient(string categoryName, string location = "All")
         {
             categoryName = categoryName.Trim().ToLower();
             if (string.IsNullOrEmpty(categoryName))
@@ -57,8 +58,17 @@ namespace WinFormsInfoApp.OpenFood
 
             try
             {
-                string apiUrl = $"{AccessString}search?fields=code,product_name,product_name_en,nutrient_levels," +
-                    $"nutriments,product_quantity&categories_tags={categoryName}&page_size=200&page=1&countries_tags_en=united-kingdom&states_tags=Complete&";
+                string apiUrl;
+                if(location == "All")
+                {
+                    apiUrl = $"{AccessString}search?fields=code,product_name,product_name_en,nutrient_levels," +
+    $"nutriments,product_quantity&categories_tags={categoryName}&page_size=200&page=1&countries_tags_en=united-kingdom&";
+                }
+                else
+                {
+                    apiUrl = $"{AccessString}search?fields=code,product_name,product_name_en,nutrient_levels," +
+    $"nutriments,product_quantity&categories_tags={categoryName}&stores_tags={location}&page_size=200&page=1&countries_tags_en=united-kingdom";
+                }
                 Debug.WriteLine($"Making request for {categoryName} using {apiUrl}");
 
                 using HttpClient client = new();

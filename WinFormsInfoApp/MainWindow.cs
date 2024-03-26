@@ -467,9 +467,35 @@ namespace WinFormsInfoApp
 
         private void recipeLink_Click(object sender, EventArgs e)
         {
-            if(CurrentRecipeSelection != null)
+            if (CurrentRecipeSelection != null)
             {
                 LaunchRecipeOnClick(CurrentRecipeSelection.RecipeUrls);
+            }
+        }
+
+        private void ingSearch_Click(object sender, EventArgs e)
+        {
+            string ing_name = ingName.Text;
+            if(string.IsNullOrWhiteSpace(ing_name))
+            {
+                MessageBox.Show("Please enter an ingredient name");
+                return;
+            }
+            Ingredient? ing = _ingredientContext.GetFirstIngredient(ing_name);
+            if(ing != null)
+            {
+                ingOutputBox.Text = $"" +
+                    $"Ingredient Name - {ing.Name}\n" +
+                    $"Ingredient Calorie Information - {ing.Calories} kcal\n" +
+                    $"Ingredient Fat Information - {ing.Fat} g\n" +
+                    $"Ingredient Carbohydrate Information - {ing.Carbohydrates} g\n" +
+                    $"Ingredient Protein Information - {ing.Protein} g\n" +
+                    $"Ingredient Sugar Information - {ing.Sugar} g\n" +
+                    $"Ingredient Fiber Information - {ing.Fiber} g\n" +
+                    $"Ingredient Weight Information - {ing.Product_Weight} g\n";
+            }
+            else{
+                ingOutputBox.Text = "Ingredient not found";
             }
         }
 

@@ -84,18 +84,33 @@ namespace WinFormsInfoApp.LocalDatabase
             return rows > 0;
         }
 
-        public List<Ingredient> GetAllIngredients(params string[] names)
+        public KeyValuePair<int, string>[] GetIngredientNameIdPairs()
         {
-            List<Ingredient> ingredients = [];
-            foreach (string name in names)
+            KeyValuePair<int, string>[] pairs = new KeyValuePair<int, string>[0];
+            using (SQLiteConnection connection = new("Data Source=" + AccessString))
             {
-                ingredients.Add(GetFirstIngredient(name));
+                connection.Open();
+                using (SQLiteCommand command = new(connection))
+                {
+                    command.CommandText = "SELECT IngredientId, Name FROM Ingredient";
+                    using SQLiteDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Array.Resize(ref pairs, pairs.Length + 1);
+                        pairs[^1] = new KeyValuePair<int, string>(reader.GetInt32(0), reader.GetString(1));
+                    }
+                }
+                connection.Close();
             }
-
-            return ingredients;
+            return pairs;
         }
 
-        public Ingredient GetFirstIngredient(string name)
+        public bool TestConnection()
+        {
+            return File.Exists(AccessString);
+        }
+
+        public Ingredient? GetFirstIngredient(string name, string location = "All")
         {
             Ingredient ingredient = new("", "", "", 0, 0, 0, 0, 0, 0, 0);
             using (SQLiteConnection connection = new("Data Source=" + AccessString))
@@ -127,30 +142,15 @@ namespace WinFormsInfoApp.LocalDatabase
             return ingredient;
         }
 
-        public KeyValuePair<int, string>[] GetIngredientNameIdPairs()
+        public List<Ingredient>? GetAllIngredients(string[] ingredients, string location = "All")
         {
-            KeyValuePair<int, string>[] pairs = new KeyValuePair<int, string>[0];
-            using (SQLiteConnection connection = new("Data Source=" + AccessString))
+            List<Ingredient> ings = new List<Ingredient>();
+            foreach (string name in ingredients)
             {
-                connection.Open();
-                using (SQLiteCommand command = new(connection))
-                {
-                    command.CommandText = "SELECT IngredientId, Name FROM Ingredient";
-                    using SQLiteDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Array.Resize(ref pairs, pairs.Length + 1);
-                        pairs[^1] = new KeyValuePair<int, string>(reader.GetInt32(0), reader.GetString(1));
-                    }
-                }
-                connection.Close();
+                ings.Add(GetFirstIngredient(name));
             }
-            return pairs;
-        }
 
-        public bool TestConnection()
-        {
-            return File.Exists(AccessString);
+            return ings;
         }
         #endregion
     }
