@@ -30,4 +30,13 @@
     <ProjectReference Include="..\RecipeExtractor\RecipeExtractor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ingredient_cache.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="recipe_cache.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
