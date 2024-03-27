@@ -476,13 +476,13 @@ namespace WinFormsInfoApp
         private void ingSearch_Click(object sender, EventArgs e)
         {
             string ing_name = ingName.Text;
-            if(string.IsNullOrWhiteSpace(ing_name))
+            if (string.IsNullOrWhiteSpace(ing_name))
             {
                 MessageBox.Show("Please enter an ingredient name");
                 return;
             }
             Ingredient? ing = _ingredientContext.GetFirstIngredient(ing_name);
-            if(ing != null)
+            if (ing != null)
             {
                 ingOutputBox.Text = $"" +
                     $"Ingredient Name - {ing.Name}\n" +
@@ -494,9 +494,30 @@ namespace WinFormsInfoApp
                     $"Ingredient Fiber Information - {ing.Fiber} g\n" +
                     $"Ingredient Weight Information - {ing.Product_Weight} g\n";
             }
-            else{
+            else
+            {
                 ingOutputBox.Text = "Ingredient not found";
             }
+        }
+
+        private void premadeDiet_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void badIngredients_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void customDiet_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void goodIngredients_Click(object sender, EventArgs e)
+        {
+
         }
 
         private static T? GetValue<T>(List<KeyValuePair<string, object>> recipeRaw, string key)

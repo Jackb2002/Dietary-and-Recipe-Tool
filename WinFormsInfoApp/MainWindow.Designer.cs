@@ -48,9 +48,16 @@
             ingSearch = new Button();
             ingName = new TextBox();
             DietBox = new GroupBox();
+            goodIngredients = new Button();
+            badIngredients = new Button();
+            customDiet = new Button();
+            premadeDiet = new Button();
+            currentDietLabel = new Label();
+            nextMealLabel = new Label();
             recipeBox.SuspendLayout();
             menuStrip1.SuspendLayout();
             IngredientBox.SuspendLayout();
+            DietBox.SuspendLayout();
             SuspendLayout();
             // 
             // ConnectionStatus
@@ -66,10 +73,10 @@
             // recipeList
             // 
             recipeList.FormattingEnabled = true;
-            recipeList.ItemHeight = 15;
+            recipeList.ItemHeight = 18;
             recipeList.Location = new Point(6, 22);
             recipeList.Name = "recipeList";
-            recipeList.Size = new Size(209, 514);
+            recipeList.Size = new Size(209, 508);
             recipeList.TabIndex = 1;
             recipeList.SelectedIndexChanged += recipeList_SelectedIndexChanged;
             // 
@@ -123,6 +130,7 @@
             recipeBox.Controls.Add(label1);
             recipeBox.Controls.Add(recipeLink);
             recipeBox.Controls.Add(recipeTitle);
+            recipeBox.Font = new Font("Verdana", 12F);
             recipeBox.Location = new Point(12, 28);
             recipeBox.Name = "recipeBox";
             recipeBox.Size = new Size(602, 543);
@@ -154,7 +162,7 @@
             // 
             recipeInfoPanel.Location = new Point(221, 427);
             recipeInfoPanel.Name = "recipeInfoPanel";
-            recipeInfoPanel.Size = new Size(375, 110);
+            recipeInfoPanel.Size = new Size(375, 103);
             recipeInfoPanel.TabIndex = 6;
             recipeInfoPanel.Paint += recipeInfoPanel_Paint;
             // 
@@ -193,6 +201,7 @@
             IngredientBox.Controls.Add(ingOutputBox);
             IngredientBox.Controls.Add(ingSearch);
             IngredientBox.Controls.Add(ingName);
+            IngredientBox.Font = new Font("Verdana", 12F);
             IngredientBox.Location = new Point(634, 28);
             IngredientBox.Name = "IngredientBox";
             IngredientBox.Size = new Size(414, 263);
@@ -210,10 +219,10 @@
             label3.TabIndex = 5;
             label3.Text = "Name";
             // 
-            // richTextBox1
+            // ingOutputBox
             // 
             ingOutputBox.Location = new Point(6, 128);
-            ingOutputBox.Name = "richTextBox1";
+            ingOutputBox.Name = "ingOutputBox";
             ingOutputBox.ReadOnly = true;
             ingOutputBox.Size = new Size(402, 129);
             ingOutputBox.TabIndex = 2;
@@ -222,9 +231,10 @@
             // 
             // ingSearch
             // 
-            ingSearch.Location = new Point(6, 85);
+            ingSearch.Font = new Font("Verdana", 12F);
+            ingSearch.Location = new Point(118, 86);
             ingSearch.Name = "ingSearch";
-            ingSearch.Size = new Size(109, 23);
+            ingSearch.Size = new Size(178, 32);
             ingSearch.TabIndex = 1;
             ingSearch.Text = "Find Ingredients";
             ingSearch.UseVisualStyleBackColor = true;
@@ -234,17 +244,84 @@
             // 
             ingName.Location = new Point(121, 42);
             ingName.Name = "ingName";
-            ingName.Size = new Size(287, 23);
+            ingName.Size = new Size(287, 27);
             ingName.TabIndex = 0;
             // 
             // DietBox
             // 
+            DietBox.Controls.Add(nextMealLabel);
+            DietBox.Controls.Add(currentDietLabel);
+            DietBox.Controls.Add(goodIngredients);
+            DietBox.Controls.Add(badIngredients);
+            DietBox.Controls.Add(customDiet);
+            DietBox.Controls.Add(premadeDiet);
+            DietBox.Font = new Font("Verdana", 12F);
             DietBox.Location = new Point(634, 297);
             DietBox.Name = "DietBox";
             DietBox.Size = new Size(414, 274);
             DietBox.TabIndex = 9;
             DietBox.TabStop = false;
             DietBox.Text = "Diets";
+            // 
+            // goodIngredients
+            // 
+            goodIngredients.Location = new Point(212, 99);
+            goodIngredients.Name = "goodIngredients";
+            goodIngredients.Size = new Size(196, 47);
+            goodIngredients.TabIndex = 13;
+            goodIngredients.Text = "Prioritise certain ingredients";
+            goodIngredients.UseVisualStyleBackColor = true;
+            goodIngredients.Click += goodIngredients_Click;
+            // 
+            // badIngredients
+            // 
+            badIngredients.Location = new Point(6, 99);
+            badIngredients.Name = "badIngredients";
+            badIngredients.Size = new Size(200, 47);
+            badIngredients.TabIndex = 12;
+            badIngredients.Text = "Add ingredients to not include";
+            badIngredients.UseVisualStyleBackColor = true;
+            badIngredients.Click += badIngredients_Click;
+            // 
+            // customDiet
+            // 
+            customDiet.Location = new Point(212, 46);
+            customDiet.Name = "customDiet";
+            customDiet.Size = new Size(196, 47);
+            customDiet.TabIndex = 11;
+            customDiet.Text = "Generate a diet with customised values";
+            customDiet.UseVisualStyleBackColor = true;
+            customDiet.Click += customDiet_Click;
+            // 
+            // premadeDiet
+            // 
+            premadeDiet.Location = new Point(6, 46);
+            premadeDiet.Name = "premadeDiet";
+            premadeDiet.Size = new Size(200, 47);
+            premadeDiet.TabIndex = 10;
+            premadeDiet.Text = "Generate a pre made diet plan";
+            premadeDiet.UseVisualStyleBackColor = true;
+            premadeDiet.Click += premadeDiet_Click;
+            // 
+            // currentDietLabel
+            // 
+            currentDietLabel.AutoSize = true;
+            currentDietLabel.Font = new Font("Verdana", 15F);
+            currentDietLabel.Location = new Point(6, 172);
+            currentDietLabel.Name = "currentDietLabel";
+            currentDietLabel.Size = new Size(147, 25);
+            currentDietLabel.TabIndex = 14;
+            currentDietLabel.Text = "Current Diet:";
+            // 
+            // nextMealLabel
+            // 
+            nextMealLabel.AutoSize = true;
+            nextMealLabel.Font = new Font("Verdana", 10F);
+            nextMealLabel.Location = new Point(6, 217);
+            nextMealLabel.Name = "nextMealLabel";
+            nextMealLabel.Size = new Size(106, 17);
+            nextMealLabel.TabIndex = 15;
+            nextMealLabel.Text = "Todays Meals:";
             // 
             // MainWindow
             // 
@@ -268,6 +345,8 @@
             menuStrip1.PerformLayout();
             IngredientBox.ResumeLayout(false);
             IngredientBox.PerformLayout();
+            DietBox.ResumeLayout(false);
+            DietBox.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -294,5 +373,11 @@
         private TextBox ingName;
         private RichTextBox ingOutputBox;
         private Label label3;
+        private Button customDiet;
+        private Button premadeDiet;
+        private Button badIngredients;
+        private Button goodIngredients;
+        private Label nextMealLabel;
+        private Label currentDietLabel;
     }
 }
