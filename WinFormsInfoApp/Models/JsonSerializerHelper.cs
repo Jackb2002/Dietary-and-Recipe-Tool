@@ -10,7 +10,7 @@ namespace WinFormsInfoApp.Models
             File.WriteAllText(filePath, jsonString);
         }
 
-        public List<Recipe> DeserializeRecipes(string filePath)
+        public List<Recipe>? DeserializeRecipes(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -26,7 +26,7 @@ namespace WinFormsInfoApp.Models
             File.WriteAllText(filePath, jsonString);
         }
 
-        public List<Ingredient> DeserializeIngredients(string filePath)
+        public List<Ingredient>? DeserializeIngredients(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -34,6 +34,22 @@ namespace WinFormsInfoApp.Models
             }
             string jsonString = File.ReadAllText(filePath);
             return JsonSerializer.Deserialize<List<Ingredient>>(jsonString);
+        }
+
+        public void SerializeDiets(List<Diet> diets, string filePath)
+        {
+            string jsonString = JsonSerializer.Serialize(diets);
+            File.WriteAllText(filePath, jsonString);
+        }
+
+        public List<Diet>? DeserializeDiets(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                return [];
+            }
+            string jsonString = File.ReadAllText(filePath);
+            return JsonSerializer.Deserialize<List<Diet>>(jsonString);
         }
     }
 }
