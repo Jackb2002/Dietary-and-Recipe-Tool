@@ -1,20 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace WinFormsInfoApp
+﻿namespace WinFormsInfoApp
 {
     public partial class IngredientSelector : Form
     {
-        public IngredientSelector()
+        private List<string> ingredientList = new List<string>();
+        private bool forPositive;
+        MainWindow mainWindow;
+        public IngredientSelector(bool forPositive, MainWindow mainWindow)
         {
             InitializeComponent();
+            if (forPositive)
+            {
+                Text = "Select ingredients to chose";
+                ingredientList = mainWindow.good_ings;
+                UpdateList();
+
+            }
+            else
+            {
+                Text = "Select ingredients to avoid";
+                ingredientList = mainWindow.avoid_ings;
+                UpdateList();
+            }
+            this.forPositive = forPositive;
+            this.mainWindow = mainWindow;
+        }
+
+        private void addIngBtn_Click(object sender, EventArgs e)
+        {
+            string ing = ingText.Text.Trim().ToLower();
+            ingredientList.Add(ing);
+            UpdateList();
+        }
+
+        private void UpdateList()
+        {
+            IngredientsBox.Items.Clear();
+            IngredientsBox.Items.AddRange(ingredientList.ToArray());
+        }
+
+        private void removeListBtn_Click(object sender, EventArgs e)
+        {
+            ingredientList.Remove(IngredientsBox.SelectedItem.ToString());
+            UpdateList();
+        }
+
+        private void saveList_Click(object sender, EventArgs e)
+        {
+            if (forPositive)
+            {
+                mainWindow.good_ings = ingredientList;
+            }
+            else
+            {
+                mainWindow.avoid_ings = ingredientList;
+            }
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void unsaveList_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private void IngredientSelector_Load(object sender, EventArgs e)
+        {
+            string msg = forPositive ? "try and include" : "try and avoid";
+            MessageBox.Show($"Add any text you want to {msg}. When pressing save a diet plan will look for this text when creating your diet plan");
         }
     }
 }

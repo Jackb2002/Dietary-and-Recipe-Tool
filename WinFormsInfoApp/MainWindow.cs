@@ -19,6 +19,8 @@ namespace WinFormsInfoApp
         private List<Ingredient> _ingredientCache = [];
         private Recipe? CurrentRecipeSelection;
         private Family.Family currentFamily;
+        internal List<string> avoid_ings = new List<string>();
+        internal List<string> good_ings = new List<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -505,19 +507,23 @@ namespace WinFormsInfoApp
 
         }
 
-        private void badIngredients_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void customDiet_Click(object sender, EventArgs e)
         {
 
         }
 
+        private void badIngredients_Click(object sender, EventArgs e)
+        {
+            IngredientSelector selector = new(false, this);
+            selector.ShowDialog();
+            Debug.WriteLine("Avoid ingredients are now " + string.Join(" ", avoid_ings));
+        }
+
         private void goodIngredients_Click(object sender, EventArgs e)
         {
-
+            IngredientSelector selector = new(true, this);
+            selector.ShowDialog();
+            Debug.WriteLine("Good ingredients are now " + string.Join(" ", good_ings));
         }
 
         private static T? GetValue<T>(List<KeyValuePair<string, object>> recipeRaw, string key)

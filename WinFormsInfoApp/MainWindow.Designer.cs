@@ -48,12 +48,12 @@
             ingSearch = new Button();
             ingName = new TextBox();
             DietBox = new GroupBox();
+            nextMealLabel = new Label();
+            currentDietLabel = new Label();
             goodIngredients = new Button();
             badIngredients = new Button();
             customDiet = new Button();
             premadeDiet = new Button();
-            currentDietLabel = new Label();
-            nextMealLabel = new Label();
             recipeBox.SuspendLayout();
             menuStrip1.SuspendLayout();
             IngredientBox.SuspendLayout();
@@ -72,11 +72,13 @@
             // 
             // recipeList
             // 
+            recipeList.Font = new Font("Verdana", 8F);
             recipeList.FormattingEnabled = true;
-            recipeList.ItemHeight = 18;
+            recipeList.HorizontalScrollbar = true;
+            recipeList.ItemHeight = 13;
             recipeList.Location = new Point(6, 22);
             recipeList.Name = "recipeList";
-            recipeList.Size = new Size(209, 508);
+            recipeList.Size = new Size(209, 498);
             recipeList.TabIndex = 1;
             recipeList.SelectedIndexChanged += recipeList_SelectedIndexChanged;
             // 
@@ -263,13 +265,33 @@
             DietBox.TabStop = false;
             DietBox.Text = "Diets";
             // 
+            // nextMealLabel
+            // 
+            nextMealLabel.AutoSize = true;
+            nextMealLabel.Font = new Font("Verdana", 10F);
+            nextMealLabel.Location = new Point(6, 217);
+            nextMealLabel.Name = "nextMealLabel";
+            nextMealLabel.Size = new Size(106, 17);
+            nextMealLabel.TabIndex = 15;
+            nextMealLabel.Text = "Todays Meals:";
+            // 
+            // currentDietLabel
+            // 
+            currentDietLabel.AutoSize = true;
+            currentDietLabel.Font = new Font("Verdana", 15F);
+            currentDietLabel.Location = new Point(6, 172);
+            currentDietLabel.Name = "currentDietLabel";
+            currentDietLabel.Size = new Size(147, 25);
+            currentDietLabel.TabIndex = 14;
+            currentDietLabel.Text = "Current Diet:";
+            // 
             // goodIngredients
             // 
             goodIngredients.Location = new Point(212, 99);
             goodIngredients.Name = "goodIngredients";
             goodIngredients.Size = new Size(196, 47);
             goodIngredients.TabIndex = 13;
-            goodIngredients.Text = "Prioritise certain ingredients";
+            goodIngredients.Text = "Add ingredients to include";
             goodIngredients.UseVisualStyleBackColor = true;
             goodIngredients.Click += goodIngredients_Click;
             // 
@@ -302,26 +324,6 @@
             premadeDiet.Text = "Generate a pre made diet plan";
             premadeDiet.UseVisualStyleBackColor = true;
             premadeDiet.Click += premadeDiet_Click;
-            // 
-            // currentDietLabel
-            // 
-            currentDietLabel.AutoSize = true;
-            currentDietLabel.Font = new Font("Verdana", 15F);
-            currentDietLabel.Location = new Point(6, 172);
-            currentDietLabel.Name = "currentDietLabel";
-            currentDietLabel.Size = new Size(147, 25);
-            currentDietLabel.TabIndex = 14;
-            currentDietLabel.Text = "Current Diet:";
-            // 
-            // nextMealLabel
-            // 
-            nextMealLabel.AutoSize = true;
-            nextMealLabel.Font = new Font("Verdana", 10F);
-            nextMealLabel.Location = new Point(6, 217);
-            nextMealLabel.Name = "nextMealLabel";
-            nextMealLabel.Size = new Size(106, 17);
-            nextMealLabel.TabIndex = 15;
-            nextMealLabel.Text = "Todays Meals:";
             // 
             // MainWindow
             // 
