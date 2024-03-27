@@ -18,6 +18,11 @@ namespace WinFormsInfoApp.Models
             PriorityNegative = priorityNeg;
         }
 
+        public override string? ToString()
+        {
+            return $"{Name} - {Description}";
+        }
+
         public static Diet[] ReturnDefaultDiets()
         {
             string[] balancedPositive = { "Kcal", "Protein", "Fibre" };

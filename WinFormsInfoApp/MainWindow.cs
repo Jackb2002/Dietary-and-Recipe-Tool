@@ -14,9 +14,11 @@ namespace WinFormsInfoApp
     {
         private const string _recipe_FilePath = "recipe_cache.json";
         private const string _ingredient_FilePath = "ingredient_cache.json";
+        private const string _diet_FilePath = "diet_cache.json";
         private readonly IIngredientContext _ingredientContext;
-        private readonly List<Recipe> _recipes = [];
+        private readonly List<Recipe> _recipesCache = [];
         private List<Ingredient> _ingredientCache = [];
+        private List<Diet> _dietCache = [];
         private Recipe? CurrentRecipeSelection;
         private Family.Family currentFamily;
         internal List<string> avoid_ings = new List<string>();
@@ -65,7 +67,31 @@ namespace WinFormsInfoApp
             ingredientLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadIngredientsCompleted);
             ingredientLoader.RunWorkerAsync();
 
+            // Load diets asynchronously
+            BackgroundWorker dietLoader = new();
+            dietLoader.DoWork += new DoWorkEventHandler(LoadDiets);
+            dietLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadDietsCompleted);
+            dietLoader.RunWorkerAsync();
+
             Debug.WriteLine("Loaded recipes and ingredients");
+        }
+
+        private void LoadDietsCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            Debug.WriteLine($"Loaded {_dietCache.Count} diets successfully");
+        }
+
+        private void LoadDiets(object? sender, DoWorkEventArgs e)
+        {
+            ImportDiets();
+        }
+
+        private void ImportDiets()
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, _diet_FilePath);
+            JsonSerializerHelper helper = new();
+            List<Diet> localDiets = helper.DeserializeDiets(path);
+            _dietCache.AddRange(localDiets);
         }
 
         /// <summary>
@@ -73,8 +99,8 @@ namespace WinFormsInfoApp
         /// </summary>
         private void LoadRecipesCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
-            Debug.WriteLine($"Loaded {_recipes.Count} recipes successfully");
-            recipeList.Items.AddRange(_recipes.Select(x => x.Title).ToArray());
+            Debug.WriteLine($"Loaded {_recipesCache.Count} recipes successfully");
+            recipeList.Items.AddRange(_recipesCache.Select(x => x.Title).ToArray());
         }
 
         /// <summary>
@@ -114,7 +140,7 @@ namespace WinFormsInfoApp
             var recipes = ImportLocalRecipes(_recipe_FilePath);
             var valid_recipes = recipes.Where(x => x.Kcal > 0 && x.Serving > 0).ToList();
             Debug.WriteLine("Counted " + valid_recipes.Count + " recipes with kcal and serving");
-            _recipes.AddRange(valid_recipes);
+            _recipesCache.AddRange(valid_recipes);
         }
 
         /// <summary>
@@ -152,9 +178,11 @@ namespace WinFormsInfoApp
             Debug.WriteLine("Form is closing, saving current entries to cache");
             JsonSerializerHelper helper = new();
             helper.SerializeIngredients(_ingredientCache, _ingredient_FilePath);
-            helper.SerializeRecipes(_recipes, _recipe_FilePath);
+            helper.SerializeRecipes(_recipesCache, _recipe_FilePath);
+            helper.SerializeDiets(_dietCache, _diet_FilePath);
             Debug.WriteLine($"Saved {_ingredientCache.Count} ingredients to cache");
-            Debug.WriteLine($"Saved {_recipes.Count} recipes to cache");
+            Debug.WriteLine($"Saved {_recipesCache.Count} recipes to cache");
+            Debug.WriteLine($"Saved {_dietCache.Count} diets to cache");
         }
 
         /// <summary>
@@ -164,7 +192,7 @@ namespace WinFormsInfoApp
         /// <param name="e"></param>
         private void recipeList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Recipe recipe = _recipes[recipeList.SelectedIndex];
+            Recipe recipe = _recipesCache[recipeList.SelectedIndex];
             CurrentRecipeSelection = recipe;
             recipeTitle.Text = "Recipe Name: " + CurrentRecipeSelection.Title;
             recipeLink.Text = "Recipe Link: Here";
