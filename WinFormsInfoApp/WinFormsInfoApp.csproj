@@ -31,9 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ingredient_cache.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="recipe_cache.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

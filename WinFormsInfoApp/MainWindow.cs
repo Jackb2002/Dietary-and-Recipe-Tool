@@ -137,7 +137,30 @@ namespace WinFormsInfoApp
         /// <returns>A list of imported recipes.</returns>
         public void ImportRecipes()
         {
-            var recipes = ImportLocalRecipes(_recipe_FilePath);
+            var recipes = ImportLocalRecipes(_recipe_FilePath).ToList();
+            int total = 0, counter = 0;
+            total = recipes.Count;
+            foreach (var item in recipes)
+            {
+                counter++;
+                Debug.WriteLine($"Progress: {counter}/{total}");
+                //Check if default or zero 
+                if(item.Kcal == 0 || item.Serving == 0)
+                {
+                    //Extract recipe from URL
+                    Recipe? extractedRecipe = ExtractRecipeFromURL(item.RecipeUrls);
+                    item.Kcal = extractedRecipe?.Kcal ?? 0;
+                    item.Serving = extractedRecipe?.Serving ?? 0;
+                    item.Fat = extractedRecipe?.Fat ?? 0;
+                    item.Saturates = extractedRecipe?.Saturates ?? 0;
+                    item.Carbs = extractedRecipe?.Carbs ?? 0;
+                    item.Sugars = extractedRecipe?.Sugars ?? 0;
+                    item.Fibre = extractedRecipe?.Fibre ?? 0;
+                    item.Protein = extractedRecipe?.Protein ?? 0;
+                    item.Salt = extractedRecipe?.Salt ?? 0;
+                }
+            }
+
             var valid_recipes = recipes.Where(x => x.Kcal > 0 && x.Serving > 0).ToList();
             Debug.WriteLine("Counted " + valid_recipes.Count + " recipes with kcal and serving");
             _recipesCache.AddRange(valid_recipes);
@@ -153,7 +176,6 @@ namespace WinFormsInfoApp
             string path = Path.Combine(Environment.CurrentDirectory, fileName);
             JsonSerializerHelper helper = new();
             List<Recipe> localRecipes = helper.DeserializeRecipes(path);
-
 
             //Filter out duplicates
             localRecipes = localRecipes.Distinct().ToList();
