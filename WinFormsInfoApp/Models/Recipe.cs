@@ -3,7 +3,7 @@
 namespace WinFormsInfoApp.Models
 {
     public class Recipe
-    {
+    { 
         public string Title { get; set; }
         public string Difficulty { get; set; }
         public string Rating { get; set; }
@@ -28,5 +28,27 @@ namespace WinFormsInfoApp.Models
         public string Method { get; set; }
         public string Description { get; set; }
         public int Serving { get; set; }
+
+
+        internal static float MAX_KCAL { get; private set; }
+        internal static float MAX_FAT { get; private set; }
+        internal static float MAX_SATURATES { get; private set; }
+        internal static float MAX_CARBS { get; private set; }
+        internal static float MAX_SUGARS { get; private set; }
+        internal static float MAX_FIBRE { get; private set; }
+        internal static float MAX_PROTEIN { get; private set; }
+        internal static float MAX_SALT { get; private set; }
+
+        internal static void GenerateMaxValues(List<Recipe> recipes)
+        {
+            MAX_KCAL = recipes.Max(r => r.Kcal);
+            MAX_FAT = recipes.Max(r => r.Fat);
+            MAX_SATURATES = recipes.Max(r => r.Saturates);
+            MAX_CARBS = recipes.Max(r => r.Carbs);
+            MAX_SUGARS = recipes.Max(r => r.Sugars);
+            MAX_FIBRE = recipes.Max(r => r.Fibre);
+            MAX_PROTEIN = recipes.Max(r => r.Protein);
+            MAX_SALT = recipes.Max(r => r.Salt);
+        }
     }
 }

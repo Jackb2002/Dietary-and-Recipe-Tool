@@ -29,58 +29,83 @@
         private void InitializeComponent()
         {
             recipeBox = new GroupBox();
-            servingsLabel = new Label();
-            recipeList = new ListBox();
-            recipeIng = new Label();
+            saveBtn = new Button();
+            exitBtn = new Button();
+            dietInfo = new Label();
+            dietList = new ListBox();
+            dietExamples = new Label();
             label1 = new Label();
-            recipeTitle = new Label();
+            dietTitle = new Label();
             recipeBox.SuspendLayout();
             SuspendLayout();
             // 
             // recipeBox
             // 
-            recipeBox.Controls.Add(servingsLabel);
-            recipeBox.Controls.Add(recipeList);
-            recipeBox.Controls.Add(recipeIng);
+            recipeBox.Controls.Add(saveBtn);
+            recipeBox.Controls.Add(exitBtn);
+            recipeBox.Controls.Add(dietInfo);
+            recipeBox.Controls.Add(dietList);
+            recipeBox.Controls.Add(dietExamples);
             recipeBox.Controls.Add(label1);
-            recipeBox.Controls.Add(recipeTitle);
+            recipeBox.Controls.Add(dietTitle);
             recipeBox.Font = new Font("Verdana", 12F);
             recipeBox.Location = new Point(12, 14);
             recipeBox.Name = "recipeBox";
             recipeBox.Size = new Size(568, 272);
             recipeBox.TabIndex = 7;
             recipeBox.TabStop = false;
-            recipeBox.Text = "Recipes";
+            recipeBox.Text = "Diets";
             // 
-            // servingsLabel
+            // saveBtn
             // 
-            servingsLabel.AutoSize = true;
-            servingsLabel.Font = new Font("Verdana", 12F);
-            servingsLabel.Location = new Point(220, 76);
-            servingsLabel.Name = "servingsLabel";
-            servingsLabel.Size = new Size(144, 18);
-            servingsLabel.TabIndex = 7;
-            servingsLabel.Text = "Recipe Servings:";
+            saveBtn.Location = new Point(221, 237);
+            saveBtn.Name = "saveBtn";
+            saveBtn.Size = new Size(92, 23);
+            saveBtn.TabIndex = 9;
+            saveBtn.Text = "Save";
+            saveBtn.UseVisualStyleBackColor = true;
+            saveBtn.Click += saveBtn_Click;
             // 
-            // recipeList
+            // exitBtn
             // 
-            recipeList.Font = new Font("Verdana", 12F);
-            recipeList.FormattingEnabled = true;
-            recipeList.HorizontalScrollbar = true;
-            recipeList.ItemHeight = 18;
-            recipeList.Location = new Point(6, 22);
-            recipeList.Name = "recipeList";
-            recipeList.Size = new Size(209, 238);
-            recipeList.TabIndex = 1;
+            exitBtn.Location = new Point(470, 237);
+            exitBtn.Name = "exitBtn";
+            exitBtn.Size = new Size(92, 23);
+            exitBtn.TabIndex = 8;
+            exitBtn.Text = "Exit";
+            exitBtn.UseVisualStyleBackColor = true;
+            exitBtn.Click += exitBtn_Click;
             // 
-            // recipeIng
+            // dietInfo
             // 
-            recipeIng.Font = new Font("Verdana", 12F);
-            recipeIng.Location = new Point(221, 128);
-            recipeIng.Name = "recipeIng";
-            recipeIng.Size = new Size(343, 143);
-            recipeIng.TabIndex = 5;
-            recipeIng.Text = "Recipe Ingredients:  ";
+            dietInfo.AutoSize = true;
+            dietInfo.Font = new Font("Verdana", 12F);
+            dietInfo.Location = new Point(220, 76);
+            dietInfo.Name = "dietInfo";
+            dietInfo.Size = new Size(79, 18);
+            dietInfo.TabIndex = 7;
+            dietInfo.Text = "Diet info";
+            // 
+            // dietList
+            // 
+            dietList.Font = new Font("Verdana", 12F);
+            dietList.FormattingEnabled = true;
+            dietList.HorizontalScrollbar = true;
+            dietList.ItemHeight = 18;
+            dietList.Location = new Point(6, 22);
+            dietList.Name = "dietList";
+            dietList.Size = new Size(209, 238);
+            dietList.TabIndex = 1;
+            dietList.SelectedIndexChanged += dietList_SelectedIndexChanged;
+            // 
+            // dietExamples
+            // 
+            dietExamples.Font = new Font("Verdana", 12F);
+            dietExamples.Location = new Point(221, 128);
+            dietExamples.Name = "dietExamples";
+            dietExamples.Size = new Size(343, 106);
+            dietExamples.TabIndex = 5;
+            dietExamples.Text = "Example Meals";
             // 
             // label1
             // 
@@ -88,19 +113,19 @@
             label1.Font = new Font("Verdana", 15F);
             label1.Location = new Point(300, 15);
             label1.Name = "label1";
-            label1.Size = new Size(204, 25);
+            label1.Size = new Size(179, 25);
             label1.TabIndex = 2;
-            label1.Text = "Recipe Information";
+            label1.Text = "Diet Information";
             // 
-            // recipeTitle
+            // dietTitle
             // 
-            recipeTitle.AutoSize = true;
-            recipeTitle.Font = new Font("Verdana", 12F);
-            recipeTitle.Location = new Point(221, 47);
-            recipeTitle.Name = "recipeTitle";
-            recipeTitle.Size = new Size(122, 18);
-            recipeTitle.TabIndex = 3;
-            recipeTitle.Text = "Recipe Name:";
+            dietTitle.AutoSize = true;
+            dietTitle.Font = new Font("Verdana", 12F);
+            dietTitle.Location = new Point(221, 47);
+            dietTitle.Name = "dietTitle";
+            dietTitle.Size = new Size(93, 18);
+            dietTitle.TabIndex = 3;
+            dietTitle.Text = "Diet name";
             // 
             // PremadeDietsSelector
             // 
@@ -109,7 +134,7 @@
             ClientSize = new Size(592, 298);
             Controls.Add(recipeBox);
             Name = "PremadeDietsSelector";
-            Text = "PremadeDietsSelector";
+            Text = "Premade Diets";
             recipeBox.ResumeLayout(false);
             recipeBox.PerformLayout();
             ResumeLayout(false);
@@ -118,10 +143,12 @@
         #endregion
 
         private GroupBox recipeBox;
-        private Label servingsLabel;
-        private ListBox recipeList;
-        private Label recipeIng;
+        private Label dietInfo;
+        private ListBox dietList;
+        private Label dietExamples;
         private Label label1;
-        private Label recipeTitle;
+        private Label dietTitle;
+        private Button saveBtn;
+        private Button exitBtn;
     }
 }
