@@ -16,13 +16,16 @@ namespace WinFormsInfoApp
         private const string _ingredient_FilePath = "ingredient_cache.json";
         private const string _diet_FilePath = "diet_cache.json";
         private readonly IIngredientContext _ingredientContext;
-        private readonly List<Recipe> _recipesCache = [];
         private List<Ingredient> _ingredientCache = [];
         private List<Diet> _dietCache = [];
         private Recipe? CurrentRecipeSelection;
         private Family.Family currentFamily;
+
+        internal readonly List<Recipe> _recipesCache = [];
+        internal Diet currentDiet; 
         internal List<string> avoid_ings = new List<string>();
         internal List<string> good_ings = new List<string>();
+        
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -101,6 +104,7 @@ namespace WinFormsInfoApp
         {
             Debug.WriteLine($"Loaded {_recipesCache.Count} recipes successfully");
             recipeList.Items.AddRange(_recipesCache.Select(x => x.Title).ToArray());
+            Recipe.GenerateMaxValues(_recipesCache);
         }
 
         /// <summary>
@@ -554,7 +558,8 @@ namespace WinFormsInfoApp
 
         private void premadeDiet_Click(object sender, EventArgs e)
         {
-
+            PremadeDietsSelector selector = new(this);
+            selector.ShowDialog();
         }
 
         private void customDiet_Click(object sender, EventArgs e)
