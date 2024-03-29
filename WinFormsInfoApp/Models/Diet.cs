@@ -34,7 +34,7 @@ namespace WinFormsInfoApp.Models
         /// <summary>
         /// List to store ranked recipes based on the diet's priorities.
         /// </summary>
-        public List<Recipe>? RecipeRank;
+        public Dictionary<Recipe, float>? RecipeRank;
 
         /// <summary>
         /// Constructor to initialize a Diet object.
@@ -62,36 +62,67 @@ namespace WinFormsInfoApp.Models
         /// <returns>An array of default Diet objects.</returns>
         public static Diet[] ReturnDefaultDiets()
         {
-            // Define priorities for each diet
             string[] balancedPositive = { "Kcal", "Protein", "Fibre" };
             string[] balancedNegative = { "Saturates", "Sugars", "Salt" };
-            // Add other diet priorities similarly
+
+            string[] lowCarbPositive = { "Protein", "Fibre" };
+            string[] lowCarbNegative = { "Carbs", "Sugars" };
+
+            string[] lowFatPositive = { "Protein", "Fibre" };
+            string[] lowFatNegative = { "Fat", "Saturates" };
+
+            string[] highProteinPositive = { "Protein", "Fibre" };
+            string[] highProteinNegative = { "Carbs", "Sugars", "Fat", "Saturates" };
+
+            string[] lowProPositive = { "Fibre" };
+            string[] lowProNegative = { "Protein", "Saturates" };
+
+            string[] highFibrePositive = { "Fibre" };
+            string[] highFibreNegative = { "Carbs" };
 
             // Create instances of the Diet class for each diet
             Diet balancedDiet = new Diet("Balanced Diet", "A diet with balanced nutritional values",
                                          balancedPositive, balancedNegative);
-            // Create other diet instances similarly
+
+            Diet lowCarbDiet = new Diet("Low Carb Diet", "A diet low in carbohydrates",
+                                         lowCarbPositive, lowCarbNegative);
+
+            Diet lowFatDiet = new Diet("Low Fat Diet", "A diet low in fat",
+                                       lowFatPositive, lowFatNegative);
+
+            Diet highProteinDiet = new Diet("High Protein Diet", "A diet high in protein",
+                                            highProteinPositive, highProteinNegative);
+
+            Diet lowProteinDiet = new Diet("Low Protein Diet", "A diet consisting only of low prottein and saturated fats",
+                                      lowProPositive, lowProNegative);
+
+            Diet highFibreDiet = new Diet("High Fibre Diet", "A diet containing lots of fibre",
+                                           highFibrePositive, highFibreNegative);
 
             // Return the diets in an array
-            return new Diet[] { balancedDiet, /* Add other diet instances */ };
+            return [balancedDiet, lowCarbDiet, lowFatDiet, highProteinDiet, lowProteinDiet, highFibreDiet];
         }
 
         /// <summary>
         /// Generates meals based on the diet's priorities.
         /// </summary>
         /// <param name="diet">The Diet object representing the chosen diet.</param>
-        /// <param name="numMeals">The number of meals to generate.</param>
         /// <param name="recipes">The list of available recipes.</param>
+        /// <param name="numMeals">(Optional) The number of meals to generate. -1 does all the recipes</param>
         /// <returns>A list of Recipe objects representing the generated meals.</returns>
-        public static List<Recipe> GenerateMeals(Diet diet, int numMeals, List<Recipe> recipes)
+        public static Dictionary<Recipe, float> GenerateMeals(Diet diet, List<Recipe> recipes, int numMeals = -1)
         {
+            if(numMeals == -1) numMeals = recipes.Count; // Default to all recipes if not specified
             Debug.WriteLine($"Received instruction for diet {diet}, meals {numMeals} out of {recipes.Count} options");
+
+            if (diet.RecipeRank != null) return diet.RecipeRank; // Return the cached ranking if it exists
 
             string[] priorities = diet.PriorityPositive;
             var recipeRanks = GenerateRankedRecipes(recipes, priorities);
-            recipeRanks.OrderByDescending(x => x.Value); // Order by highest value first
-            diet.RecipeRank = recipeRanks.Keys.ToList(); // Store the ranked recipes
-            return diet.RecipeRank.Take(numMeals).ToList(); // Return the top n recipes
+            // Sort the recipes by their total scores
+            var sortedRecipes = recipeRanks.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            // Generate a ranking dictionary for the recipes with recipe, rank
+            return diet.RecipeRank = sortedRecipes;
         }
 
         /// <summary>

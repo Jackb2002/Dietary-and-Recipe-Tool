@@ -1,6 +1,7 @@
 ﻿using RecipeExtractor;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 using WinFormsInfoApp.Family;
 using WinFormsInfoApp.Models;
 using static WinFormsInfoApp.IIngredientContext;
@@ -560,6 +561,12 @@ namespace WinFormsInfoApp
         {
             PremadeDietsSelector selector = new(this);
             selector.ShowDialog();
+            if(selector.DialogResult == DialogResult.OK)
+            {
+                Debug.WriteLine("New diet selected " + currentDiet.Name);
+                currentDiet.RecipeRank = Diet.GenerateMeals(currentDiet, _recipesCache);
+                Debug.WriteLine("Diet now has " + currentDiet.RecipeRank.Count + " recipes");
+            }
         }
 
         private void customDiet_Click(object sender, EventArgs e)

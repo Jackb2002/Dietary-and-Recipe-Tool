@@ -33,19 +33,19 @@
             exitBtn = new Button();
             dietInfo = new Label();
             dietList = new ListBox();
-            dietExamples = new Label();
             label1 = new Label();
             dietTitle = new Label();
+            priorityLabel = new Label();
             recipeBox.SuspendLayout();
             SuspendLayout();
             // 
             // recipeBox
             // 
+            recipeBox.Controls.Add(priorityLabel);
             recipeBox.Controls.Add(saveBtn);
             recipeBox.Controls.Add(exitBtn);
             recipeBox.Controls.Add(dietInfo);
             recipeBox.Controls.Add(dietList);
-            recipeBox.Controls.Add(dietExamples);
             recipeBox.Controls.Add(label1);
             recipeBox.Controls.Add(dietTitle);
             recipeBox.Font = new Font("Verdana", 12F);
@@ -80,7 +80,7 @@
             // 
             dietInfo.AutoSize = true;
             dietInfo.Font = new Font("Verdana", 12F);
-            dietInfo.Location = new Point(220, 76);
+            dietInfo.Location = new Point(221, 95);
             dietInfo.Name = "dietInfo";
             dietInfo.Size = new Size(79, 18);
             dietInfo.TabIndex = 7;
@@ -97,15 +97,6 @@
             dietList.Size = new Size(209, 238);
             dietList.TabIndex = 1;
             dietList.SelectedIndexChanged += dietList_SelectedIndexChanged;
-            // 
-            // dietExamples
-            // 
-            dietExamples.Font = new Font("Verdana", 12F);
-            dietExamples.Location = new Point(221, 128);
-            dietExamples.Name = "dietExamples";
-            dietExamples.Size = new Size(343, 106);
-            dietExamples.TabIndex = 5;
-            dietExamples.Text = "Example Meals";
             // 
             // label1
             // 
@@ -127,6 +118,16 @@
             dietTitle.TabIndex = 3;
             dietTitle.Text = "Diet name";
             // 
+            // priorityLabel
+            // 
+            priorityLabel.AutoSize = true;
+            priorityLabel.Font = new Font("Verdana", 12F);
+            priorityLabel.Location = new Point(221, 165);
+            priorityLabel.Name = "priorityLabel";
+            priorityLabel.Size = new Size(148, 18);
+            priorityLabel.TabIndex = 10;
+            priorityLabel.Text = "Tries to prioritise";
+            // 
             // PremadeDietsSelector
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -145,10 +146,10 @@
         private GroupBox recipeBox;
         private Label dietInfo;
         private ListBox dietList;
-        private Label dietExamples;
         private Label label1;
         private Label dietTitle;
         private Button saveBtn;
         private Button exitBtn;
+        private Label priorityLabel;
     }
 }
