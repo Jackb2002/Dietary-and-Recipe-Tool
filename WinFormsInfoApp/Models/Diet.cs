@@ -117,12 +117,21 @@ namespace WinFormsInfoApp.Models
 
             if (diet.RecipeRank != null) return diet.RecipeRank; // Return the cached ranking if it exists
 
-            string[] priorities = diet.PriorityPositive;
-            var recipeRanks = GenerateRankedRecipes(recipes, priorities);
+            string[] posPriorities = diet.PriorityPositive;
+            string[] negPriorities = diet.PriorityNegative;
+            var posRecipeRanks = GenerateRankedRecipes(recipes, posPriorities);
+            var negRecipeRanks = GenerateRankedRecipes(recipes, negPriorities);
+            // Combine the positive and negative priorities to form a total value
+            var recipeRanks = posRecipeRanks.ToDictionary(x => x.Key, x => x.Value - negRecipeRanks[x.Key]);
             // Sort the recipes by their total scores
             var sortedRecipes = recipeRanks.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-            // Generate a ranking dictionary for the recipes with recipe, rank
-            return diet.RecipeRank = sortedRecipes;
+            // Shuffle the top 10% of the recipes
+            var top10 = sortedRecipes.Take(sortedRecipes.Count/10);
+            Random random = new Random();
+            //randomise the order of the top 10% of the recipes
+            var shuffledTop10 = top10.OrderBy(x => random.Next()).ToDictionary(x => x.Key, x => x.Value);
+            
+            return diet.RecipeRank = shuffledTop10;
         }
 
         /// <summary>
