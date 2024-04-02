@@ -2,18 +2,19 @@
 
 namespace WinFormsInfoApp
 {
-    public partial class PremadeDietsSelector : Form
+    public partial class ExistingDietsSelector : Form
     {
         private readonly MainWindow _mainWindow;
         private readonly Diet[] diets;
         private Diet? currentDiet; // The diet that is currently selected
-        public PremadeDietsSelector(MainWindow mainWindow)
+        public ExistingDietsSelector(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
             InitializeComponent();
 
             // Load in the premade diets
             diets = Diet.ReturnDefaultDiets();
+            dietList.Items.AddRange(mainWindow._dietCache.ToArray());
             dietList.Items.AddRange(diets);
         }
 

@@ -30,6 +30,12 @@ namespace WinFormsInfoApp.Models
         public string[] PriorityNegative { get; set; }
 
         /// <summary>
+        /// The day that the diet starts from.
+        /// </summary>
+        public DateTime StartDate { get; set; }
+
+
+        /// <summary>
         /// List to store ranked recipes based on the diet's priorities.
         /// </summary>
         public Dictionary<Recipe, float>? RecipeRank;

@@ -1,6 +1,6 @@
 ﻿namespace WinFormsInfoApp
 {
-    partial class PremadeDietsSelector
+    partial class ExistingDietsSelector
     {
         /// <summary>
         /// Required designer variable.

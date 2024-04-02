@@ -1,6 +1,8 @@
-﻿using RecipeExtractor;
+﻿using AngleSharp.Common;
+using RecipeExtractor;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net;
 using WinFormsInfoApp.Family;
 using WinFormsInfoApp.Models;
 using static WinFormsInfoApp.IIngredientContext;
@@ -17,11 +19,11 @@ namespace WinFormsInfoApp
         private const string _diet_FilePath = "diet_cache.json";
         private readonly IIngredientContext _ingredientContext;
         private List<Ingredient> _ingredientCache = [];
-        private readonly List<Diet> _dietCache = [];
         private Recipe? CurrentRecipeSelection;
         private Family.Family currentFamily;
 
         internal readonly List<Recipe> _recipesCache = [];
+        internal readonly List<Diet> _dietCache = [];
         internal Diet currentDiet;
         internal List<string> avoid_ings = [];
         internal List<string> good_ings = [];
@@ -77,6 +79,8 @@ namespace WinFormsInfoApp
             dietLoader.DoWork += new DoWorkEventHandler(LoadDiets);
             dietLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadDietsCompleted);
             dietLoader.RunWorkerAsync();
+
+            SetTodaysMeal();
 
             Debug.WriteLine("Loaded recipes and ingredients");
         }
@@ -311,6 +315,18 @@ namespace WinFormsInfoApp
 
             recipe.Description = GetValue<string>(recipeRaw, "description");
             recipe.Method = GetValue<string>(recipeRaw, "method");
+
+
+            //Decode HTML strings
+            string decodedName = WebUtility.HtmlDecode(recipe.Title);
+            recipe.Title = decodedName;
+            string decodedIngredients = WebUtility.HtmlDecode(recipe.Ingredients);
+            recipe.Ingredients = decodedIngredients;
+            string decodedMethod = WebUtility.HtmlDecode(recipe.Method);
+            recipe.Method = decodedMethod;
+            string decodedDescription = WebUtility.HtmlDecode(recipe.Description);
+            recipe.Description = decodedDescription;
+
             return recipe;
         }
         private void recipeInfoPanel_Paint(object sender, PaintEventArgs e)
@@ -465,13 +481,11 @@ namespace WinFormsInfoApp
 
         private void premadeDiet_Click(object sender, EventArgs e)
         {
-            PremadeDietsSelector selector = new(this);
+            ExistingDietsSelector selector = new(this);
             _ = selector.ShowDialog();
             if (selector.DialogResult == DialogResult.OK)
             {
-                Debug.WriteLine("New diet selected " + currentDiet.Name);
-                currentDiet.RecipeRank = Diet.GenerateMeals(currentDiet, _recipesCache);
-                Debug.WriteLine("Diet now has " + currentDiet.RecipeRank.Count + " recipes");
+                SetupNewDiet();
             }
         }
 
@@ -481,10 +495,33 @@ namespace WinFormsInfoApp
             _ = creator.ShowDialog();
             if (creator.DialogResult == DialogResult.OK)
             {
-                Debug.WriteLine("New diet created " + currentDiet.Name);
-                currentDiet.RecipeRank = Diet.GenerateMeals(currentDiet, _recipesCache);
-                Debug.WriteLine("Diet now has " + currentDiet.RecipeRank.Count + " recipes");
+                SetupNewDiet();
             }
+        }
+
+        private void SetupNewDiet()
+        {
+            Debug.WriteLine("New diet selected " + currentDiet.Name);
+            currentDiet.RecipeRank = Diet.GenerateMeals(currentDiet, _recipesCache);
+            Debug.WriteLine("Diet now has " + currentDiet.RecipeRank.Count + " recipes");
+            currentDiet.StartDate = DateTime.Now;
+            _dietCache.Add(currentDiet);
+            SetTodaysMeal();
+        }
+
+        private void SetTodaysMeal()
+        {
+            if(currentDiet == null)
+            {
+                return;
+            }
+            currentDietLabel.Text = "Current Diet: " + currentDiet.Name;
+            int daysSinceDietStart = (DateTime.Now - currentDiet.StartDate).Days;
+            int mealIndex = daysSinceDietStart % currentDiet.RecipeRank.Count; // Wrap around
+            Recipe todaysMeal = currentDiet.RecipeRank.GetItemByIndex(mealIndex).Key; // Get the recipe for todays index
+            int listIndex = _recipesCache.IndexOf(todaysMeal);
+            recipeList.SelectedIndex = listIndex;
+            nextMealLabel.Text = "Today's Meal: " + todaysMeal.Title;
         }
 
         private void badIngredients_Click(object sender, EventArgs e)
