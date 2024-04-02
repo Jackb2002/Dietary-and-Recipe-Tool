@@ -128,9 +128,9 @@ namespace WinFormsInfoApp.Models
             var top10 = sortedRecipes.Take(sortedRecipes.Count/10);
             Random random = new Random();
             //randomise the order of the top 10% of the recipes
-            var shuffledTop10 = top10.OrderBy(x => random.Next()).ToDictionary(x => x.Key, x => x.Value);
-            
-            return diet.RecipeRank = shuffledTop10;
+            var shuffledTop10 = top10.OrderBy(x => random.Next()).ToDictionary(x => x.Key, x => x.Value).Take(numMeals);
+            //return the dictionary of the shuffled top 10 and set to size of meal numbers
+            return diet.RecipeRank = shuffledTop10.ToDictionary();
         }
 
         /// <summary>
