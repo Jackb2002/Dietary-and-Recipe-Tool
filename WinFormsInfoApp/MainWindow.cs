@@ -1,7 +1,6 @@
 ﻿using RecipeExtractor;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using WinFormsInfoApp.Family;
 using WinFormsInfoApp.Models;
 using static WinFormsInfoApp.IIngredientContext;
@@ -18,15 +17,15 @@ namespace WinFormsInfoApp
         private const string _diet_FilePath = "diet_cache.json";
         private readonly IIngredientContext _ingredientContext;
         private List<Ingredient> _ingredientCache = [];
-        private List<Diet> _dietCache = [];
+        private readonly List<Diet> _dietCache = [];
         private Recipe? CurrentRecipeSelection;
         private Family.Family currentFamily;
 
         internal readonly List<Recipe> _recipesCache = [];
-        internal Diet currentDiet; 
-        internal List<string> avoid_ings = new List<string>();
-        internal List<string> good_ings = new List<string>();
-        
+        internal Diet currentDiet;
+        internal List<string> avoid_ings = [];
+        internal List<string> good_ings = [];
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -56,8 +55,10 @@ namespace WinFormsInfoApp
                 ConnectionStatus.ForeColor = Color.Green;
             }
 
-            currentFamily = new Family.Family();
-            currentFamily.People = [new AdultMale()];
+            currentFamily = new Family.Family
+            {
+                People = [new AdultMale()]
+            };
 
             // Load recipes asynchronously
             BackgroundWorker recipeLoader = new();
@@ -142,15 +143,15 @@ namespace WinFormsInfoApp
         /// <returns>A list of imported recipes.</returns>
         public void ImportRecipes()
         {
-            var recipes = ImportLocalRecipes(_recipe_FilePath).ToList();
+            List<Recipe> recipes = ImportLocalRecipes(_recipe_FilePath).ToList();
             int total = 0, counter = 0;
             total = recipes.Count;
-            foreach (var item in recipes)
+            foreach (Recipe? item in recipes)
             {
                 counter++;
                 Debug.WriteLine($"Progress: {counter}/{total}");
                 //Check if default or zero 
-                if(item.Kcal == 0 || item.Serving == 0)
+                if (item.Kcal == 0 || item.Serving == 0)
                 {
                     //Extract recipe from URL
                     Recipe? extractedRecipe = ExtractRecipeFromURL(item.RecipeUrls);
@@ -166,7 +167,7 @@ namespace WinFormsInfoApp
                 }
             }
 
-            var valid_recipes = recipes.Where(x => x.Kcal > 0 && x.Serving > 0).ToList();
+            List<Recipe> valid_recipes = recipes.Where(x => x.Kcal > 0 && x.Serving > 0).ToList();
             Debug.WriteLine("Counted " + valid_recipes.Count + " recipes with kcal and serving");
             _recipesCache.AddRange(valid_recipes);
         }
@@ -231,7 +232,7 @@ namespace WinFormsInfoApp
 
         private void LaunchRecipeOnClick(string url)
         {
-            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+            _ = Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
         }
 
         /// <summary>
@@ -315,8 +316,8 @@ namespace WinFormsInfoApp
         private void recipeInfoPanel_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            Pen pen = new Pen(Color.Black, 2);
-            Font font = new Font("Arial", 10);
+            Pen pen = new(Color.Black, 2);
+            Font font = new("Arial", 10);
             Size size = recipeInfoPanel.ClientSize; // Use ClientSize for size calculations
             int boxWidth = size.Width / 4;
             int boxHeight = size.Height / 2;
@@ -325,186 +326,96 @@ namespace WinFormsInfoApp
 
             if (CurrentRecipeSelection != null)
             {
-                using (StringFormat stringFormat = new StringFormat())
+                using StringFormat stringFormat = new();
+                stringFormat.Alignment = StringAlignment.Near;
+                stringFormat.LineAlignment = StringAlignment.Center;
+
+                // Draw a box with padding 2 rows 4 columns 
+                for (int row = 0; row < 2; row++)
                 {
-                    stringFormat.Alignment = StringAlignment.Near;
-                    stringFormat.LineAlignment = StringAlignment.Center;
-
-                    // Draw a box with padding 2 rows 4 columns 
-                    for (int row = 0; row < 2; row++)
+                    for (int col = 0; col < 4; col++)
                     {
-                        for (int col = 0; col < 4; col++)
+                        int x = (col * boxWidth) + padding_x;
+                        int y = (row * boxHeight) + padding_y;
+
+                        // Define the rectangle for the text
+                        RectangleF textRect = new(x + 5, y + 5, boxWidth - (2 * padding_x), boxHeight - (2 * padding_y));
+
+                        // Draw the rectangle
+                        g.DrawRectangle(pen, x, y, boxWidth - padding_x, boxHeight - padding_y);
+
+                        //Calculate the recommended daily intake for each of the nutrients 
+                        float kcal = currentFamily.GetTotalKcal();
+                        float fat = currentFamily.GetTotalFat();
+                        float saturates = currentFamily.GetTotalSaturates();
+                        float carbs = currentFamily.GetTotalCarbs();
+                        float sugars = currentFamily.GetTotalSugar();
+                        float fibre = currentFamily.GetTotalFibre();
+                        float protein = currentFamily.GetTotalProtein();
+                        float salt = currentFamily.GetTotalSalt();
+
+                        //Use current recipe selection to turn these into a percentage of daily intake for the whole
+                        //family based on the serving of the recipe and the nutritional info provided 
+                        float kcalPerServing = CurrentRecipeSelection.Kcal / CurrentRecipeSelection.Serving;
+                        float fatPerServing = CurrentRecipeSelection.Fat / CurrentRecipeSelection.Serving;
+                        float saturatesPerServing = CurrentRecipeSelection.Saturates / CurrentRecipeSelection.Serving;
+                        float carbsPerServing = CurrentRecipeSelection.Carbs / CurrentRecipeSelection.Serving;
+                        float sugarsPerServing = CurrentRecipeSelection.Sugars / CurrentRecipeSelection.Serving;
+                        float fibrePerServing = CurrentRecipeSelection.Fibre / CurrentRecipeSelection.Serving;
+                        float proteinPerServing = CurrentRecipeSelection.Protein / CurrentRecipeSelection.Serving;
+                        float saltPerServing = CurrentRecipeSelection.Salt / CurrentRecipeSelection.Serving;
+
+                        //Calculate the percentage of daily intake for the whole family
+                        float kcalPercentage = kcalPerServing / kcal * 100;
+                        float fatPercentage = fatPerServing / fat * 100;
+                        float saturatesPercentage = saturatesPerServing / saturates * 100;
+                        float carbsPercentage = carbsPerServing / carbs * 100;
+                        float sugarsPercentage = sugarsPerServing / sugars * 100;
+                        float fibrePercentage = fibrePerServing / fibre * 100;
+                        float proteinPercentage = proteinPerServing / protein * 100;
+                        float saltPercentage = saltPerServing / salt * 100;
+
+                        //Create the threshold values
+                        const float RED_THRESHOLD = 75;
+                        const float ORANGE_THRESHOLD = 45;
+                        Brush b;
+                        // Draw the nutrient information with text wrapping
+                        switch ((row * 4) + col)
                         {
-                            int x = col * boxWidth + padding_x;
-                            int y = row * boxHeight + padding_y;
-
-                            // Define the rectangle for the text
-                            RectangleF textRect = new RectangleF(x + 5, y + 5, boxWidth - 2 * padding_x, boxHeight - 2 * padding_y);
-
-                            // Draw the rectangle
-                            g.DrawRectangle(pen, x, y, boxWidth - padding_x, boxHeight - padding_y);
-
-                            //Calculate the recommended daily intake for each of the nutrients 
-                            float kcal = currentFamily.GetTotalKcal();
-                            float fat = currentFamily.GetTotalFat();
-                            float saturates = currentFamily.GetTotalSaturates();
-                            float carbs = currentFamily.GetTotalCarbs();
-                            float sugars = currentFamily.GetTotalSugar();
-                            float fibre = currentFamily.GetTotalFibre();
-                            float protein = currentFamily.GetTotalProtein();
-                            float salt = currentFamily.GetTotalSalt();
-
-                            //Use current recipe selection to turn these into a percentage of daily intake for the whole
-                            //family based on the serving of the recipe and the nutritional info provided 
-                            float kcalPerServing = CurrentRecipeSelection.Kcal / CurrentRecipeSelection.Serving;
-                            float fatPerServing = CurrentRecipeSelection.Fat / CurrentRecipeSelection.Serving;
-                            float saturatesPerServing = CurrentRecipeSelection.Saturates / CurrentRecipeSelection.Serving;
-                            float carbsPerServing = CurrentRecipeSelection.Carbs / CurrentRecipeSelection.Serving;
-                            float sugarsPerServing = CurrentRecipeSelection.Sugars / CurrentRecipeSelection.Serving;
-                            float fibrePerServing = CurrentRecipeSelection.Fibre / CurrentRecipeSelection.Serving;
-                            float proteinPerServing = CurrentRecipeSelection.Protein / CurrentRecipeSelection.Serving;
-                            float saltPerServing = CurrentRecipeSelection.Salt / CurrentRecipeSelection.Serving;
-
-                            //Calculate the percentage of daily intake for the whole family
-                            float kcalPercentage = (kcalPerServing / kcal) * 100;
-                            float fatPercentage = (fatPerServing / fat) * 100;
-                            float saturatesPercentage = (saturatesPerServing / saturates) * 100;
-                            float carbsPercentage = (carbsPerServing / carbs) * 100;
-                            float sugarsPercentage = (sugarsPerServing / sugars) * 100;
-                            float fibrePercentage = (fibrePerServing / fibre) * 100;
-                            float proteinPercentage = (proteinPerServing / protein) * 100;
-                            float saltPercentage = (saltPerServing / salt) * 100;
-
-                            //Create the threshold values
-                            const float RED_THRESHOLD = 75;
-                            const float ORANGE_THRESHOLD = 45;
-                            Brush b;
-                            // Draw the nutrient information with text wrapping
-                            switch (row * 4 + col)
-                            {
-                                case 0:
-                                    if (kcalPercentage > RED_THRESHOLD)
-                                    {
-                                        b = Brushes.Red;
-                                    }
-                                    else if (kcalPercentage > ORANGE_THRESHOLD)
-                                    {
-                                        b = Brushes.Orange;
-                                    }
-                                    else
-                                    {
-                                        b = Brushes.Green;
-                                    }
-                                    g.DrawString("Kcal: " + CurrentRecipeSelection.Kcal + 'g', font, b, textRect, stringFormat);
-                                    break;
-                                case 1:
-                                    if (fatPercentage > RED_THRESHOLD)
-                                    {
-                                        b = Brushes.Red;
-                                    }
-                                    else if (fatPercentage > ORANGE_THRESHOLD)
-                                    {
-                                        b = Brushes.Orange;
-                                    }
-                                    else
-                                    {
-                                        b = Brushes.Green;
-                                    }
-                                    g.DrawString("Fat: " + CurrentRecipeSelection.Fat + 'g', font, b, textRect, stringFormat);
-                                    break;
-                                case 2:
-                                    if (saturatesPercentage > RED_THRESHOLD)
-                                    {
-                                        b = Brushes.Red;
-                                    }
-                                    else if (saturatesPercentage > ORANGE_THRESHOLD)
-                                    {
-                                        b = Brushes.Orange;
-                                    }
-                                    else
-                                    {
-                                        b = Brushes.Green;
-                                    }
-                                    g.DrawString("Saturates: " + CurrentRecipeSelection.Saturates + 'g', font, b, textRect, stringFormat);
-                                    break;
-                                case 3:
-                                    if (carbsPercentage > RED_THRESHOLD)
-                                    {
-                                        b = Brushes.Red;
-                                    }
-                                    else if (carbsPercentage > ORANGE_THRESHOLD)
-                                    {
-                                        b = Brushes.Orange;
-                                    }
-                                    else
-                                    {
-                                        b = Brushes.Green;
-                                    }
-                                    g.DrawString("Carbs: " + CurrentRecipeSelection.Carbs + 'g', font, b, textRect, stringFormat);
-                                    break;
-                                case 4:
-                                    if (sugarsPercentage > RED_THRESHOLD)
-                                    {
-                                        b = Brushes.Red;
-                                    }
-                                    else if (sugarsPercentage > ORANGE_THRESHOLD)
-                                    {
-                                        b = Brushes.Orange;
-                                    }
-                                    else
-                                    {
-                                        b = Brushes.Green;
-                                    }
-                                    g.DrawString("Sugars: " + CurrentRecipeSelection.Sugars + 'g', font, b, textRect, stringFormat);
-                                    break;
-                                case 5:
-                                    if (fibrePercentage > RED_THRESHOLD)
-                                    {
-                                        b = Brushes.Red;
-                                    }
-                                    else if (fibrePercentage > ORANGE_THRESHOLD)
-                                    {
-                                        b = Brushes.Orange;
-                                    }
-                                    else
-                                    {
-                                        b = Brushes.Green;
-                                    }
-                                    g.DrawString("Fibre: " + CurrentRecipeSelection.Fibre + 'g', font, b, textRect, stringFormat);
-                                    break;
-                                case 6:
-                                    if (proteinPercentage > RED_THRESHOLD)
-                                    {
-                                        b = Brushes.Red;
-                                    }
-                                    else if (proteinPercentage > ORANGE_THRESHOLD)
-                                    {
-                                        b = Brushes.Orange;
-                                    }
-                                    else
-                                    {
-                                        b = Brushes.Green;
-                                    }
-                                    g.DrawString("Protein: " + CurrentRecipeSelection.Protein + 'g', font, b, textRect, stringFormat);
-                                    break;
-                                case 7:
-                                    if (saltPercentage > RED_THRESHOLD)
-                                    {
-                                        b = Brushes.Red;
-                                    }
-                                    else if (saltPercentage > ORANGE_THRESHOLD)
-                                    {
-                                        b = Brushes.Orange;
-                                    }
-                                    else
-                                    {
-                                        b = Brushes.Green;
-                                    }
-                                    g.DrawString("Salt: " + CurrentRecipeSelection.Salt + 'g', font, b, textRect, stringFormat);
-                                    break;
-                            }
-
+                            case 0:
+                                b = kcalPercentage > RED_THRESHOLD ? Brushes.Red : kcalPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
+                                g.DrawString("Kcal: " + CurrentRecipeSelection.Kcal + 'g', font, b, textRect, stringFormat);
+                                break;
+                            case 1:
+                                b = fatPercentage > RED_THRESHOLD ? Brushes.Red : fatPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
+                                g.DrawString("Fat: " + CurrentRecipeSelection.Fat + 'g', font, b, textRect, stringFormat);
+                                break;
+                            case 2:
+                                b = saturatesPercentage > RED_THRESHOLD ? Brushes.Red : saturatesPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
+                                g.DrawString("Saturates: " + CurrentRecipeSelection.Saturates + 'g', font, b, textRect, stringFormat);
+                                break;
+                            case 3:
+                                b = carbsPercentage > RED_THRESHOLD ? Brushes.Red : carbsPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
+                                g.DrawString("Carbs: " + CurrentRecipeSelection.Carbs + 'g', font, b, textRect, stringFormat);
+                                break;
+                            case 4:
+                                b = sugarsPercentage > RED_THRESHOLD ? Brushes.Red : sugarsPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
+                                g.DrawString("Sugars: " + CurrentRecipeSelection.Sugars + 'g', font, b, textRect, stringFormat);
+                                break;
+                            case 5:
+                                b = fibrePercentage > RED_THRESHOLD ? Brushes.Red : fibrePercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
+                                g.DrawString("Fibre: " + CurrentRecipeSelection.Fibre + 'g', font, b, textRect, stringFormat);
+                                break;
+                            case 6:
+                                b = proteinPercentage > RED_THRESHOLD ? Brushes.Red : proteinPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
+                                g.DrawString("Protein: " + CurrentRecipeSelection.Protein + 'g', font, b, textRect, stringFormat);
+                                break;
+                            case 7:
+                                b = saltPercentage > RED_THRESHOLD ? Brushes.Red : saltPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
+                                g.DrawString("Salt: " + CurrentRecipeSelection.Salt + 'g', font, b, textRect, stringFormat);
+                                break;
                         }
+
                     }
                 }
             }
@@ -514,7 +425,7 @@ namespace WinFormsInfoApp
         {
             Debug.WriteLine("Opening family edit form");
             FamilyEditor familyEditor = new(currentFamily);
-            familyEditor.ShowDialog();
+            _ = familyEditor.ShowDialog();
             if (familyEditor.DialogResult == DialogResult.OK)
             {
                 currentFamily = familyEditor.family;
@@ -535,13 +446,12 @@ namespace WinFormsInfoApp
             string ing_name = ingName.Text;
             if (string.IsNullOrWhiteSpace(ing_name))
             {
-                MessageBox.Show("Please enter an ingredient name");
+                _ = MessageBox.Show("Please enter an ingredient name");
                 return;
             }
             Ingredient? ing = _ingredientContext.GetFirstIngredient(ing_name);
-            if (ing != null)
-            {
-                ingOutputBox.Text = $"" +
+            ingOutputBox.Text = ing != null
+                ? $"" +
                     $"Ingredient Name - {ing.Name}\n" +
                     $"Ingredient Calorie Information - {ing.Calories} kcal\n" +
                     $"Ingredient Fat Information - {ing.Fat} g\n" +
@@ -549,19 +459,15 @@ namespace WinFormsInfoApp
                     $"Ingredient Protein Information - {ing.Protein} g\n" +
                     $"Ingredient Sugar Information - {ing.Sugar} g\n" +
                     $"Ingredient Fibre Information - {ing.Fibre} g\n" +
-                    $"Ingredient Weight Information - {ing.Product_Weight} g\n";
-            }
-            else
-            {
-                ingOutputBox.Text = "Ingredient not found";
-            }
+                    $"Ingredient Weight Information - {ing.Product_Weight} g\n"
+                : "Ingredient not found";
         }
 
         private void premadeDiet_Click(object sender, EventArgs e)
         {
             PremadeDietsSelector selector = new(this);
-            selector.ShowDialog();
-            if(selector.DialogResult == DialogResult.OK)
+            _ = selector.ShowDialog();
+            if (selector.DialogResult == DialogResult.OK)
             {
                 Debug.WriteLine("New diet selected " + currentDiet.Name);
                 currentDiet.RecipeRank = Diet.GenerateMeals(currentDiet, _recipesCache);
@@ -572,7 +478,7 @@ namespace WinFormsInfoApp
         private void customDiet_Click(object sender, EventArgs e)
         {
             CustomDietsCreator creator = new(this);
-            creator.ShowDialog();
+            _ = creator.ShowDialog();
             if (creator.DialogResult == DialogResult.OK)
             {
                 Debug.WriteLine("New diet created " + currentDiet.Name);
@@ -584,14 +490,14 @@ namespace WinFormsInfoApp
         private void badIngredients_Click(object sender, EventArgs e)
         {
             IngredientSelector selector = new(false, this);
-            selector.ShowDialog();
+            _ = selector.ShowDialog();
             Debug.WriteLine("Avoid ingredients are now " + string.Join(" ", avoid_ings));
         }
 
         private void goodIngredients_Click(object sender, EventArgs e)
         {
             IngredientSelector selector = new(true, this);
-            selector.ShowDialog();
+            _ = selector.ShowDialog();
             Debug.WriteLine("Good ingredients are now " + string.Join(" ", good_ings));
         }
 

@@ -1,9 +1,7 @@
-﻿using System.Text.Json.Serialization;
-
-namespace WinFormsInfoApp.Models
+﻿namespace WinFormsInfoApp.Models
 {
     public class Recipe
-    { 
+    {
         public string Title { get; set; }
         public string Difficulty { get; set; }
         public string Rating { get; set; }

@@ -144,7 +144,7 @@ namespace WinFormsInfoApp.LocalDatabase
 
         public List<Ingredient>? GetAllIngredients(string[] ingredients, string location = "All")
         {
-            List<Ingredient> ings = new List<Ingredient>();
+            List<Ingredient> ings = [];
             foreach (string name in ingredients)
             {
                 ings.Add(GetFirstIngredient(name));

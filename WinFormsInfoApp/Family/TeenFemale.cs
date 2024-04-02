@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WinFormsInfoApp.Family
+﻿namespace WinFormsInfoApp.Family
 {
     internal class TeenFemale : Person
     {
