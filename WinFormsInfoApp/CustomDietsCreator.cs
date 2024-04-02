@@ -13,15 +13,23 @@ namespace WinFormsInfoApp
 
         private void calPos_CheckedChanged(object sender, EventArgs e)
         {
-            if (calNeg.Checked)
+            if (sender == calPos && calPos.Checked)
             {
                 calNeg.Checked = false;
             }
         }
 
+        private void calNeg_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == calNeg && calNeg.Checked)
+            {
+                calPos.Checked = false;
+            }
+        }
+
         private void fatPos_CheckedChanged(object sender, EventArgs e)
         {
-            if (fatNeg.Checked)
+            if (sender == fatPos && fatPos.Checked)
             {
                 fatNeg.Checked = false;
             }
@@ -29,115 +37,108 @@ namespace WinFormsInfoApp
 
         private void fatNeg_CheckedChanged(object sender, EventArgs e)
         {
-            if (fatPos.Checked)
+            if (sender == fatNeg && fatNeg.Checked)
             {
                 fatPos.Checked = false;
             }
         }
 
-        private void calNeg_CheckedChanged(object sender, EventArgs e)
-        {
-            if (calPos.Checked)
-            {
-                calPos.Checked = false;
-            }
-        }
-
-        private void satNeg_CheckedChanged(object sender, EventArgs e)
-        {
-            if (satPos.Checked)
-            {
-                satPos.Checked = false;
-            }
-        }
-
-        private void fibNeg_CheckedChanged(object sender, EventArgs e)
-        {
-            if (fibPos.Checked)
-            {
-                fibPos.Checked = false;
-            }
-        }
-
-        private void carbNeg_CheckedChanged(object sender, EventArgs e)
-        {
-            if (carbPos.Checked)
-            {
-                carbPos.Checked = false;
-            }
-        }
-
-        private void salNeg_CheckedChanged(object sender, EventArgs e)
-        {
-            if (salPos.Checked)
-            {
-                salPos.Checked = false;
-            }
-        }
-
-        private void sugNeg_CheckedChanged(object sender, EventArgs e)
-        {
-            if (sugPos.Checked)
-            {
-                sugPos.Checked = false;
-            }
-        }
-
-        private void proNeg_CheckedChanged(object sender, EventArgs e)
-        {
-            if (proPos.Checked)
-            {
-                proPos.Checked = false;
-            }
-        }
-
-        private void sugPos_CheckedChanged(object sender, EventArgs e)
-        {
-            if (sugNeg.Checked)
-            {
-                sugNeg.Checked = false;
-            }
-        }
-
-        private void proPos_CheckedChanged(object sender, EventArgs e)
-        {
-            if (proNeg.Checked)
-            {
-                proNeg.Checked = false;
-            }
-        }
-
-        private void carbPos_CheckedChanged(object sender, EventArgs e)
-        {
-            if (carbNeg.Checked)
-            {
-                carbNeg.Checked = false;
-            }
-        }
-
-        private void salPos_CheckedChanged(object sender, EventArgs e)
-        {
-            if (salNeg.Checked)
-            {
-                salNeg.Checked = false;
-            }
-        }
-
         private void satPos_CheckedChanged(object sender, EventArgs e)
         {
-            if (satNeg.Checked)
+            if (sender == satPos && satPos.Checked)
             {
                 satNeg.Checked = false;
             }
         }
 
+        private void satNeg_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == satNeg && satNeg.Checked)
+            {
+                satPos.Checked = false;
+            }
+        }
+
         private void fibPos_CheckedChanged(object sender, EventArgs e)
         {
-            if (fibNeg.Checked)
+            if (sender == fibPos && fibPos.Checked)
             {
                 fibNeg.Checked = false;
             }
         }
+
+        private void fibNeg_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == fibNeg && fibNeg.Checked)
+            {
+                fibPos.Checked = false;
+            }
+        }
+
+        private void carbPos_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == carbPos && carbPos.Checked)
+            {
+                carbNeg.Checked = false;
+            }
+        }
+
+        private void carbNeg_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == carbNeg && carbNeg.Checked)
+            {
+                carbPos.Checked = false;
+            }
+        }
+
+        private void salPos_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == salPos && salPos.Checked)
+            {
+                salNeg.Checked = false;
+            }
+        }
+
+        private void salNeg_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == salNeg && salNeg.Checked)
+            {
+                salPos.Checked = false;
+            }
+        }
+
+        private void sugPos_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == sugPos && sugPos.Checked)
+            {
+                sugNeg.Checked = false;
+            }
+        }
+
+        private void sugNeg_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == sugNeg && sugNeg.Checked)
+            {
+                sugPos.Checked = false;
+            }
+        }
+
+        private void proPos_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == proPos && proPos.Checked)
+            {
+                proNeg.Checked = false;
+            }
+        }
+
+        private void proNeg_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender == proNeg && proNeg.Checked)
+            {
+                proPos.Checked = false;
+            }
+        }
+
 
         private void saveBtn_Click(object sender, EventArgs e)
         {
@@ -163,6 +164,9 @@ namespace WinFormsInfoApp
             }
 
             Diet customDiet = new Diet(dietName.Text, dietDesc.Text, positives.ToArray(), negatives.ToArray());
+            mainWindow.currentDiet = customDiet;
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void AddToLists(List<string> positives, List<string> negatives)
