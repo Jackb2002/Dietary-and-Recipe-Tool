@@ -9,46 +9,24 @@ namespace WinFormsInfoApp.Models
     [JsonSerializable(typeof(Diet))]
     public class Diet
     {
-        /// <summary>
-        /// The name of the diet.
-        /// </summary>
         public string Name { get; set; }
-
-        /// <summary>
-        /// The description of the diet.
-        /// </summary>
         public string Description { get; set; }
-
-        /// <summary>
-        /// The array of positive priorities for the diet.
-        /// </summary>
         public string[] PriorityPositive { get; set; }
-
-        /// <summary>
-        /// The array of negative priorities for the diet.
-        /// </summary>
         public string[] PriorityNegative { get; set; }
-
-        /// <summary>
-        /// The day that the diet starts from.
-        /// </summary>
         public DateTime StartDate { get; set; }
-
-
-        /// <summary>
-        /// List to store ranked recipes based on the diet's priorities.
-        /// </summary>
+        public bool InUse { get; set; }
+        public bool DefaultDiet { get; set; }
         public Dictionary<Recipe, float>? RecipeRank;
 
-        /// <summary>
-        /// Constructor to initialize a Diet object.
-        /// </summary>
-        public Diet(string name, string description, string[] priorityPos, string[] priorityNeg)
+        public Diet(string name, string description, string[] priorityPositive, string[] priorityNegative, DateTime startDate, bool defaultDiet = false, bool inUse = false)
         {
             Name = name;
             Description = description;
-            PriorityPositive = priorityPos;
-            PriorityNegative = priorityNeg;
+            PriorityPositive = priorityPositive;
+            PriorityNegative = priorityNegative;
+            StartDate = startDate;
+            InUse = inUse;
+            DefaultDiet = defaultDiet;
         }
 
         /// <summary>
@@ -86,22 +64,22 @@ namespace WinFormsInfoApp.Models
 
             // Create instances of the Diet class for each diet
             Diet balancedDiet = new("Balanced Diet", "A diet with balanced nutritional values",
-                                         balancedPositive, balancedNegative);
+                                         balancedPositive, balancedNegative,DateTime.Now, true);
 
             Diet lowCarbDiet = new("Low Carb Diet", "A diet low in carbohydrates",
-                                         lowCarbPositive, lowCarbNegative);
+                                         lowCarbPositive, lowCarbNegative,DateTime.Now, true);
 
             Diet lowFatDiet = new("Low Fat Diet", "A diet low in fat",
-                                       lowFatPositive, lowFatNegative);
+                                       lowFatPositive, lowFatNegative, DateTime.Now, true);
 
             Diet highProteinDiet = new("High Protein Diet", "A diet high in protein",
-                                            highProteinPositive, highProteinNegative);
+                                            highProteinPositive, highProteinNegative, DateTime.Now, true);
 
             Diet lowProteinDiet = new("Low Protein Diet", "A diet consisting only of low prottein and saturated fats",
-                                      lowProPositive, lowProNegative);
+                                      lowProPositive, lowProNegative, DateTime.Now, true);
 
             Diet highFibreDiet = new("High Fibre Diet", "A diet containing lots of fibre",
-                                           highFibrePositive, highFibreNegative);
+                                           highFibrePositive, highFibreNegative, DateTime.Now, true);
 
             // Return the diets in an array
             return [balancedDiet, lowCarbDiet, lowFatDiet, highProteinDiet, lowProteinDiet, highFibreDiet];

@@ -163,7 +163,7 @@ namespace WinFormsInfoApp
                 return;
             }
 
-            Diet customDiet = new(dietName.Text, dietDesc.Text, positives.ToArray(), negatives.ToArray());
+            Diet customDiet = new(dietName.Text, dietDesc.Text, positives.ToArray(), negatives.ToArray(), DateTime.Now);
             mainWindow.currentDiet = customDiet;
             DialogResult = DialogResult.OK;
             Close();

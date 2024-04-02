@@ -68,18 +68,6 @@ namespace WinFormsInfoApp
             recipeLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadRecipesCompleted);
             recipeLoader.RunWorkerAsync();
 
-            // Load ingredients asynchronously
-            BackgroundWorker ingredientLoader = new();
-            ingredientLoader.DoWork += new DoWorkEventHandler(LoadIngredients);
-            ingredientLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadIngredientsCompleted);
-            ingredientLoader.RunWorkerAsync();
-
-            // Load diets asynchronously
-            BackgroundWorker dietLoader = new();
-            dietLoader.DoWork += new DoWorkEventHandler(LoadDiets);
-            dietLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadDietsCompleted);
-            dietLoader.RunWorkerAsync();
-
             SetTodaysMeal();
 
             Debug.WriteLine("Loaded recipes and ingredients");
@@ -93,6 +81,16 @@ namespace WinFormsInfoApp
         private void LoadDiets(object? sender, DoWorkEventArgs e)
         {
             ImportDiets();
+            var customInuse = _dietCache.FirstOrDefault(x => x.InUse);
+            if(customInuse != default)
+            {
+                currentDiet = customInuse;
+                SetTodaysMeal();
+            }
+            else
+            {
+                Debug.WriteLine("Got list of diets with no current diet selected");
+            }
         }
 
         private void ImportDiets()
@@ -111,6 +109,12 @@ namespace WinFormsInfoApp
             Debug.WriteLine($"Loaded {_recipesCache.Count} recipes successfully");
             recipeList.Items.AddRange(_recipesCache.Select(x => x.Title).ToArray());
             Recipe.GenerateMaxValues(_recipesCache);
+
+            // Load ingredients asynchronously
+            BackgroundWorker ingredientLoader = new();
+            ingredientLoader.DoWork += new DoWorkEventHandler(LoadIngredients);
+            ingredientLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadIngredientsCompleted);
+            ingredientLoader.RunWorkerAsync();
         }
 
         /// <summary>
@@ -119,6 +123,13 @@ namespace WinFormsInfoApp
         private void LoadIngredientsCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
             Debug.WriteLine($"Loaded {_ingredientCache.Count} ingredients successfully");
+
+
+            // Load diets asynchronously
+            BackgroundWorker dietLoader = new();
+            dietLoader.DoWork += new DoWorkEventHandler(LoadDiets);
+            dietLoader.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadDietsCompleted);
+            dietLoader.RunWorkerAsync();
         }
 
         /// <summary>
@@ -153,7 +164,6 @@ namespace WinFormsInfoApp
             foreach (Recipe? item in recipes)
             {
                 counter++;
-                Debug.WriteLine($"Progress: {counter}/{total}");
                 //Check if default or zero 
                 if (item.Kcal == 0 || item.Serving == 0)
                 {
@@ -211,7 +221,7 @@ namespace WinFormsInfoApp
             JsonSerializerHelper helper = new();
             helper.SerializeIngredients(_ingredientCache, _ingredient_FilePath);
             helper.SerializeRecipes(_recipesCache, _recipe_FilePath);
-            helper.SerializeDiets(_dietCache, _diet_FilePath);
+            helper.SerializeDiets(_dietCache.Where(x => (x.DefaultDiet == false) || (x.DefaultDiet == true && x.InUse == true)).ToList(), _diet_FilePath); //only save default diets if in use 
             Debug.WriteLine($"Saved {_ingredientCache.Count} ingredients to cache");
             Debug.WriteLine($"Saved {_recipesCache.Count} recipes to cache");
             Debug.WriteLine($"Saved {_dietCache.Count} diets to cache");
@@ -511,17 +521,29 @@ namespace WinFormsInfoApp
 
         private void SetTodaysMeal()
         {
-            if(currentDiet == null)
+            if (currentDiet == null)
             {
                 return;
             }
-            currentDietLabel.Text = "Current Diet: " + currentDiet.Name;
-            int daysSinceDietStart = (DateTime.Now - currentDiet.StartDate).Days;
-            int mealIndex = daysSinceDietStart % currentDiet.RecipeRank.Count; // Wrap around
-            Recipe todaysMeal = currentDiet.RecipeRank.GetItemByIndex(mealIndex).Key; // Get the recipe for todays index
-            int listIndex = _recipesCache.IndexOf(todaysMeal);
-            recipeList.SelectedIndex = listIndex;
-            nextMealLabel.Text = "Today's Meal: " + todaysMeal.Title;
+
+            // Update UI elements on the UI thread
+            Invoke(new MethodInvoker(delegate {
+                foreach (var diet in _dietCache)
+                {
+                    diet.InUse = false;
+                }
+                currentDiet.InUse = true;
+                _dietCache.Where(x => x.Name == currentDiet.Name).FirstOrDefault().InUse = true;
+                currentDietLabel.Text = "Current Diet: " + currentDiet.Name;
+                int daysSinceDietStart = (DateTime.Now - currentDiet.StartDate).Days;
+                currentDiet.RecipeRank = Diet.GenerateMeals(currentDiet, _recipesCache);
+                int mealIndex = daysSinceDietStart % currentDiet.RecipeRank.Count; // Wrap around
+                Recipe todaysMeal = currentDiet.RecipeRank.GetItemByIndex(mealIndex).Key; // Get the recipe for todays index
+                int listIndex = _recipesCache.IndexOf(todaysMeal);
+                recipeList.SelectedIndex = listIndex;
+                nextMealLabel.Text = "Today's Meal: " + todaysMeal.Title;
+            }));
+
         }
 
         private void badIngredients_Click(object sender, EventArgs e)
