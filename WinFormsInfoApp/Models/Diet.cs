@@ -115,7 +115,6 @@ namespace WinFormsInfoApp.Models
             if(numMeals == -1) numMeals = recipes.Count; // Default to all recipes if not specified
             Debug.WriteLine($"Received instruction for diet {diet}, meals {numMeals} out of {recipes.Count} options");
 
-            if (diet.RecipeRank != null) return diet.RecipeRank; // Return the cached ranking if it exists
 
             string[] posPriorities = diet.PriorityPositive;
             string[] negPriorities = diet.PriorityNegative;
