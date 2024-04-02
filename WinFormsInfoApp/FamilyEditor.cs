@@ -7,7 +7,7 @@ namespace WinFormsInfoApp
         internal Family.Family family { get; private set; }
         internal FamilyEditor(Family.Family family)
         {
-            if(family == default || family == null)
+            if (family is default(Family.Family?) or null)
             {
                 family = new Family.Family();
             }
@@ -73,7 +73,7 @@ namespace WinFormsInfoApp
 
         private void removeLast_Click(object sender, EventArgs e)
         {
-            if(familyList.SelectedIndex != -1)
+            if (familyList.SelectedIndex != -1)
             {
                 family.People.RemoveAt(familyList.SelectedIndex);
                 familyList.Items.Clear();

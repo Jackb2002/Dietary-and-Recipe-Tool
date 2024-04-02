@@ -2,9 +2,9 @@
 {
     public partial class IngredientSelector : Form
     {
-        private List<string> ingredientList = new List<string>();
-        private bool forPositive;
-        MainWindow mainWindow;
+        private readonly List<string> ingredientList = [];
+        private readonly bool forPositive;
+        private readonly MainWindow mainWindow;
         public IngredientSelector(bool forPositive, MainWindow mainWindow)
         {
             InitializeComponent();
@@ -40,7 +40,7 @@
 
         private void removeListBtn_Click(object sender, EventArgs e)
         {
-            ingredientList.Remove(IngredientsBox.SelectedItem.ToString());
+            _ = ingredientList.Remove(IngredientsBox.SelectedItem.ToString());
             UpdateList();
         }
 
@@ -67,7 +67,7 @@
         private void IngredientSelector_Load(object sender, EventArgs e)
         {
             string msg = forPositive ? "try and include" : "try and avoid";
-            MessageBox.Show($"Add any text you want to {msg}. When pressing save a diet plan will look for this text when creating your diet plan");
+            _ = MessageBox.Show($"Add any text you want to {msg}. When pressing save a diet plan will look for this text when creating your diet plan");
         }
     }
 }

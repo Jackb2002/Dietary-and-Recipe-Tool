@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using WinFormsInfoApp.Models;
+﻿using WinFormsInfoApp.Models;
 
 namespace WinFormsInfoApp
 {
     public partial class PremadeDietsSelector : Form
     {
-        private MainWindow _mainWindow;
-        private Diet[] diets;
+        private readonly MainWindow _mainWindow;
+        private readonly Diet[] diets;
         private Diet? currentDiet; // The diet that is currently selected
         public PremadeDietsSelector(MainWindow mainWindow)
         {

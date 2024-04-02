@@ -4,7 +4,7 @@ namespace WinFormsInfoApp
 {
     public partial class CustomDietsCreator : Form
     {
-        private MainWindow mainWindow;
+        private readonly MainWindow mainWindow;
         public CustomDietsCreator(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
@@ -144,26 +144,26 @@ namespace WinFormsInfoApp
         {
             if (string.IsNullOrWhiteSpace(dietName.Text))
             {
-                MessageBox.Show("Diet Name was empty!");
+                _ = MessageBox.Show("Diet Name was empty!");
                 return;
             }
             if (string.IsNullOrWhiteSpace(dietDesc.Text))
             {
-                MessageBox.Show("Diet Description was empty!");
+                _ = MessageBox.Show("Diet Description was empty!");
                 return;
             }
 
-            List<string> positives = new List<string>();
-            List<string> negatives = new List<string>();
+            List<string> positives = [];
+            List<string> negatives = [];
             AddToLists(positives, negatives);
 
-            if(positives.Count == 0 && negatives.Count == 0)
+            if (positives.Count == 0 && negatives.Count == 0)
             {
-                MessageBox.Show("You must select at least one positive or negative attribute!");
+                _ = MessageBox.Show("You must select at least one positive or negative attribute!");
                 return;
             }
 
-            Diet customDiet = new Diet(dietName.Text, dietDesc.Text, positives.ToArray(), negatives.ToArray());
+            Diet customDiet = new(dietName.Text, dietDesc.Text, positives.ToArray(), negatives.ToArray());
             mainWindow.currentDiet = customDiet;
             DialogResult = DialogResult.OK;
             Close();

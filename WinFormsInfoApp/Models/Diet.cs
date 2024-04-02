@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace WinFormsInfoApp.Models
@@ -81,22 +79,22 @@ namespace WinFormsInfoApp.Models
             string[] highFibreNegative = { "Carbs" };
 
             // Create instances of the Diet class for each diet
-            Diet balancedDiet = new Diet("Balanced Diet", "A diet with balanced nutritional values",
+            Diet balancedDiet = new("Balanced Diet", "A diet with balanced nutritional values",
                                          balancedPositive, balancedNegative);
 
-            Diet lowCarbDiet = new Diet("Low Carb Diet", "A diet low in carbohydrates",
+            Diet lowCarbDiet = new("Low Carb Diet", "A diet low in carbohydrates",
                                          lowCarbPositive, lowCarbNegative);
 
-            Diet lowFatDiet = new Diet("Low Fat Diet", "A diet low in fat",
+            Diet lowFatDiet = new("Low Fat Diet", "A diet low in fat",
                                        lowFatPositive, lowFatNegative);
 
-            Diet highProteinDiet = new Diet("High Protein Diet", "A diet high in protein",
+            Diet highProteinDiet = new("High Protein Diet", "A diet high in protein",
                                             highProteinPositive, highProteinNegative);
 
-            Diet lowProteinDiet = new Diet("Low Protein Diet", "A diet consisting only of low prottein and saturated fats",
+            Diet lowProteinDiet = new("Low Protein Diet", "A diet consisting only of low prottein and saturated fats",
                                       lowProPositive, lowProNegative);
 
-            Diet highFibreDiet = new Diet("High Fibre Diet", "A diet containing lots of fibre",
+            Diet highFibreDiet = new("High Fibre Diet", "A diet containing lots of fibre",
                                            highFibrePositive, highFibreNegative);
 
             // Return the diets in an array
@@ -112,23 +110,27 @@ namespace WinFormsInfoApp.Models
         /// <returns>A list of Recipe objects representing the generated meals.</returns>
         public static Dictionary<Recipe, float> GenerateMeals(Diet diet, List<Recipe> recipes, int numMeals = -1)
         {
-            if(numMeals == -1) numMeals = recipes.Count; // Default to all recipes if not specified
+            if (numMeals == -1)
+            {
+                numMeals = recipes.Count; // Default to all recipes if not specified
+            }
+
             Debug.WriteLine($"Received instruction for diet {diet}, meals {numMeals} out of {recipes.Count} options");
 
 
             string[] posPriorities = diet.PriorityPositive;
             string[] negPriorities = diet.PriorityNegative;
-            var posRecipeRanks = GenerateRankedRecipes(recipes, posPriorities);
-            var negRecipeRanks = GenerateRankedRecipes(recipes, negPriorities);
+            Dictionary<Recipe, float> posRecipeRanks = GenerateRankedRecipes(recipes, posPriorities);
+            Dictionary<Recipe, float> negRecipeRanks = GenerateRankedRecipes(recipes, negPriorities);
             // Combine the positive and negative priorities to form a total value
-            var recipeRanks = posRecipeRanks.ToDictionary(x => x.Key, x => x.Value - negRecipeRanks[x.Key]);
+            Dictionary<Recipe, float> recipeRanks = posRecipeRanks.ToDictionary(x => x.Key, x => x.Value - negRecipeRanks[x.Key]);
             // Sort the recipes by their total scores
-            var sortedRecipes = recipeRanks.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            Dictionary<Recipe, float> sortedRecipes = recipeRanks.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
             // Shuffle the top 10% of the recipes
-            var top10 = sortedRecipes.Take(sortedRecipes.Count/10);
-            Random random = new Random();
+            IEnumerable<KeyValuePair<Recipe, float>> top10 = sortedRecipes.Take(sortedRecipes.Count / 10);
+            Random random = new();
             //randomise the order of the top 10% of the recipes
-            var shuffledTop10 = top10.OrderBy(x => random.Next()).ToDictionary(x => x.Key, x => x.Value).Take(numMeals);
+            IEnumerable<KeyValuePair<Recipe, float>> shuffledTop10 = top10.OrderBy(x => random.Next()).ToDictionary(x => x.Key, x => x.Value).Take(numMeals);
             //return the dictionary of the shuffled top 10 and set to size of meal numbers
             return diet.RecipeRank = shuffledTop10.ToDictionary();
         }
@@ -141,11 +143,11 @@ namespace WinFormsInfoApp.Models
         /// <returns>A dictionary containing recipes and their total scores.</returns>
         private static Dictionary<Recipe, float> GenerateRankedRecipes(List<Recipe> recipes, string[] priorities)
         {
-            Dictionary<Recipe, float> recipeRanks = new Dictionary<Recipe, float>();
-            foreach (var recipe in recipes)
+            Dictionary<Recipe, float> recipeRanks = [];
+            foreach (Recipe recipe in recipes)
             {
                 float total = 0;
-                foreach (var priority in priorities)
+                foreach (string priority in priorities)
                 {
                     total += GetNormalizedPropertyValue(recipe, priority);
                 }
@@ -163,19 +165,18 @@ namespace WinFormsInfoApp.Models
         /// <returns>The normalized value of the property.</returns>
         private static float GetNormalizedPropertyValue(Recipe recipe, string propertyName)
         {
-            switch (propertyName)
+            return propertyName switch
             {
-                case "Kcal": return recipe.Kcal / Recipe.MAX_KCAL; // Normalize to range [0, 1]
-                case "Fat": return recipe.Fat / Recipe.MAX_FAT;
-                case "Saturates": return recipe.Saturates / Recipe.MAX_SATURATES;
-                case "Sugars": return recipe.Sugars / Recipe.MAX_SUGARS;
-                case "Salt": return recipe.Salt / Recipe.MAX_SALT;
-                case "Protein": return recipe.Protein / Recipe.MAX_PROTEIN;
-                case "Carbs": return recipe.Carbs / Recipe.MAX_CARBS;
-                case "Fibre": return recipe.Fibre / Recipe.MAX_FIBRE;
-
-                default: return 0;
-            }
+                "Kcal" => recipe.Kcal / Recipe.MAX_KCAL,// Normalize to range [0, 1]
+                "Fat" => recipe.Fat / Recipe.MAX_FAT,
+                "Saturates" => recipe.Saturates / Recipe.MAX_SATURATES,
+                "Sugars" => recipe.Sugars / Recipe.MAX_SUGARS,
+                "Salt" => recipe.Salt / Recipe.MAX_SALT,
+                "Protein" => recipe.Protein / Recipe.MAX_PROTEIN,
+                "Carbs" => recipe.Carbs / Recipe.MAX_CARBS,
+                "Fibre" => recipe.Fibre / Recipe.MAX_FIBRE,
+                _ => 0,
+            };
         }
     }
 }
