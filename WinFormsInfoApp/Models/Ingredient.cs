@@ -14,10 +14,10 @@ namespace WinFormsInfoApp.Models
         public double Protein { get; set; }
         public double Calories { get; set; }
         public double Sugar { get; set; }
-        public double Fiber { get; set; }
+        public double Fibre { get; set; }
         public double Product_Weight { get; set; }
 
-        public Ingredient(string ingredientId, string name, string description, double fat, double carbohydrates, double protein, double calories, double sugar, double fiber, double product_Weight)
+        public Ingredient(string ingredientId, string name, string description, double fat, double carbohydrates, double protein, double calories, double sugar, double fibre, double product_Weight)
         {
             IngredientId = ingredientId;
             Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -27,7 +27,7 @@ namespace WinFormsInfoApp.Models
             Protein = protein;
             Calories = calories;
             Sugar = sugar;
-            Fiber = fiber;
+            Fibre = fibre;
             Product_Weight = product_Weight;
         }
     }

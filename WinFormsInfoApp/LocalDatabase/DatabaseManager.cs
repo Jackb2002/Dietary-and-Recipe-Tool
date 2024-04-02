@@ -25,7 +25,7 @@ namespace WinFormsInfoApp.LocalDatabase
             connection.Open();
             using (SQLiteCommand command = new(connection))
             {
-                command.CommandText = "CREATE TABLE IF NOT EXISTS Ingredient (IngredientId INTEGER PRIMARY KEY, Name TEXT, Description TEXT, Fat REAL, Carbohydrates REAL, Protein REAL, Calories REAL, Sugar REAL, Fiber REAL, Product_Weight REAL)";
+                command.CommandText = "CREATE TABLE IF NOT EXISTS Ingredient (IngredientId INTEGER PRIMARY KEY, Name TEXT, Description TEXT, Fat REAL, Carbohydrates REAL, Protein REAL, Calories REAL, Sugar REAL, Fibre REAL, Product_Weight REAL)";
                 _ = command.ExecuteNonQuery();
             }
             connection.Close();
@@ -41,7 +41,7 @@ namespace WinFormsInfoApp.LocalDatabase
             double Protein = ingredient.Protein;
             double Calories = ingredient.Calories;
             double Sugar = ingredient.Sugar;
-            double Fiber = ingredient.Fiber;
+            double Fibre = ingredient.Fibre;
             double Product_Weight = ingredient.Product_Weight;
             int rows = 0;
             using (SQLiteConnection connection = new("Data Source=" + AccessString))
@@ -49,7 +49,7 @@ namespace WinFormsInfoApp.LocalDatabase
                 connection.Open();
                 using (SQLiteCommand command = new(connection))
                 {
-                    command.CommandText = "INSERT INTO Ingredient (Name, Description, Fat, Carbohydrates, Protein, Calories, Sugar, Fiber, Product_Weight) VALUES (@Name, @Description, @Fat, @Carbohydrates, @Protein, @Calories, @Sugar, @Fiber, @Product_Weight)";
+                    command.CommandText = "INSERT INTO Ingredient (Name, Description, Fat, Carbohydrates, Protein, Calories, Sugar, Fibre, Product_Weight) VALUES (@Name, @Description, @Fat, @Carbohydrates, @Protein, @Calories, @Sugar, @Fibre, @Product_Weight)";
                     _ = command.Parameters.AddWithValue("@Name", Name);
                     _ = command.Parameters.AddWithValue("@Description", Description);
                     _ = command.Parameters.AddWithValue("@Fat", Fat);
@@ -57,7 +57,7 @@ namespace WinFormsInfoApp.LocalDatabase
                     _ = command.Parameters.AddWithValue("@Protein", Protein);
                     _ = command.Parameters.AddWithValue("@Calories", Calories);
                     _ = command.Parameters.AddWithValue("@Sugar", Sugar);
-                    _ = command.Parameters.AddWithValue("@Fiber", Fiber);
+                    _ = command.Parameters.AddWithValue("@Fibre", Fibre);
                     _ = command.Parameters.AddWithValue("@Product_Weight", Product_Weight);
                     rows = command.ExecuteNonQuery();
                 }

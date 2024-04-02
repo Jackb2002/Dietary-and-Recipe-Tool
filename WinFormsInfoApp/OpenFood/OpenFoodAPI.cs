@@ -147,10 +147,10 @@ namespace WinFormsInfoApp.OpenFood
             double protein = (double)product["nutriments"]["proteins_100g"];
             double calories = (double)product["nutriments"]["energy-kcal_100g"];
             double sugar = (double)product["nutriments"]["sugars_100g"];
-            double fiber = (double)product["nutriments"]["fiber_100g"];
+            double fibre = (double)product["nutriments"]["fibre_100g"];
             double productWeight = (double)product["product_quantity"];
             string code = (string)product["code"];
-            return new Ingredient(code, name, "", fat, carbohydrates, protein, calories, sugar, fiber, productWeight);
+            return new Ingredient(code, name, "", fat, carbohydrates, protein, calories, sugar, fibre, productWeight);
         }
 
         /// <inheritdoc/>
@@ -191,6 +191,6 @@ namespace WinFormsInfoApp.OpenFood
         public double Protein { get; set; }
         public double Calories { get; set; }
         public double Sugar { get; set; }
-        public double Fiber { get; set; }
+        public double Fibre { get; set; }
         public double Product_Weight { get; set; }
  */

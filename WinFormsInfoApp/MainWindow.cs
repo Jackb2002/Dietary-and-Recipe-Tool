@@ -350,7 +350,7 @@ namespace WinFormsInfoApp
                             float saturates = currentFamily.GetTotalSaturates();
                             float carbs = currentFamily.GetTotalCarbs();
                             float sugars = currentFamily.GetTotalSugar();
-                            float fibre = currentFamily.GetTotalFiber();
+                            float fibre = currentFamily.GetTotalFibre();
                             float protein = currentFamily.GetTotalProtein();
                             float salt = currentFamily.GetTotalSalt();
 
@@ -548,7 +548,7 @@ namespace WinFormsInfoApp
                     $"Ingredient Carbohydrate Information - {ing.Carbohydrates} g\n" +
                     $"Ingredient Protein Information - {ing.Protein} g\n" +
                     $"Ingredient Sugar Information - {ing.Sugar} g\n" +
-                    $"Ingredient Fiber Information - {ing.Fiber} g\n" +
+                    $"Ingredient Fibre Information - {ing.Fibre} g\n" +
                     $"Ingredient Weight Information - {ing.Product_Weight} g\n";
             }
             else
@@ -571,7 +571,14 @@ namespace WinFormsInfoApp
 
         private void customDiet_Click(object sender, EventArgs e)
         {
-
+            CustomDietsCreator creator = new(this);
+            creator.ShowDialog();
+            if (creator.DialogResult == DialogResult.OK)
+            {
+                Debug.WriteLine("New diet created " + currentDiet.Name);
+                currentDiet.RecipeRank = Diet.GenerateMeals(currentDiet, _recipesCache);
+                Debug.WriteLine("Diet now has " + currentDiet.RecipeRank.Count + " recipes");
+            }
         }
 
         private void badIngredients_Click(object sender, EventArgs e)

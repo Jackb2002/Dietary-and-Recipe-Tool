@@ -55,7 +55,7 @@
             return total;
         }
 
-        internal float GetTotalFiber()
+        internal float GetTotalFibre()
         {
             float total = 0;
             foreach (var person in People)
