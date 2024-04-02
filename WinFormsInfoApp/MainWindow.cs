@@ -410,7 +410,7 @@ namespace WinFormsInfoApp
                         {
                             case 0:
                                 b = kcalPercentage > RED_THRESHOLD ? Brushes.Red : kcalPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
-                                g.DrawString("Kcal: " + CurrentRecipeSelection.Kcal + 'g', font, b, textRect, stringFormat);
+                                g.DrawString("Kcal: " + CurrentRecipeSelection.Kcal + ' kcal', font, b, textRect, stringFormat);
                                 break;
                             case 1:
                                 b = fatPercentage > RED_THRESHOLD ? Brushes.Red : fatPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
