@@ -321,7 +321,7 @@
             premadeDiet.Name = "premadeDiet";
             premadeDiet.Size = new Size(200, 47);
             premadeDiet.TabIndex = 10;
-            premadeDiet.Text = "Generate a pre made diet plan";
+            premadeDiet.Text = "Use an existing diet plan";
             premadeDiet.UseVisualStyleBackColor = true;
             premadeDiet.Click += premadeDiet_Click;
             // 
