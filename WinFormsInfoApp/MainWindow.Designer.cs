@@ -196,7 +196,7 @@
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1446, 24);
             menuStrip1.TabIndex = 7;
-            menuStrip1.Text = "menuStrip1";
+            menuStrip1.Text = "topStrip";
             // 
             // optionsToolStripMenuItem
             // 
