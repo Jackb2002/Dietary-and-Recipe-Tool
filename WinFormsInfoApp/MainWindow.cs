@@ -21,6 +21,9 @@ namespace WinFormsInfoApp
         private List<Ingredient> _ingredientCache = [];
         private Recipe? CurrentRecipeSelection;
         private Family.Family currentFamily;
+        private bool changingWeights = false;
+        private bool changingLiquids = false;
+
 
         internal readonly List<Recipe> _recipesCache = [];
         internal readonly List<Diet> _dietCache = [];
@@ -559,6 +562,108 @@ namespace WinFormsInfoApp
             IngredientSelector selector = new(true, this);
             _ = selector.ShowDialog();
             Debug.WriteLine("Good ingredients are now " + string.Join(" ", good_ings));
+        }
+
+        private void measurementWeightChanged(object sender, EventArgs e)
+        {
+            if (changingWeights)
+            { // flag to prevent infinite loop
+                return;
+            }
+
+            Control control = (Control)sender; // Get the control that triggered the event
+            string controlName = control.Name;
+            if (double.TryParse(control.Text.Trim(), out double value))
+            {
+                switch (controlName)
+                {
+                    case "ozTxt":
+                        value = KitchenConverter.OuncesToGrams(value);
+                        break;
+                    case "lbsTxt":
+                        value = KitchenConverter.PoundsToGrams(value);
+                        break;
+                    case "tspTxt":
+                        value = KitchenConverter.TeaspoonsToGrams(value);
+                        break;
+                    case "tbspTxt":
+                        value = KitchenConverter.TablespoonsToGrams(value);
+                        break;
+                    case "gTxt":
+                        break; // Already in grams
+                    default:
+                        Debug.WriteLine("Unknown control name " + controlName);
+                        break;
+                }
+
+                SetAllWeightMeasurements(value);
+            }
+        }
+
+        /// <summary>
+        /// Set all weight measurements with a known grams quantity
+        /// </summary>
+        /// <param name="valueInGrams">The weight in grams</param>
+        private void SetAllWeightMeasurements(double valueInGrams)
+        {
+            changingWeights = true;
+            double oz = KitchenConverter.GramsToOunces(valueInGrams);
+            double lbs = KitchenConverter.GramsToPounds(valueInGrams);
+            double tsp = KitchenConverter.GramsToTeaspoons(valueInGrams);
+            double tbsp = KitchenConverter.GramsToTablespoons(valueInGrams);
+            gTxt.Text = valueInGrams.ToString();
+            ozTxt.Text = oz.ToString();
+            lbsTxt.Text = lbs.ToString();
+            tspTxt.Text = tsp.ToString();
+            tbspTxt.Text = tbsp.ToString();
+            changingWeights = false;
+        }
+
+        private void SetAllLiquidMeasurements(double valueInMl)
+        {
+            changingLiquids = true;
+            double liters = KitchenConverter.MillilitersToLitres(valueInMl);
+            double flOz = KitchenConverter.MillilitersToFluidOunces(valueInMl);
+            double cups = KitchenConverter.MillilitersToCups(valueInMl);
+            lTxt.Text = liters.ToString();
+            mlTxt.Text = valueInMl.ToString();
+            flOzTxt.Text = flOz.ToString();
+            cupTxt.Text = cups.ToString();
+            changingLiquids = false;
+        }
+
+        private void measurementLiquidChanged(object sender, EventArgs e)
+        {
+            if (changingLiquids)
+            { // flag to prevent infinite loop
+                return;
+            }
+
+            Control control = (Control)sender; // Get the control that triggered the event
+            string controlName = control.Name;
+
+            if (double.TryParse(control.Text.Trim(), out double value))
+            {
+                switch (controlName)
+                {
+                    case "mlTxt":
+                        break; // Already in ml
+                    case "flOzTxt":
+                        value = KitchenConverter.FluidOuncesToMilliliters(value);
+                        break;
+                    case "lTxt":
+                        value = KitchenConverter.LitresToMilliliters(value);
+                        break;
+                    case "cupTxt":
+                        value = KitchenConverter.CupsToMilliliters(value);
+                        break;
+                    default:
+                        Debug.WriteLine("Unknown control name " + controlName);
+                        break;
+                }
+
+                SetAllLiquidMeasurements(value);
+            }
         }
 
         private static T? GetValue<T>(List<KeyValuePair<string, object>> recipeRaw, string key)
