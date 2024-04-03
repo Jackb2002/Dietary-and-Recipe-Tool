@@ -607,10 +607,11 @@ namespace WinFormsInfoApp
         private void SetAllWeightMeasurements(double valueInGrams)
         {
             changingWeights = true;
-            double oz = KitchenConverter.GramsToOunces(valueInGrams);
-            double lbs = KitchenConverter.GramsToPounds(valueInGrams);
-            double tsp = KitchenConverter.GramsToTeaspoons(valueInGrams);
-            double tbsp = KitchenConverter.GramsToTablespoons(valueInGrams);
+            valueInGrams = Math.Round(valueInGrams,5);
+            double oz = Math.Round(KitchenConverter.GramsToOunces(valueInGrams),5);
+            double lbs = Math.Round(KitchenConverter.GramsToPounds(valueInGrams),5);
+            double tsp = Math.Round(KitchenConverter.GramsToTeaspoons(valueInGrams),5);
+            double tbsp = Math.Round(KitchenConverter.GramsToTablespoons(valueInGrams),5);
             gTxt.Text = valueInGrams.ToString();
             ozTxt.Text = oz.ToString();
             lbsTxt.Text = lbs.ToString();
@@ -622,9 +623,10 @@ namespace WinFormsInfoApp
         private void SetAllLiquidMeasurements(double valueInMl)
         {
             changingLiquids = true;
-            double liters = KitchenConverter.MillilitersToLitres(valueInMl);
-            double flOz = KitchenConverter.MillilitersToFluidOunces(valueInMl);
-            double cups = KitchenConverter.MillilitersToCups(valueInMl);
+            valueInMl = Math.Round(valueInMl,5);
+            double liters = Math.Round(KitchenConverter.MillilitersToLitres(valueInMl),5);
+            double flOz = Math.Round(KitchenConverter.MillilitersToFluidOunces(valueInMl),5);
+            double cups = Math.Round(KitchenConverter.MillilitersToCups(valueInMl),5);
             lTxt.Text = liters.ToString();
             mlTxt.Text = valueInMl.ToString();
             flOzTxt.Text = flOz.ToString();
