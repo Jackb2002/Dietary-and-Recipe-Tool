@@ -82,7 +82,7 @@ namespace WinFormsInfoApp
         {
             ImportDiets();
             var customInuse = _dietCache.FirstOrDefault(x => x.InUse);
-            if(customInuse != default)
+            if (customInuse != default)
             {
                 currentDiet = customInuse;
                 SetTodaysMeal();
@@ -410,7 +410,7 @@ namespace WinFormsInfoApp
                         {
                             case 0:
                                 b = kcalPercentage > RED_THRESHOLD ? Brushes.Red : kcalPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
-                                g.DrawString("Kcal: " + CurrentRecipeSelection.Kcal + ' kcal', font, b, textRect, stringFormat);
+                                g.DrawString("Kcal: " + CurrentRecipeSelection.Kcal + " kcal", font, b, textRect, stringFormat);
                                 break;
                             case 1:
                                 b = fatPercentage > RED_THRESHOLD ? Brushes.Red : fatPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
@@ -527,7 +527,8 @@ namespace WinFormsInfoApp
             }
 
             // Update UI elements on the UI thread
-            Invoke(new MethodInvoker(delegate {
+            Invoke(new MethodInvoker(delegate
+            {
                 foreach (var diet in _dietCache)
                 {
                     diet.InUse = false;
