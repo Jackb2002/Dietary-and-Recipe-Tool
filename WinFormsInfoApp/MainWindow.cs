@@ -1,7 +1,9 @@
 ﻿using AngleSharp.Common;
+using Microsoft.VisualBasic.FileIO;
 using RecipeExtractor;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Net;
 using Windows.Media.Playback;
 using WinFormsInfoApp.Family;
@@ -20,11 +22,12 @@ namespace WinFormsInfoApp
         private const string _diet_FilePath = "diet_cache.json";
         private readonly IIngredientContext _ingredientContext;
         private List<Ingredient> _ingredientCache = [];
-        private Recipe? CurrentRecipeSelection;
+        private Recipe? currentRecipe;
         private Family.Family currentFamily;
         private bool changingWeights = false;
         private bool changingLiquids = false;
         private Ingredient?[] currentIngredients;
+        private List<string> shoppingList = new List<string>();
 
         internal readonly List<Recipe> _recipesCache = [];
         internal readonly List<Diet> _dietCache = [];
@@ -239,12 +242,12 @@ namespace WinFormsInfoApp
         private void recipeList_SelectedIndexChanged(object sender, EventArgs e)
         {
             Recipe recipe = _recipesCache[recipeList.SelectedIndex];
-            CurrentRecipeSelection = recipe;
-            recipeTitle.Text = "Recipe Name: " + CurrentRecipeSelection.Title;
+            currentRecipe = recipe;
+            recipeTitle.Text = "Recipe Name: " + currentRecipe.Title;
             recipeLink.Text = "Recipe Link: Here";
             recipeIng.Text = "Recipe Ingredients: " +
-                Environment.NewLine + CurrentRecipeSelection.Ingredients;
-            servingsLabel.Text = "Recipe Servings: " + CurrentRecipeSelection.Serving;
+                Environment.NewLine + currentRecipe.Ingredients;
+            servingsLabel.Text = "Recipe Servings: " + currentRecipe.Serving;
             recipeInfoPanel.Invalidate();
         }
 
@@ -354,7 +357,7 @@ namespace WinFormsInfoApp
             int padding_x = 10;
             int padding_y = 10;
 
-            if (CurrentRecipeSelection != null)
+            if (currentRecipe != null)
             {
                 using StringFormat stringFormat = new();
                 stringFormat.Alignment = StringAlignment.Near;
@@ -386,14 +389,14 @@ namespace WinFormsInfoApp
 
                         //Use current recipe selection to turn these into a percentage of daily intake for the whole
                         //family based on the serving of the recipe and the nutritional info provided 
-                        float kcalPerServing = CurrentRecipeSelection.Kcal / CurrentRecipeSelection.Serving;
-                        float fatPerServing = CurrentRecipeSelection.Fat / CurrentRecipeSelection.Serving;
-                        float saturatesPerServing = CurrentRecipeSelection.Saturates / CurrentRecipeSelection.Serving;
-                        float carbsPerServing = CurrentRecipeSelection.Carbs / CurrentRecipeSelection.Serving;
-                        float sugarsPerServing = CurrentRecipeSelection.Sugars / CurrentRecipeSelection.Serving;
-                        float fibrePerServing = CurrentRecipeSelection.Fibre / CurrentRecipeSelection.Serving;
-                        float proteinPerServing = CurrentRecipeSelection.Protein / CurrentRecipeSelection.Serving;
-                        float saltPerServing = CurrentRecipeSelection.Salt / CurrentRecipeSelection.Serving;
+                        float kcalPerServing = currentRecipe.Kcal / currentRecipe.Serving;
+                        float fatPerServing = currentRecipe.Fat / currentRecipe.Serving;
+                        float saturatesPerServing = currentRecipe.Saturates / currentRecipe.Serving;
+                        float carbsPerServing = currentRecipe.Carbs / currentRecipe.Serving;
+                        float sugarsPerServing = currentRecipe.Sugars / currentRecipe.Serving;
+                        float fibrePerServing = currentRecipe.Fibre / currentRecipe.Serving;
+                        float proteinPerServing = currentRecipe.Protein / currentRecipe.Serving;
+                        float saltPerServing = currentRecipe.Salt / currentRecipe.Serving;
 
                         //Calculate the percentage of daily intake for the whole family
                         float kcalPercentage = kcalPerServing / kcal * 100;
@@ -414,35 +417,35 @@ namespace WinFormsInfoApp
                         {
                             case 0:
                                 b = kcalPercentage > RED_THRESHOLD ? Brushes.Red : kcalPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
-                                g.DrawString("Kcal: " + CurrentRecipeSelection.Kcal + " kcal", font, b, textRect, stringFormat);
+                                g.DrawString("Kcal: " + currentRecipe.Kcal + " kcal", font, b, textRect, stringFormat);
                                 break;
                             case 1:
                                 b = fatPercentage > RED_THRESHOLD ? Brushes.Red : fatPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
-                                g.DrawString("Fat: " + CurrentRecipeSelection.Fat + 'g', font, b, textRect, stringFormat);
+                                g.DrawString("Fat: " + currentRecipe.Fat + 'g', font, b, textRect, stringFormat);
                                 break;
                             case 2:
                                 b = saturatesPercentage > RED_THRESHOLD ? Brushes.Red : saturatesPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
-                                g.DrawString("Saturates: " + CurrentRecipeSelection.Saturates + 'g', font, b, textRect, stringFormat);
+                                g.DrawString("Saturates: " + currentRecipe.Saturates + 'g', font, b, textRect, stringFormat);
                                 break;
                             case 3:
                                 b = carbsPercentage > RED_THRESHOLD ? Brushes.Red : carbsPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
-                                g.DrawString("Carbs: " + CurrentRecipeSelection.Carbs + 'g', font, b, textRect, stringFormat);
+                                g.DrawString("Carbs: " + currentRecipe.Carbs + 'g', font, b, textRect, stringFormat);
                                 break;
                             case 4:
                                 b = sugarsPercentage > RED_THRESHOLD ? Brushes.Red : sugarsPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
-                                g.DrawString("Sugars: " + CurrentRecipeSelection.Sugars + 'g', font, b, textRect, stringFormat);
+                                g.DrawString("Sugars: " + currentRecipe.Sugars + 'g', font, b, textRect, stringFormat);
                                 break;
                             case 5:
                                 b = fibrePercentage > RED_THRESHOLD ? Brushes.Red : fibrePercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
-                                g.DrawString("Fibre: " + CurrentRecipeSelection.Fibre + 'g', font, b, textRect, stringFormat);
+                                g.DrawString("Fibre: " + currentRecipe.Fibre + 'g', font, b, textRect, stringFormat);
                                 break;
                             case 6:
                                 b = proteinPercentage > RED_THRESHOLD ? Brushes.Red : proteinPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
-                                g.DrawString("Protein: " + CurrentRecipeSelection.Protein + 'g', font, b, textRect, stringFormat);
+                                g.DrawString("Protein: " + currentRecipe.Protein + 'g', font, b, textRect, stringFormat);
                                 break;
                             case 7:
                                 b = saltPercentage > RED_THRESHOLD ? Brushes.Red : saltPercentage > ORANGE_THRESHOLD ? Brushes.Orange : Brushes.Green;
-                                g.DrawString("Salt: " + CurrentRecipeSelection.Salt + 'g', font, b, textRect, stringFormat);
+                                g.DrawString("Salt: " + currentRecipe.Salt + 'g', font, b, textRect, stringFormat);
                                 break;
                         }
 
@@ -465,9 +468,9 @@ namespace WinFormsInfoApp
 
         private void recipeLink_Click(object sender, EventArgs e)
         {
-            if (CurrentRecipeSelection != null)
+            if (currentRecipe != null)
             {
-                LaunchRecipeOnClick(CurrentRecipeSelection.RecipeUrls);
+                LaunchRecipeOnClick(currentRecipe.RecipeUrls);
             }
         }
 
@@ -692,6 +695,47 @@ namespace WinFormsInfoApp
             if (currentIngredients != null)
             {
                 DisplayIngredient(currentIngredients[ingComboBox.SelectedIndex]);
+            }
+        }
+
+        private void addToList_Click(object sender, EventArgs e)
+        {
+            if (currentRecipe == null)
+            {
+                _ = MessageBox.Show("Please select a recipe first");
+                return;
+            }
+
+            var ings = currentRecipe.Ingredients.Split("\n").Select(x => x.Trim()).ToList();
+            shoppingList.AddRange(ings);
+            shoppingList = shoppingList.Distinct().ToList();
+            //Order it ignoring any numbers
+            shoppingList.Sort((x, y) => x.Where(char.IsLetter).ToString().CompareTo(y.Where(char.IsLetter).ToString()));
+            shoppingListTxt.Text = "-" + string.Join("\n-", shoppingList);
+        }
+
+        private void clearShoppingList_Click(object sender, EventArgs e)
+        {
+            shoppingList.Clear();
+            shoppingListTxt.Text = "";
+        }
+
+        private void printList_Click(object sender, EventArgs e)
+        {
+            //Send to printer a text doc of the contents of the textbox if its not empty 
+            if(!string.IsNullOrWhiteSpace(shoppingListTxt.Text))
+            {
+                string path = SpecialDirectories.Desktop + "\\ShoppingList.txt";
+                if(File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+                File.WriteAllText(path, shoppingListTxt.Text);
+                MessageBox.Show("File saved to desktop as ShoppingList.txt!");
+            }
+            else
+            {
+                _ = MessageBox.Show("Shopping list is empty");
             }
         }
 

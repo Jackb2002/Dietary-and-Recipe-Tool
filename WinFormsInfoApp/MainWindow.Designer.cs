@@ -35,6 +35,7 @@
             recipeLink = new Label();
             recipeIng = new Label();
             recipeBox = new GroupBox();
+            addToList = new Button();
             label2 = new Label();
             servingsLabel = new Label();
             recipeInfoPanel = new Panel();
@@ -72,11 +73,16 @@
             gTxt = new TextBox();
             groupBox2 = new GroupBox();
             button1 = new Button();
+            groupBox3 = new GroupBox();
+            printList = new Button();
+            clearShoppingList = new Button();
+            shoppingListTxt = new RichTextBox();
             recipeBox.SuspendLayout();
             IngredientBox.SuspendLayout();
             DietBox.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
+            groupBox3.SuspendLayout();
             SuspendLayout();
             // 
             // ConnectionStatus
@@ -143,6 +149,7 @@
             // 
             // recipeBox
             // 
+            recipeBox.Controls.Add(addToList);
             recipeBox.Controls.Add(label2);
             recipeBox.Controls.Add(servingsLabel);
             recipeBox.Controls.Add(recipeInfoPanel);
@@ -158,6 +165,16 @@
             recipeBox.TabIndex = 6;
             recipeBox.TabStop = false;
             recipeBox.Text = "Recipes";
+            // 
+            // addToList
+            // 
+            addToList.Location = new Point(6, 513);
+            addToList.Name = "addToList";
+            addToList.Size = new Size(209, 40);
+            addToList.TabIndex = 9;
+            addToList.Text = "Add ingredients to list";
+            addToList.UseVisualStyleBackColor = true;
+            addToList.Click += addToList_Click;
             // 
             // label2
             // 
@@ -511,28 +528,73 @@
             // 
             groupBox2.Controls.Add(button1);
             groupBox2.Font = new Font("Verdana", 12F);
-            groupBox2.Location = new Point(1054, 297);
+            groupBox2.Location = new Point(1054, 502);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(380, 274);
+            groupBox2.Size = new Size(380, 69);
             groupBox2.TabIndex = 11;
             groupBox2.TabStop = false;
             groupBox2.Text = "Settings";
             // 
             // button1
             // 
-            button1.Location = new Point(8, 26);
+            button1.Font = new Font("Verdana", 12F);
+            button1.Location = new Point(8, 23);
             button1.Name = "button1";
-            button1.Size = new Size(209, 40);
+            button1.Size = new Size(191, 40);
             button1.TabIndex = 0;
             button1.Text = "Edit family size";
             button1.UseVisualStyleBackColor = true;
             button1.Click += editFamily_Click;
+            // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(printList);
+            groupBox3.Controls.Add(clearShoppingList);
+            groupBox3.Controls.Add(shoppingListTxt);
+            groupBox3.Font = new Font("Verdana", 12F);
+            groupBox3.Location = new Point(1054, 297);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(380, 197);
+            groupBox3.TabIndex = 12;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Shopping List";
+            // 
+            // printList
+            // 
+            printList.Font = new Font("Verdana", 8F);
+            printList.Location = new Point(211, 166);
+            printList.Name = "printList";
+            printList.Size = new Size(163, 25);
+            printList.TabIndex = 15;
+            printList.Text = "Save Shopping List";
+            printList.UseVisualStyleBackColor = true;
+            printList.Click += printList_Click;
+            // 
+            // clearShoppingList
+            // 
+            clearShoppingList.Font = new Font("Verdana", 8F);
+            clearShoppingList.Location = new Point(8, 166);
+            clearShoppingList.Name = "clearShoppingList";
+            clearShoppingList.Size = new Size(170, 25);
+            clearShoppingList.TabIndex = 14;
+            clearShoppingList.Text = "Clear shopping list";
+            clearShoppingList.UseVisualStyleBackColor = true;
+            // 
+            // shoppingListTxt
+            // 
+            shoppingListTxt.Location = new Point(8, 26);
+            shoppingListTxt.Name = "shoppingListTxt";
+            shoppingListTxt.ReadOnly = true;
+            shoppingListTxt.Size = new Size(366, 137);
+            shoppingListTxt.TabIndex = 13;
+            shoppingListTxt.Text = "";
             // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1446, 608);
+            Controls.Add(groupBox3);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(DietBox);
@@ -554,6 +616,7 @@
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
+            groupBox3.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -604,5 +667,10 @@
         private TextBox lTxt;
         private ComboBox ingComboBox;
         private Button button1;
+        private GroupBox groupBox3;
+        private RichTextBox shoppingListTxt;
+        private Button addToList;
+        private Button printList;
+        private Button clearShoppingList;
     }
 }
