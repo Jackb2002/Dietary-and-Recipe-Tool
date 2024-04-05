@@ -38,10 +38,8 @@
             label2 = new Label();
             servingsLabel = new Label();
             recipeInfoPanel = new Panel();
-            menuStrip1 = new MenuStrip();
-            optionsToolStripMenuItem = new ToolStripMenuItem();
-            editFamilyToolStripMenuItem = new ToolStripMenuItem();
             IngredientBox = new GroupBox();
+            ingComboBox = new ComboBox();
             label3 = new Label();
             ingOutputBox = new RichTextBox();
             ingSearch = new Button();
@@ -74,7 +72,6 @@
             gTxt = new TextBox();
             groupBox2 = new GroupBox();
             recipeBox.SuspendLayout();
-            menuStrip1.SuspendLayout();
             IngredientBox.SuspendLayout();
             DietBox.SuspendLayout();
             groupBox1.SuspendLayout();
@@ -153,9 +150,9 @@
             recipeBox.Controls.Add(recipeLink);
             recipeBox.Controls.Add(recipeTitle);
             recipeBox.Font = new Font("Verdana", 12F);
-            recipeBox.Location = new Point(12, 28);
+            recipeBox.Location = new Point(12, 12);
             recipeBox.Name = "recipeBox";
-            recipeBox.Size = new Size(602, 543);
+            recipeBox.Size = new Size(602, 559);
             recipeBox.TabIndex = 6;
             recipeBox.TabStop = false;
             recipeBox.Text = "Recipes";
@@ -188,43 +185,30 @@
             recipeInfoPanel.TabIndex = 6;
             recipeInfoPanel.Paint += recipeInfoPanel_Paint;
             // 
-            // menuStrip1
-            // 
-            menuStrip1.ImageScalingSize = new Size(20, 20);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { optionsToolStripMenuItem });
-            menuStrip1.Location = new Point(0, 0);
-            menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1446, 24);
-            menuStrip1.TabIndex = 7;
-            menuStrip1.Text = "topStrip";
-            // 
-            // optionsToolStripMenuItem
-            // 
-            optionsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { editFamilyToolStripMenuItem });
-            optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            optionsToolStripMenuItem.Size = new Size(61, 20);
-            optionsToolStripMenuItem.Text = "Options";
-            // 
-            // editFamilyToolStripMenuItem
-            // 
-            editFamilyToolStripMenuItem.Name = "editFamilyToolStripMenuItem";
-            editFamilyToolStripMenuItem.Size = new Size(132, 22);
-            editFamilyToolStripMenuItem.Text = "Edit Family";
-            editFamilyToolStripMenuItem.Click += editFamilyToolStripMenuItem_Click;
-            // 
             // IngredientBox
             // 
+            IngredientBox.Controls.Add(ingComboBox);
             IngredientBox.Controls.Add(label3);
             IngredientBox.Controls.Add(ingOutputBox);
             IngredientBox.Controls.Add(ingSearch);
             IngredientBox.Controls.Add(ingName);
             IngredientBox.Font = new Font("Verdana", 12F);
-            IngredientBox.Location = new Point(634, 28);
+            IngredientBox.Location = new Point(634, 12);
             IngredientBox.Name = "IngredientBox";
-            IngredientBox.Size = new Size(414, 263);
+            IngredientBox.Size = new Size(414, 279);
             IngredientBox.TabIndex = 8;
             IngredientBox.TabStop = false;
             IngredientBox.Text = "Ingredients";
+            // 
+            // ingComboBox
+            // 
+            ingComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            ingComboBox.FormattingEnabled = true;
+            ingComboBox.Location = new Point(190, 86);
+            ingComboBox.Name = "ingComboBox";
+            ingComboBox.Size = new Size(218, 26);
+            ingComboBox.TabIndex = 9;
+            ingComboBox.SelectedIndexChanged += ingComboBox_SelectedIndexChanged;
             // 
             // label3
             // 
@@ -241,7 +225,7 @@
             ingOutputBox.Location = new Point(6, 128);
             ingOutputBox.Name = "ingOutputBox";
             ingOutputBox.ReadOnly = true;
-            ingOutputBox.Size = new Size(402, 129);
+            ingOutputBox.Size = new Size(402, 145);
             ingOutputBox.TabIndex = 2;
             ingOutputBox.TabStop = false;
             ingOutputBox.Text = "";
@@ -249,7 +233,7 @@
             // ingSearch
             // 
             ingSearch.Font = new Font("Verdana", 12F);
-            ingSearch.Location = new Point(118, 86);
+            ingSearch.Location = new Point(6, 86);
             ingSearch.Name = "ingSearch";
             ingSearch.Size = new Size(178, 32);
             ingSearch.TabIndex = 1;
@@ -361,9 +345,9 @@
             groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(gTxt);
             groupBox1.Font = new Font("Verdana", 12F);
-            groupBox1.Location = new Point(1054, 28);
+            groupBox1.Location = new Point(1054, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(380, 263);
+            groupBox1.Size = new Size(380, 279);
             groupBox1.TabIndex = 10;
             groupBox1.TabStop = false;
             groupBox1.Text = "Measurement Converter";
@@ -529,7 +513,7 @@
             groupBox2.Size = new Size(380, 274);
             groupBox2.TabIndex = 11;
             groupBox2.TabStop = false;
-            groupBox2.Text = "Common Recipes";
+            groupBox2.Text = "Settings";
             // 
             // MainWindow
             // 
@@ -542,7 +526,6 @@
             Controls.Add(IngredientBox);
             Controls.Add(recipeBox);
             Controls.Add(ConnectionStatus);
-            Controls.Add(menuStrip1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "MainWindow";
@@ -551,8 +534,6 @@
             Load += MainWindow_Load;
             recipeBox.ResumeLayout(false);
             recipeBox.PerformLayout();
-            menuStrip1.ResumeLayout(false);
-            menuStrip1.PerformLayout();
             IngredientBox.ResumeLayout(false);
             IngredientBox.PerformLayout();
             DietBox.ResumeLayout(false);
@@ -574,9 +555,6 @@
         private GroupBox recipeBox;
         private Panel recipeInfoPanel;
         private Label servingsLabel;
-        private MenuStrip menuStrip1;
-        private ToolStripMenuItem optionsToolStripMenuItem;
-        private ToolStripMenuItem editFamilyToolStripMenuItem;
         private GroupBox IngredientBox;
         private GroupBox DietBox;
         private Label label2;
@@ -610,5 +588,6 @@
         private TextBox mlTxt;
         private Label lTxtLabel;
         private TextBox lTxt;
+        private ComboBox ingComboBox;
     }
 }

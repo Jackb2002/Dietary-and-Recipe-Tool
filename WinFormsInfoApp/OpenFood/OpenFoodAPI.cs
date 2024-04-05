@@ -32,12 +32,12 @@ namespace WinFormsInfoApp.OpenFood
         /// </summary>
         /// <param name="ingredients">List of ingredient names you want to look up</param>
         /// <returns>C# List object of Ingredient objects containing OpenFood Information</returns>
-        public List<Ingredient>? GetAllIngredients(string[] ingredients, string location = "All")
+        public List<Ingredient?[]> GetIngredientList(string[] ingredients, string location = "All")
         {
-            List<Ingredient>? Ingredients = [];
+            List<Ingredient?[]> Ingredients = new List<Ingredient?[]>();
             foreach (string item in ingredients)
             {
-                _ = GetFirstIngredient(item, location);
+                Ingredients.Add(GetIngredientsByName(item, location));
             }
             return Ingredients;
         }
@@ -47,7 +47,7 @@ namespace WinFormsInfoApp.OpenFood
         /// </summary>
         /// <param name="categoryName"></param>
         /// <returns></returns>
-        public Ingredient? GetFirstIngredient(string categoryName, string location = "All")
+        public Ingredient?[] GetIngredientsByName(string categoryName, string location = "All")
         {
             categoryName = categoryName.Trim().ToLower();
             if (string.IsNullOrEmpty(categoryName))
@@ -78,8 +78,13 @@ namespace WinFormsInfoApp.OpenFood
 
                 if (responseJson["products"] is JArray products && products.Count > 0)
                 {
-                    // Parse the first product and return the ingredient
-                    return ParseProduct(products[0]);
+                    // Parse the products and return the ingredient
+                    var returnList = new Ingredient?[products.Count];
+                    for (int i = 0; i < products.Count; i++)
+                    {
+                        returnList[i] = ParseProduct(products[i]);
+                    }
+                    return returnList;
                 }
                 else
                 {
@@ -134,23 +139,31 @@ namespace WinFormsInfoApp.OpenFood
         /// <returns>An Ingredient object parsed from the JSON data.</returns>
         private Ingredient ParseProduct(JToken product)
         {
-            string name = (string)product["product_name"];
-            double fat = (double)product["nutriments"]["fat_100g"];
-            double carbohydrates = (double)product["nutriments"]["carbohydrates_100g"];
-            double protein = (double)product["nutriments"]["proteins_100g"];
-            double calories = (double)product["nutriments"]["energy-kcal_100g"];
-            double sugar = (double)product["nutriments"]["sugars_100g"];
-            double fibre = (double)product["nutriments"]["fibre_100g"];
-            double productWeight = (double)product["product_quantity"];
-            string code = (string)product["code"];
+            string name = (string)product["product_name"] ?? "Unknown";
+            double fat = product["nutriments"]["fat_100g"]?.ToObject<double>() ?? 0.0;
+            double carbohydrates = product["nutriments"]["carbohydrates_100g"]?.ToObject<double>() ?? 0.0;
+            double protein = product["nutriments"]["proteins_100g"]?.ToObject<double>() ?? 0.0;
+            double calories = product["nutriments"]["energy-kcal_100g"]?.ToObject<double>() ?? 0.0;
+            double sugar = product["nutriments"]["sugars_100g"]?.ToObject<double>() ?? 0.0;
+            double fibre = product["nutriments"]["fibre_100g"]?.ToObject<double>() ?? 0.0;
+            double productWeight = product["product_quantity"]?.ToObject<double>() ?? 0.0;
+            string code = (string)product["code"] ?? "";
+
             return new Ingredient(code, name, "", fat, carbohydrates, protein, calories, sugar, fibre, productWeight);
         }
+
 
         /// <inheritdoc/>
         public bool TestConnection()
         {
             using HttpClient client = new();
-            string requestString = AccessString + @"search?fields=product_name&search_term=chocolate";
+            bool test_success = TestApiConnection(client,AccessString);
+            return test_success;
+        }
+
+        private bool TestApiConnection(HttpClient client, string accessUrl)
+        {
+            string requestString = accessUrl + @"search?fields=product_name&search_term=chocolate";
             client.DefaultRequestHeaders.Add("User-Agent", customUserAgent);
             try
             {
@@ -163,6 +176,7 @@ namespace WinFormsInfoApp.OpenFood
                 else
                 {
                     Debug.WriteLine($"Connection made but bad code recieved {response.StatusCode}");
+
                     return false;
                 }
             }

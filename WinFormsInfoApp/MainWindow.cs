@@ -3,6 +3,7 @@ using RecipeExtractor;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
+using Windows.Media.Playback;
 using WinFormsInfoApp.Family;
 using WinFormsInfoApp.Models;
 using static WinFormsInfoApp.IIngredientContext;
@@ -23,7 +24,7 @@ namespace WinFormsInfoApp
         private Family.Family currentFamily;
         private bool changingWeights = false;
         private bool changingLiquids = false;
-
+        private Ingredient?[] currentIngredients;
 
         internal readonly List<Recipe> _recipesCache = [];
         internal readonly List<Diet> _dietCache = [];
@@ -478,18 +479,36 @@ namespace WinFormsInfoApp
                 _ = MessageBox.Show("Please enter an ingredient name");
                 return;
             }
-            Ingredient? ing = _ingredientContext.GetFirstIngredient(ing_name);
+            currentIngredients = _ingredientContext.GetIngredientsByName(ing_name);
+            ingComboBox.Items.Clear();
+            if (currentIngredients.Length > 0)
+            {
+                ingComboBox.Items.AddRange(currentIngredients.Select(x => x.Name).ToArray());
+                ingComboBox.SelectedIndex = 0;
+            }
+            else
+            {
+                _ = MessageBox.Show("No ingredients found with that name");
+            }
+            if(currentIngredients.Length > 0)
+            {
+                DisplayIngredient(currentIngredients[0]);
+            }
+        }
+
+        private void DisplayIngredient(Ingredient ing)
+        {
             ingOutputBox.Text = ing != null
-                ? $"" +
-                    $"Ingredient Name - {ing.Name}\n" +
-                    $"Ingredient Calorie Information - {ing.Calories} kcal\n" +
-                    $"Ingredient Fat Information - {ing.Fat} g\n" +
-                    $"Ingredient Carbohydrate Information - {ing.Carbohydrates} g\n" +
-                    $"Ingredient Protein Information - {ing.Protein} g\n" +
-                    $"Ingredient Sugar Information - {ing.Sugar} g\n" +
-                    $"Ingredient Fibre Information - {ing.Fibre} g\n" +
-                    $"Ingredient Weight Information - {ing.Product_Weight} g\n"
-                : "Ingredient not found";
+                            ? $"" +
+                                $"Ingredient Name - {ing.Name}\n" +
+                                $"Ingredient Calorie Information - {ing.Calories} kcal\n" +
+                                $"Ingredient Fat Information - {ing.Fat} g\n" +
+                                $"Ingredient Carbohydrate Information - {ing.Carbohydrates} g\n" +
+                                $"Ingredient Protein Information - {ing.Protein} g\n" +
+                                $"Ingredient Sugar Information - {ing.Sugar} g\n" +
+                                $"Ingredient Fibre Information - {ing.Fibre} g\n" +
+                                $"Ingredient Weight Information - {ing.Product_Weight} g\n"
+                            : "Ingredient not found";
         }
 
         private void premadeDiet_Click(object sender, EventArgs e)
@@ -607,11 +626,11 @@ namespace WinFormsInfoApp
         private void SetAllWeightMeasurements(double valueInGrams)
         {
             changingWeights = true;
-            valueInGrams = Math.Round(valueInGrams,5);
-            double oz = Math.Round(KitchenConverter.GramsToOunces(valueInGrams),5);
-            double lbs = Math.Round(KitchenConverter.GramsToPounds(valueInGrams),5);
-            double tsp = Math.Round(KitchenConverter.GramsToTeaspoons(valueInGrams),5);
-            double tbsp = Math.Round(KitchenConverter.GramsToTablespoons(valueInGrams),5);
+            valueInGrams = Math.Round(valueInGrams, 5);
+            double oz = Math.Round(KitchenConverter.GramsToOunces(valueInGrams), 5);
+            double lbs = Math.Round(KitchenConverter.GramsToPounds(valueInGrams), 5);
+            double tsp = Math.Round(KitchenConverter.GramsToTeaspoons(valueInGrams), 5);
+            double tbsp = Math.Round(KitchenConverter.GramsToTablespoons(valueInGrams), 5);
             gTxt.Text = valueInGrams.ToString();
             ozTxt.Text = oz.ToString();
             lbsTxt.Text = lbs.ToString();
@@ -623,10 +642,10 @@ namespace WinFormsInfoApp
         private void SetAllLiquidMeasurements(double valueInMl)
         {
             changingLiquids = true;
-            valueInMl = Math.Round(valueInMl,5);
-            double liters = Math.Round(KitchenConverter.MillilitersToLitres(valueInMl),5);
-            double flOz = Math.Round(KitchenConverter.MillilitersToFluidOunces(valueInMl),5);
-            double cups = Math.Round(KitchenConverter.MillilitersToCups(valueInMl),5);
+            valueInMl = Math.Round(valueInMl, 5);
+            double liters = Math.Round(KitchenConverter.MillilitersToLitres(valueInMl), 5);
+            double flOz = Math.Round(KitchenConverter.MillilitersToFluidOunces(valueInMl), 5);
+            double cups = Math.Round(KitchenConverter.MillilitersToCups(valueInMl), 5);
             lTxt.Text = liters.ToString();
             mlTxt.Text = valueInMl.ToString();
             flOzTxt.Text = flOz.ToString();
@@ -665,6 +684,14 @@ namespace WinFormsInfoApp
                 }
 
                 SetAllLiquidMeasurements(value);
+            }
+        }
+
+        private void ingComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(currentIngredients != null)
+            {
+                DisplayIngredient(currentIngredients[ingComboBox.SelectedIndex]);
             }
         }
 

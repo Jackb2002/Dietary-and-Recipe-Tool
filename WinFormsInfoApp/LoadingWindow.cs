@@ -60,8 +60,8 @@ namespace WinFormsInfoApp
                 Log("API connection made, testing API", true);
                 UpdateProgressBar(50);
 
-                Ingredient? result = apiConnection.GetFirstIngredient("chocolate");
-                if (result != null)
+                Ingredient?[] result = apiConnection.GetIngredientsByName("chocolate");
+                if (result != null && result.Length > 0)
                 {
                     Log("Connected to API successfully", true);
                     UpdateProgressBar(80);
