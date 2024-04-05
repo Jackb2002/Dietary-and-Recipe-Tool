@@ -71,10 +71,12 @@
             label4 = new Label();
             gTxt = new TextBox();
             groupBox2 = new GroupBox();
+            button1 = new Button();
             recipeBox.SuspendLayout();
             IngredientBox.SuspendLayout();
             DietBox.SuspendLayout();
             groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
             SuspendLayout();
             // 
             // ConnectionStatus
@@ -507,6 +509,7 @@
             // 
             // groupBox2
             // 
+            groupBox2.Controls.Add(button1);
             groupBox2.Font = new Font("Verdana", 12F);
             groupBox2.Location = new Point(1054, 297);
             groupBox2.Name = "groupBox2";
@@ -514,6 +517,16 @@
             groupBox2.TabIndex = 11;
             groupBox2.TabStop = false;
             groupBox2.Text = "Settings";
+            // 
+            // button1
+            // 
+            button1.Location = new Point(8, 26);
+            button1.Name = "button1";
+            button1.Size = new Size(209, 40);
+            button1.TabIndex = 0;
+            button1.Text = "Edit family size";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += editFamily_Click;
             // 
             // MainWindow
             // 
@@ -540,6 +553,7 @@
             DietBox.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -589,5 +603,6 @@
         private Label lTxtLabel;
         private TextBox lTxt;
         private ComboBox ingComboBox;
+        private Button button1;
     }
 }

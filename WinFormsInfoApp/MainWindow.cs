@@ -451,7 +451,7 @@ namespace WinFormsInfoApp
             }
         }
 
-        private void editFamilyToolStripMenuItem_Click(object sender, EventArgs e)
+        private void editFamily_Click(object sender, EventArgs e)
         {
             Debug.WriteLine("Opening family edit form");
             FamilyEditor familyEditor = new(currentFamily);
@@ -490,7 +490,7 @@ namespace WinFormsInfoApp
             {
                 _ = MessageBox.Show("No ingredients found with that name");
             }
-            if(currentIngredients.Length > 0)
+            if (currentIngredients.Length > 0)
             {
                 DisplayIngredient(currentIngredients[0]);
             }
@@ -689,7 +689,7 @@ namespace WinFormsInfoApp
 
         private void ingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(currentIngredients != null)
+            if (currentIngredients != null)
             {
                 DisplayIngredient(currentIngredients[ingComboBox.SelectedIndex]);
             }
