@@ -26,7 +26,7 @@ namespace WinFormsInfoApp
         private Family.Family currentFamily;
         private bool changingWeights = false;
         private bool changingLiquids = false;
-        private Ingredient?[] currentIngredients;
+        private Ingredient?[] currentIngredients = [];
         private List<string> shoppingList = new List<string>();
 
         internal readonly List<Recipe> _recipesCache = [];
@@ -484,7 +484,7 @@ namespace WinFormsInfoApp
             }
             currentIngredients = _ingredientContext.GetIngredientsByName(ing_name);
             ingComboBox.Items.Clear();
-            if (currentIngredients.Length > 0)
+            if (currentIngredients != null && currentIngredients.Length > 0)
             {
                 ingComboBox.Items.AddRange(currentIngredients.Select(x => x.Name).ToArray());
                 ingComboBox.SelectedIndex = 0;
@@ -493,7 +493,7 @@ namespace WinFormsInfoApp
             {
                 _ = MessageBox.Show("No ingredients found with that name");
             }
-            if (currentIngredients.Length > 0)
+            if (currentIngredients != null && currentIngredients.Length > 0)
             {
                 DisplayIngredient(currentIngredients[0]);
             }
