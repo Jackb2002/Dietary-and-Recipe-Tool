@@ -64,10 +64,10 @@ namespace WinFormsInfoApp.Models
 
             // Create instances of the Diet class for each diet
             Diet balancedDiet = new("Balanced Diet", "A diet with balanced nutritional values",
-                                         balancedPositive, balancedNegative,DateTime.Now, true);
+                                         balancedPositive, balancedNegative, DateTime.Now, true);
 
             Diet lowCarbDiet = new("Low Carb Diet", "A diet low in carbohydrates",
-                                         lowCarbPositive, lowCarbNegative,DateTime.Now, true);
+                                         lowCarbPositive, lowCarbNegative, DateTime.Now, true);
 
             Diet lowFatDiet = new("Low Fat Diet", "A diet low in fat",
                                        lowFatPositive, lowFatNegative, DateTime.Now, true);

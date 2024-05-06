@@ -3,9 +3,7 @@ using Microsoft.VisualBasic.FileIO;
 using RecipeExtractor;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing.Printing;
 using System.Net;
-using Windows.Media.Playback;
 using WinFormsInfoApp.Family;
 using WinFormsInfoApp.Models;
 using static WinFormsInfoApp.IIngredientContext;
@@ -27,7 +25,7 @@ namespace WinFormsInfoApp
         private bool changingWeights = false;
         private bool changingLiquids = false;
         private Ingredient?[] currentIngredients = [];
-        private List<string> shoppingList = new List<string>();
+        private List<string> shoppingList = [];
 
         internal readonly List<Recipe> _recipesCache = [];
         internal readonly List<Diet> _dietCache = [];
@@ -88,7 +86,7 @@ namespace WinFormsInfoApp
         private void LoadDiets(object? sender, DoWorkEventArgs e)
         {
             ImportDiets();
-            var customInuse = _dietCache.FirstOrDefault(x => x.InUse);
+            Diet? customInuse = _dietCache.FirstOrDefault(x => x.InUse);
             if (customInuse != default)
             {
                 currentDiet = customInuse;
@@ -552,9 +550,9 @@ namespace WinFormsInfoApp
             }
 
             // Update UI elements on the UI thread
-            Invoke(new MethodInvoker(delegate
+            _ = Invoke(new MethodInvoker(delegate
             {
-                foreach (var diet in _dietCache)
+                foreach (Diet diet in _dietCache)
                 {
                     diet.InUse = false;
                 }
@@ -706,7 +704,7 @@ namespace WinFormsInfoApp
                 return;
             }
 
-            var ings = currentRecipe.Ingredients.Split("\n").Select(x => x.Trim()).ToList();
+            List<string> ings = currentRecipe.Ingredients.Split("\n").Select(x => x.Trim()).ToList();
             shoppingList.AddRange(ings);
             shoppingList = shoppingList.Distinct().ToList();
             //Order it ignoring any numbers
@@ -723,15 +721,15 @@ namespace WinFormsInfoApp
         private void printList_Click(object sender, EventArgs e)
         {
             //Send to printer a text doc of the contents of the textbox if its not empty 
-            if(!string.IsNullOrWhiteSpace(shoppingListTxt.Text))
+            if (!string.IsNullOrWhiteSpace(shoppingListTxt.Text))
             {
                 string path = SpecialDirectories.Desktop + "\\ShoppingList.txt";
-                if(File.Exists(path))
+                if (File.Exists(path))
                 {
                     File.Delete(path);
                 }
                 File.WriteAllText(path, shoppingListTxt.Text);
-                MessageBox.Show("File saved to desktop as ShoppingList.txt!");
+                _ = MessageBox.Show("File saved to desktop as ShoppingList.txt!");
             }
             else
             {

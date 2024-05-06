@@ -5,7 +5,7 @@ namespace WinFormsInfoApp
     public partial class ExistingDietsSelector : Form
     {
         private readonly MainWindow _mainWindow;
-        private readonly List<Diet> diets = new List<Diet>();
+        private readonly List<Diet> diets = [];
         private Diet? currentDiet; // The diet that is currently selected
         public ExistingDietsSelector(MainWindow mainWindow)
         {
@@ -13,7 +13,7 @@ namespace WinFormsInfoApp
             InitializeComponent();
 
             // Load in the premade diets
-            mainWindow._dietCache.RemoveAll(d => d.DefaultDiet); // Remove any default diets that are already in the cache
+            _ = mainWindow._dietCache.RemoveAll(d => d.DefaultDiet); // Remove any default diets that are already in the cache
             diets.AddRange(mainWindow._dietCache); // Add the diets that have been created by the user
             diets.AddRange(Diet.ReturnDefaultDiets()); // Add the default diets
             dietList.Items.AddRange(diets.ToArray()); // Add the diets to the list

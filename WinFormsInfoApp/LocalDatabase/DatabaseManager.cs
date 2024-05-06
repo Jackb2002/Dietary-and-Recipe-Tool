@@ -113,34 +113,32 @@ namespace WinFormsInfoApp.LocalDatabase
         public Ingredient?[] GetIngredientsByName(string name, string location = "All")
         {
             Ingredient?[] ingredients = null;
-            using (SQLiteConnection connection = new SQLiteConnection("Data Source=" + AccessString))
+            using (SQLiteConnection connection = new("Data Source=" + AccessString))
             {
                 connection.Open();
-                using (SQLiteCommand command = new SQLiteCommand(connection))
+                using (SQLiteCommand command = new(connection))
                 {
                     command.CommandText = "SELECT * FROM Ingredient WHERE Name = @Id";
-                    command.Parameters.AddWithValue("@Id", name);
-                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    _ = command.Parameters.AddWithValue("@Id", name);
+                    using SQLiteDataReader reader = command.ExecuteReader();
+                    List<Ingredient> ingredientList = [];
+                    while (reader.Read())
                     {
-                        List<Ingredient> ingredientList = new List<Ingredient>();
-                        while (reader.Read())
-                        {
-                            Ingredient ingredient = new Ingredient(
-                                reader.GetString(0),
-                                reader.GetString(1),
-                                reader.GetString(2),
-                                reader.GetDouble(4),
-                                reader.GetDouble(5),
-                                reader.GetDouble(3),
-                                reader.GetDouble(6),
-                                reader.GetDouble(7),
-                                reader.GetDouble(8),
-                                reader.GetDouble(9)
-                            );
-                            ingredientList.Add(ingredient);
-                        }
-                        ingredients = ingredientList.ToArray();
+                        Ingredient ingredient = new(
+                            reader.GetString(0),
+                            reader.GetString(1),
+                            reader.GetString(2),
+                            reader.GetDouble(4),
+                            reader.GetDouble(5),
+                            reader.GetDouble(3),
+                            reader.GetDouble(6),
+                            reader.GetDouble(7),
+                            reader.GetDouble(8),
+                            reader.GetDouble(9)
+                        );
+                        ingredientList.Add(ingredient);
                     }
+                    ingredients = ingredientList.ToArray();
                 }
                 connection.Close();
             }

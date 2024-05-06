@@ -34,7 +34,7 @@ namespace WinFormsInfoApp.OpenFood
         /// <returns>C# List object of Ingredient objects containing OpenFood Information</returns>
         public List<Ingredient?[]> GetIngredientList(string[] ingredients, string location = "All")
         {
-            List<Ingredient?[]> Ingredients = new List<Ingredient?[]>();
+            List<Ingredient?[]> Ingredients = [];
             foreach (string item in ingredients)
             {
                 Ingredients.Add(GetIngredientsByName(item, location));
@@ -47,7 +47,7 @@ namespace WinFormsInfoApp.OpenFood
         /// </summary>
         /// <param name="categoryName"></param>
         /// <returns></returns>
-        public Ingredient?[] GetIngredientsByName(string categoryName, string location = "All")
+        public Ingredient?[]? GetIngredientsByName(string categoryName, string location = "All")
         {
             categoryName = categoryName.Trim().ToLower();
             if (string.IsNullOrEmpty(categoryName))
@@ -79,7 +79,7 @@ namespace WinFormsInfoApp.OpenFood
                 if (responseJson["products"] is JArray products && products.Count > 0)
                 {
                     // Parse the products and return the ingredient
-                    var returnList = new Ingredient?[products.Count];
+                    Ingredient?[] returnList = new Ingredient?[products.Count];
                     for (int i = 0; i < products.Count; i++)
                     {
                         returnList[i] = ParseProduct(products[i]);
@@ -157,7 +157,7 @@ namespace WinFormsInfoApp.OpenFood
         public bool TestConnection()
         {
             using HttpClient client = new();
-            bool test_success = TestApiConnection(client,AccessString);
+            bool test_success = TestApiConnection(client, AccessString);
             return test_success;
         }
 
