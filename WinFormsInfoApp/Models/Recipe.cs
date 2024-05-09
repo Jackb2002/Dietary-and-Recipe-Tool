@@ -28,16 +28,16 @@
         public int Serving { get; set; }
 
 
-        internal static float MAX_KCAL { get; private set; }
-        internal static float MAX_FAT { get; private set; }
-        internal static float MAX_SATURATES { get; private set; }
-        internal static float MAX_CARBS { get; private set; }
-        internal static float MAX_SUGARS { get; private set; }
-        internal static float MAX_FIBRE { get; private set; }
-        internal static float MAX_PROTEIN { get; private set; }
-        internal static float MAX_SALT { get; private set; }
+        public static float MAX_KCAL { get; private set; }
+        public static float MAX_FAT { get; private set; }
+        public static float MAX_SATURATES { get; private set; }
+        public static float MAX_CARBS { get; private set; }
+        public static float MAX_SUGARS { get; private set; }
+        public static float MAX_FIBRE { get; private set; }
+        public static float MAX_PROTEIN { get; private set; }
+        public static float MAX_SALT { get; private set; }
 
-        internal static void GenerateMaxValues(List<Recipe> recipes)
+        public static void GenerateMaxValues(List<Recipe> recipes)
         {
             MAX_KCAL = recipes.Max(r => r.Kcal);
             MAX_FAT = recipes.Max(r => r.Fat);
