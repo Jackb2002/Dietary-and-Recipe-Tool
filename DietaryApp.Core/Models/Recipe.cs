@@ -2,19 +2,19 @@
 {
     public class Recipe
     {
-        public string Title { get; set; }
-        public string Difficulty { get; set; }
-        public string Rating { get; set; }
-        public string Reviews { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Difficulty { get; set; } = string.Empty;
+        public string Rating { get; set; } = string.Empty;
+        public string Reviews { get; set; } = string.Empty;
         public bool Vegetarian { get; set; }
         public bool Vegan { get; set; }
         public bool DairyFree { get; set; }
         public bool Keto { get; set; }
         public bool GlutenFree { get; set; }
-        public string PrepTime { get; set; }
-        public string CookTime { get; set; }
-        public string Ingredients { get; set; }
-        public string RecipeUrls { get; set; }
+        public string PrepTime { get; set; } = string.Empty;
+        public string CookTime { get; set; } = string.Empty;
+        public string Ingredients { get; set; } = string.Empty;
+        public string RecipeUrls { get; set; } = string.Empty;
         public float Kcal { get; set; }
         public float Fat { get; set; }
         public float Saturates { get; set; }
@@ -23,9 +23,15 @@
         public float Fibre { get; set; }
         public float Protein { get; set; }
         public float Salt { get; set; }
-        public string Method { get; set; }
-        public string Description { get; set; }
+        public string Method { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public int Serving { get; set; }
+
+        /// <summary>
+        /// Spoonacular recipe ID. Non-zero for recipes sourced from the Spoonacular API.
+        /// Used to fetch full ingredient and method details on demand.
+        /// </summary>
+        public int SpoonacularId { get; set; }
 
 
         public static float MAX_KCAL { get; private set; }
