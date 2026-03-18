@@ -1,12 +1,10 @@
 ﻿using System.Diagnostics;
-using System.Text.Json.Serialization;
 
 namespace WinFormsInfoApp.Models
 {
     /// <summary>
     /// Represents a diet with its name, description, positive priorities, and negative priorities.
     /// </summary>
-    [JsonSerializable(typeof(Diet))]
     public class Diet
     {
         public string Name { get; set; }

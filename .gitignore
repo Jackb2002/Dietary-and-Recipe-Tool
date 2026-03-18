@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# API keys — never commit
+*.key
+
+# Runtime cache files
+recipe_cache.json
+ingredient_cache.json
+diet_cache.json

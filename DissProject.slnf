@@ -1,0 +1,11 @@
+{
+  "solution": {
+    "path": "DissProject.sln",
+    "projects": [
+      "DietaryApp.Core/DietaryApp.Core.csproj",
+      "DietaryApp.Avalonia/DietaryApp.Avalonia.csproj",
+      "RecipeExtractor/RecipeExtractor.csproj",
+      "UnitTests/UnitTests.csproj"
+    ]
+  }
+}

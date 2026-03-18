@@ -114,23 +114,17 @@ namespace RecipeExtractor
         {
             try
             {
-                HtmlNode servingNode = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'icon-with-text') and contains(., 'Serves')]");
+                HtmlNode servingNode = doc.DocumentNode.SelectSingleNode(
+                    "//*[@data-testid='recipe-cook-and-prep-details-servings']//strong");
                 string servingText = servingNode?.InnerText.Trim() ?? string.Empty;
 
-                // Split the serving text to extract the number of servings
+                // Text is "Serves 4" — extract the trailing number
                 string[] parts = servingText.Split(' ');
-                if (parts.Length >= 2)
-                {
-                    return parts[1]; // Assuming the number of servings is always at index 1
-                }
-                else
-                {
-                    return string.Empty; // If serving text is not in the expected format
-                }
+                return parts.Length >= 2 ? parts[1] : string.Empty;
             }
             catch
             {
-                return string.Empty; // In case of any error
+                return string.Empty;
             }
         }
 
@@ -228,25 +222,29 @@ namespace RecipeExtractor
 
             try
             {
-                HtmlNodeCollection nutritionNodes = doc.DocumentNode.SelectNodes("//tbody[@class='key-value-blocks__batch body-copy-extra-small']");
-                if (nutritionNodes != null)
+                // Structure: <ul data-testid="nutritions-list">
+                //   <li class="nutrition-list__item">
+                //     <span class="nutrition-list__label">kcal</span>387
+                //   </li>
+                HtmlNodeCollection items = doc.DocumentNode.SelectNodes(
+                    "//ul[@data-testid='nutritions-list']/li");
+
+                if (items != null)
                 {
-                    foreach (HtmlNode node in nutritionNodes)
+                    foreach (HtmlNode item in items)
                     {
-                        HtmlNodeCollection rows = node.SelectNodes("./tr");
-                        if (rows != null)
-                        {
-                            foreach (HtmlNode row in rows)
-                            {
-                                string nutrient = row.SelectSingleNode("./td[1]").InnerText.Trim();
-                                string value = row.SelectSingleNode("./td[2]").InnerText.Trim();
+                        HtmlNode labelNode = item.SelectSingleNode(
+                            "./span[@class='nutrition-list__label']");
+                        if (labelNode == null) continue;
 
-                                // Remove any comments (e.g., <!-- -->) from the value
-                                value = System.Text.RegularExpressions.Regex.Replace(value, "<!--(.*?)-->", "").Trim();
+                        string nutrient = labelNode.InnerText.Trim();
+                        // Value is the li's full text minus the label (e.g. "kcal387" → "387")
+                        string fullText = item.InnerText.Trim();
+                        string value = fullText.Length > nutrient.Length
+                            ? fullText.Substring(nutrient.Length).Trim()
+                            : string.Empty;
 
-                                nutritionInfo.Add(new KeyValuePair<string, string>(nutrient, value));
-                            }
-                        }
+                        nutritionInfo.Add(new KeyValuePair<string, string>(nutrient, value));
                     }
                 }
             }
