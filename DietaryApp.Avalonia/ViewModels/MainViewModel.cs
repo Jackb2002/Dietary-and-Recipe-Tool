@@ -6,6 +6,8 @@ using RecipeExtractor;
 using WinFormsInfoApp;
 using WinFormsInfoApp.Family;
 using WinFormsInfoApp.Models;
+using WinFormsInfoApp.Recipes;
+using WinFormsInfoApp.Supermarket;
 using static WinFormsInfoApp.IIngredientContext;
 
 namespace DietaryApp.Avalonia.ViewModels;
@@ -17,6 +19,8 @@ public partial class MainViewModel : ObservableObject
     private const string DietFilePath = "diet_cache.json";
 
     private readonly IIngredientContext _ingredientContext;
+    private readonly SpoonacularAPI? _spoonacular;
+    private readonly TrolleyAPI _trolley = new();
     private readonly List<Recipe> _recipesCache = [];
     private readonly List<Diet> _dietCache = [];
     private List<Ingredient> _ingredientCache = [];
@@ -34,8 +38,12 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private Recipe? _selectedRecipe;
     [ObservableProperty] private string _recipeTitle = string.Empty;
     [ObservableProperty] private string _recipeIngredients = string.Empty;
+    [ObservableProperty] private string _recipeMethod = string.Empty;
     [ObservableProperty] private string _recipeLink = string.Empty;
     [ObservableProperty] private string _recipeServings = string.Empty;
+    [ObservableProperty] private string _recipeSearchText = string.Empty;
+    [ObservableProperty] private bool _isSearchingRecipes;
+    public bool IsSpoonacularReady => _spoonacular != null;
     public ObservableCollection<NutrientDisplayItem> NutrientItems { get; } = [];
 
     // ── Ingredients ───────────────────────────────────────────────────
@@ -54,6 +62,8 @@ public partial class MainViewModel : ObservableObject
 
     // ── Shopping list ────────────────────────────────────────────────
     [ObservableProperty] private string _shoppingListText = string.Empty;
+    [ObservableProperty] private bool _isLookingUpPrices;
+    public ObservableCollection<ShoppingPriceItem> PriceResults { get; } = [];
 
     // ── Weight converter ─────────────────────────────────────────────
     [ObservableProperty] private string _gTxt = string.Empty;
@@ -73,6 +83,22 @@ public partial class MainViewModel : ObservableObject
         _ingredientContext = context;
         IsLocalConnection = context.connectionType == ConnectionType.Local;
         ConnectionStatus = IsLocalConnection ? "Connected to local DB" : "Connected to API";
+
+        string? spoonKey = Environment.GetEnvironmentVariable("SPOONACULAR_API_KEY");
+
+        // Fallback: read from a local 'spoonacular.key' file next to the executable
+        if (string.IsNullOrEmpty(spoonKey))
+        {
+            string keyFile = Path.Combine(AppContext.BaseDirectory, "spoonacular.key");
+            if (File.Exists(keyFile))
+                spoonKey = File.ReadAllText(keyFile).Trim();
+        }
+
+        if (!string.IsNullOrEmpty(spoonKey))
+        {
+            Environment.SetEnvironmentVariable("SPOONACULAR_API_KEY", spoonKey);
+            _spoonacular = new SpoonacularAPI();
+        }
     }
 
     public async Task InitializeAsync()
@@ -93,7 +119,7 @@ public partial class MainViewModel : ObservableObject
     {
         var helper = new JsonSerializerHelper();
         string path = Path.Combine(Environment.CurrentDirectory, RecipeFilePath);
-        var localRecipes = helper.DeserializeRecipes(path)
+        var localRecipes = (helper.DeserializeRecipes(path) ?? [])
             .Distinct()
             .Where(x => x.Title != "" && x.Ingredients is not "" and not "Not specified")
             .ToList();
@@ -121,14 +147,14 @@ public partial class MainViewModel : ObservableObject
     {
         var helper = new JsonSerializerHelper();
         string path = Path.Combine(Environment.CurrentDirectory, IngredientFilePath);
-        _ingredientCache = helper.DeserializeIngredients(path);
+        _ingredientCache = helper.DeserializeIngredients(path) ?? [];
     }
 
     private void ImportDiets()
     {
         var helper = new JsonSerializerHelper();
         string path = Path.Combine(Environment.CurrentDirectory, DietFilePath);
-        var localDiets = helper.DeserializeDiets(path);
+        var localDiets = helper.DeserializeDiets(path) ?? [];
         _dietCache.AddRange(localDiets);
 
         var inUse = _dietCache.FirstOrDefault(x => x.InUse);
@@ -153,11 +179,48 @@ public partial class MainViewModel : ObservableObject
     partial void OnSelectedRecipeChanged(Recipe? value)
     {
         if (value == null) return;
+        PopulateRecipeDetail(value);
+
+        // If this is a Spoonacular recipe with no ingredients yet, fetch them in the background
+        if (value.SpoonacularId > 0 && string.IsNullOrWhiteSpace(value.Ingredients) && _spoonacular != null)
+            _ = EnrichRecipeAsync(value);
+    }
+
+    private void PopulateRecipeDetail(Recipe value)
+    {
         RecipeTitle = "Recipe Name: " + value.Title;
         RecipeLink = value.RecipeUrls;
-        RecipeIngredients = "Ingredients:\n" + value.Ingredients;
+        RecipeIngredients = string.IsNullOrWhiteSpace(value.Ingredients)
+            ? "Ingredients: loading…"
+            : "Ingredients:\n" + value.Ingredients;
+        RecipeMethod = string.IsNullOrWhiteSpace(value.Method)
+            ? string.Empty
+            : "Method:\n" + value.Method;
         RecipeServings = "Servings: " + value.Serving;
         UpdateNutrientPanel(value);
+    }
+
+    private async Task EnrichRecipeAsync(Recipe recipe)
+    {
+        var full = await Task.Run(() => _spoonacular!.GetRecipeById(recipe.SpoonacularId));
+        if (full == null) return;
+
+        recipe.Ingredients = full.Ingredients;
+        recipe.Method      = full.Method;
+        if (recipe.Kcal == 0)
+        {
+            recipe.Kcal = full.Kcal; recipe.Fat = full.Fat;
+            recipe.Saturates = full.Saturates; recipe.Carbs = full.Carbs;
+            recipe.Sugars = full.Sugars; recipe.Fibre = full.Fibre;
+            recipe.Protein = full.Protein; recipe.Salt = full.Salt;
+        }
+
+        // Refresh display if still the same recipe
+        if (SelectedRecipe == recipe)
+        {
+            await global::Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
+                () => PopulateRecipeDetail(recipe));
+        }
     }
 
     private void UpdateNutrientPanel(Recipe recipe)
@@ -191,6 +254,36 @@ public partial class MainViewModel : ObservableObject
         DisplayValue = value,
         Color = NutrientDisplayItem.BrushForPercentage(pct)
     };
+
+    // ── Recipe search (Spoonacular) ───────────────────────────────────
+    [RelayCommand]
+    async Task SearchRecipes()
+    {
+        if (_spoonacular == null || string.IsNullOrWhiteSpace(RecipeSearchText)) return;
+
+        IsSearchingRecipes = true;
+        try
+        {
+            var results = await Task.Run(() => _spoonacular.SearchRecipes(RecipeSearchText, count: 10));
+            await global::Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                foreach (var r in results)
+                {
+                    if (!_recipesCache.Any(x => x.SpoonacularId == r.SpoonacularId))
+                    {
+                        _recipesCache.Add(r);
+                        Recipes.Add(r);
+                    }
+                }
+                if (_recipesCache.Count > 0)
+                    Recipe.GenerateMaxValues(_recipesCache);
+            });
+        }
+        finally
+        {
+            IsSearchingRecipes = false;
+        }
+    }
 
     // ── Ingredient search ─────────────────────────────────────────────
     [RelayCommand]
@@ -284,6 +377,55 @@ public partial class MainViewModel : ObservableObject
     {
         _shoppingList.Clear();
         ShoppingListText = string.Empty;
+        PriceResults.Clear();
+    }
+
+    [RelayCommand]
+    async Task GetPrices()
+    {
+        if (_shoppingList.Count == 0) return;
+        IsLookingUpPrices = true;
+        PriceResults.Clear();
+
+        try
+        {
+            // Strip leading quantities ("200g chicken" → "chicken") for better search results
+            static string StripQuantity(string line)
+            {
+                string trimmed = System.Text.RegularExpressions.Regex.Replace(
+                    line.TrimStart('-', ' '), @"^\d[\d\s\.,]*[a-zA-Z]*\s+", string.Empty);
+                return string.IsNullOrWhiteSpace(trimmed) ? line.TrimStart('-', ' ') : trimmed;
+            }
+
+            foreach (string item in _shoppingList)
+            {
+                string query = StripQuantity(item);
+                var results = await Task.Run(() => _trolley.SearchProducts(query));
+                if (results.Count == 0) continue;
+
+                // Pick the cheapest non-zero result
+                var best = results
+                    .Where(r => r.Price > 0)
+                    .OrderBy(r => r.Price)
+                    .FirstOrDefault();
+
+                if (best == null) continue;
+
+                await global::Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                    PriceResults.Add(new ShoppingPriceItem
+                    {
+                        Ingredient   = query,
+                        ProductName  = best.Name,
+                        Store        = best.Store,
+                        Price        = $"£{best.Price:0.00}",
+                        PricePerUnit = best.PricePerUnit
+                    }));
+            }
+        }
+        finally
+        {
+            IsLookingUpPrices = false;
+        }
     }
 
     [RelayCommand]

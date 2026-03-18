@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <!-- AVLN3001: dialogs have parameterized constructors (no design-time loader support needed) -->
+    <NoWarn>$(NoWarn);AVLN3001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="spoonacular.key" Condition="Exists('spoonacular.key')">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="..\WinFormsInfoApp\recipe_cache.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>recipe_cache.json</Link>

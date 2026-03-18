@@ -22,48 +22,70 @@
             <TabItem Header="Recipes">
                 <Grid ColumnDefinitions="260,*" Margin="10">
 
-                    <!-- Recipe list -->
+                    <!-- Recipe list + search -->
                     <DockPanel Grid.Column="0" Margin="0,0,10,0">
                         <TextBlock DockPanel.Dock="Top" Text="Recipes" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+                            <TextBox Grid.Column="0" Text="{Binding RecipeSearchText}"
+                                     Watermark="Search Spoonacular…" Margin="0,0,4,0"
+                                     IsEnabled="{Binding IsSpoonacularReady}">
+                                <TextBox.KeyBindings>
+                                    <KeyBinding Gesture="Return" Command="{Binding SearchRecipesCommand}"/>
+                                </TextBox.KeyBindings>
+                            </TextBox>
+                            <Button Grid.Column="1" Content="Search"
+                                    Command="{Binding SearchRecipesCommand}"
+                                    IsEnabled="{Binding IsSpoonacularReady}"/>
+                        </Grid>
+                        <TextBlock DockPanel.Dock="Top" Text="Searching…"
+                                   IsVisible="{Binding IsSearchingRecipes}"
+                                   Foreground="#888" FontSize="11" Margin="0,0,0,4"/>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Spoonacular not configured — add API key to 'spoonacular.key' next to the exe"
+                                   IsVisible="{Binding !IsSpoonacularReady}"
+                                   Foreground="#cc4444" FontSize="11" Margin="0,0,0,4"/>
                         <ListBox ItemsSource="{Binding Recipes}"
                                  SelectedItem="{Binding SelectedRecipe}"
                                  DisplayMemberBinding="{Binding Title}"/>
                     </DockPanel>
 
                     <!-- Recipe detail -->
-                    <StackPanel Grid.Column="1" Spacing="8">
+                    <ScrollViewer Grid.Column="1">
+                        <StackPanel Spacing="8">
 
-                        <TextBlock Text="{Binding RecipeTitle}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                        <TextBlock Text="{Binding RecipeServings}"/>
-                        <Button Content="{Binding RecipeLink}" Command="{Binding OpenRecipeLinkCommand}"
-                                Cursor="Hand" Background="Transparent" Padding="0"/>
+                            <TextBlock Text="{Binding RecipeTitle}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding RecipeServings}"/>
+                            <Button Content="{Binding RecipeLink}" Command="{Binding OpenRecipeLinkCommand}"
+                                    Cursor="Hand" Background="Transparent" Padding="0"/>
 
-                        <!-- Nutrient grid (2×4) -->
-                        <Border BorderBrush="#ddd" BorderThickness="1" Padding="6" CornerRadius="4">
-                            <ItemsControl ItemsSource="{Binding NutrientItems}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Width="130" Height="52" Margin="3"
-                                                BorderBrush="{Binding Color}" BorderThickness="2"
-                                                CornerRadius="4" Padding="6">
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding Label}" FontWeight="SemiBold" FontSize="11"/>
-                                                <TextBlock Text="{Binding DisplayValue}" Foreground="{Binding Color}" FontSize="13"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Border>
+                            <!-- Nutrient grid (2×4) -->
+                            <Border BorderBrush="#ddd" BorderThickness="1" Padding="6" CornerRadius="4">
+                                <ItemsControl ItemsSource="{Binding NutrientItems}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="130" Height="52" Margin="3"
+                                                    BorderBrush="{Binding Color}" BorderThickness="2"
+                                                    CornerRadius="4" Padding="6">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Label}" FontWeight="SemiBold" FontSize="11"/>
+                                                    <TextBlock Text="{Binding DisplayValue}" Foreground="{Binding Color}" FontSize="13"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
 
-                        <TextBlock Text="{Binding RecipeIngredients}" TextWrapping="Wrap" MaxHeight="180"
-                                   ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-                    </StackPanel>
+                            <TextBlock Text="{Binding RecipeIngredients}" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding RecipeMethod}" TextWrapping="Wrap"
+                                       IsVisible="{Binding RecipeMethod, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        </StackPanel>
+                    </ScrollViewer>
                 </Grid>
             </TabItem>
 
@@ -109,14 +131,62 @@
             <!-- ════════ SHOPPING LIST TAB ════════ -->
             <TabItem Header="Shopping List">
                 <DockPanel Margin="12">
+
+                    <!-- Toolbar -->
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="0,0,0,10">
                         <Button Content="Add Current Recipe" Command="{Binding AddToShoppingListCommand}"/>
                         <Button Content="Clear"              Command="{Binding ClearShoppingListCommand}"/>
                         <Button Content="Save to Desktop"    Command="{Binding SaveShoppingListCommand}"/>
+                        <Button Content="Get Prices (Trolley)"
+                                Command="{Binding GetPricesCommand}"
+                                IsEnabled="{Binding !IsLookingUpPrices}"/>
+                        <TextBlock Text="Looking up prices…" VerticalAlignment="Center"
+                                   IsVisible="{Binding IsLookingUpPrices}"
+                                   Foreground="#888" FontSize="11"/>
                     </StackPanel>
-                    <TextBox Text="{Binding ShoppingListText}" IsReadOnly="True"
-                             TextWrapping="Wrap" AcceptsReturn="True"
-                             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+
+                    <!-- Split: list left, prices right -->
+                    <Grid ColumnDefinitions="*,*">
+
+                        <!-- Shopping list text -->
+                        <TextBox Grid.Column="0" Text="{Binding ShoppingListText}" IsReadOnly="True"
+                                 TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,8,0"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+
+                        <!-- Price results -->
+                        <DockPanel Grid.Column="1">
+                            <TextBlock DockPanel.Dock="Top" Text="Best Prices (Trolley.co.uk)"
+                                       FontWeight="SemiBold" Margin="0,0,0,6"/>
+                            <ScrollViewer>
+                                <ItemsControl ItemsSource="{Binding PriceResults}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="#e0e0e0" BorderThickness="0,0,0,1" Padding="4,6">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <StackPanel Grid.Column="0">
+                                                        <TextBlock Text="{Binding Ingredient}"
+                                                                   FontWeight="SemiBold" FontSize="12"/>
+                                                        <TextBlock Text="{Binding ProductName}"
+                                                                   Foreground="#555" FontSize="11"
+                                                                   TextWrapping="Wrap"/>
+                                                        <TextBlock Text="{Binding PricePerUnit}"
+                                                                   Foreground="#888" FontSize="10"/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                                        <TextBlock Text="{Binding Price}"
+                                                                   FontSize="15" FontWeight="Bold"
+                                                                   Foreground="#2a7a2a"
+                                                                   HorizontalAlignment="Right"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </Grid>
+
                 </DockPanel>
             </TabItem>
 
