@@ -17,37 +17,27 @@ public partial class LoadingViewModel : ObservableObject
     {
         await Task.Run(async () =>
         {
-            SetProgress(15, "Locating database...");
+            SetProgress(20, "Locating database...");
             string path = Path.GetFullPath(GlobalSettings.LocalDatabaseFile);
 
-            SetProgress(30, "Checking API connection...");
+            SetProgress(50, "Checking API connection...");
             OpenFoodAPI apiConnection = new();
 
-            SetProgress(50, "Trying to connect to API...");
+            // TestConnection already fires a real search request with a 5s timeout,
+            // so no second verification call is needed.
             if (apiConnection.TestConnection())
             {
-                SetProgress(60, "Testing API response...");
-                var result = apiConnection.GetIngredientsByName("chocolate");
-                if (result != null && result.Length > 0)
-                {
-                    SetProgress(80, "Connected to API successfully");
-                    await Task.Delay(300);
-                    ResolvedContext = apiConnection;
-                }
-                else
-                {
-                    SetProgress(75, "API returned no data, using local DB...");
-                    ResolvedContext = new DatabaseFileOpener(path).CreateOrOpen();
-                }
+                SetProgress(90, "Connected to OpenFoodFacts API");
+                ResolvedContext = apiConnection;
             }
             else
             {
-                SetProgress(65, "API unavailable, using local DB...");
+                SetProgress(80, "API unavailable — using local database");
                 ResolvedContext = new DatabaseFileOpener(path).CreateOrOpen();
             }
 
             SetProgress(100, "Loading complete");
-            await Task.Delay(300);
+            await Task.Delay(200);
         });
 
         await global::Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>

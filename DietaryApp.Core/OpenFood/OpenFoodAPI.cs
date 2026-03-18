@@ -37,7 +37,9 @@ namespace WinFormsInfoApp.OpenFood
             List<Ingredient?[]> Ingredients = [];
             foreach (string item in ingredients)
             {
-                Ingredients.Add(GetIngredientsByName(item, location));
+                var result = GetIngredientsByName(item, location);
+                if (result != null)
+                    Ingredients.Add(result);
             }
             return Ingredients;
         }
@@ -139,15 +141,16 @@ namespace WinFormsInfoApp.OpenFood
         /// <returns>An Ingredient object parsed from the JSON data.</returns>
         private Ingredient ParseProduct(JToken product)
         {
-            string name = (string)product["product_name"] ?? "Unknown";
-            double fat = product["nutriments"]["fat_100g"]?.ToObject<double>() ?? 0.0;
-            double carbohydrates = product["nutriments"]["carbohydrates_100g"]?.ToObject<double>() ?? 0.0;
-            double protein = product["nutriments"]["proteins_100g"]?.ToObject<double>() ?? 0.0;
-            double calories = product["nutriments"]["energy-kcal_100g"]?.ToObject<double>() ?? 0.0;
-            double sugar = product["nutriments"]["sugars_100g"]?.ToObject<double>() ?? 0.0;
-            double fibre = product["nutriments"]["fibre_100g"]?.ToObject<double>() ?? 0.0;
+            string name = product["product_name"]?.ToString() ?? "Unknown";
+            JToken? nutriments = product["nutriments"];
+            double fat = nutriments?["fat_100g"]?.ToObject<double>() ?? 0.0;
+            double carbohydrates = nutriments?["carbohydrates_100g"]?.ToObject<double>() ?? 0.0;
+            double protein = nutriments?["proteins_100g"]?.ToObject<double>() ?? 0.0;
+            double calories = nutriments?["energy-kcal_100g"]?.ToObject<double>() ?? 0.0;
+            double sugar = nutriments?["sugars_100g"]?.ToObject<double>() ?? 0.0;
+            double fibre = nutriments?["fibre_100g"]?.ToObject<double>() ?? 0.0;
             double productWeight = product["product_quantity"]?.ToObject<double>() ?? 0.0;
-            string code = (string)product["code"] ?? "";
+            string code = product["code"]?.ToString() ?? "";
 
             return new Ingredient(code, name, "", fat, carbohydrates, protein, calories, sugar, fibre, productWeight);
         }
@@ -156,7 +159,7 @@ namespace WinFormsInfoApp.OpenFood
         /// <inheritdoc/>
         public bool TestConnection()
         {
-            using HttpClient client = new();
+            using HttpClient client = new() { Timeout = TimeSpan.FromSeconds(5) };
             bool test_success = TestApiConnection(client, AccessString);
             return test_success;
         }
