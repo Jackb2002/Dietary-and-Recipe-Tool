@@ -35,7 +35,7 @@ namespace UnitTests
             Diet diet = new Diet("Test Diet", "Test Description", new string[] { "TestPriority" }, new string[] { "TestNegativePriority" }, DateTime.Now);
 
             // Act
-            string result = diet.ToString();
+            string? result = diet.ToString();
 
             // Assert
             Assert.AreEqual("Test Diet - Test Description", result);
