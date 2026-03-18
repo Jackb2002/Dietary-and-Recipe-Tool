@@ -1,0 +1,164 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DietaryApp.Avalonia.Views.MainWindow"
+        Title="Meal Planner" Width="1100" Height="780"
+        WindowStartupLocation="CenterScreen">
+
+    <DockPanel>
+
+        <!-- Status bar -->
+        <Border DockPanel.Dock="Top" Background="#1a1a2e" Padding="12,6">
+            <StackPanel Orientation="Horizontal" Spacing="16">
+                <TextBlock Text="{Binding ConnectionStatus}" Foreground="White" FontWeight="SemiBold"/>
+                <TextBlock Text="|" Foreground="#555"/>
+                <TextBlock Text="{Binding CurrentDietName}" Foreground="#aaa"/>
+                <TextBlock Text="{Binding TodaysMeal}" Foreground="#e2b04b" FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+
+        <TabControl>
+
+            <!-- ════════ RECIPES TAB ════════ -->
+            <TabItem Header="Recipes">
+                <Grid ColumnDefinitions="260,*" Margin="10">
+
+                    <!-- Recipe list -->
+                    <DockPanel Grid.Column="0" Margin="0,0,10,0">
+                        <TextBlock DockPanel.Dock="Top" Text="Recipes" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                        <ListBox ItemsSource="{Binding Recipes}"
+                                 SelectedItem="{Binding SelectedRecipe}"
+                                 DisplayMemberBinding="{Binding Title}"/>
+                    </DockPanel>
+
+                    <!-- Recipe detail -->
+                    <StackPanel Grid.Column="1" Spacing="8">
+
+                        <TextBlock Text="{Binding RecipeTitle}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding RecipeServings}"/>
+                        <Button Content="{Binding RecipeLink}" Command="{Binding OpenRecipeLinkCommand}"
+                                Cursor="Hand" Background="Transparent" Padding="0"/>
+
+                        <!-- Nutrient grid (2×4) -->
+                        <Border BorderBrush="#ddd" BorderThickness="1" Padding="6" CornerRadius="4">
+                            <ItemsControl ItemsSource="{Binding NutrientItems}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="130" Height="52" Margin="3"
+                                                BorderBrush="{Binding Color}" BorderThickness="2"
+                                                CornerRadius="4" Padding="6">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Label}" FontWeight="SemiBold" FontSize="11"/>
+                                                <TextBlock Text="{Binding DisplayValue}" Foreground="{Binding Color}" FontSize="13"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+
+                        <TextBlock Text="{Binding RecipeIngredients}" TextWrapping="Wrap" MaxHeight="180"
+                                   ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- ════════ DIET TAB ════════ -->
+            <TabItem Header="Diet">
+                <StackPanel Margin="16" Spacing="10">
+                    <TextBlock Text="{Binding CurrentDietName}" FontSize="15" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding TodaysMeal}"/>
+                    <Separator/>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Premade Diets"   Click="PremadeDiets_Click"/>
+                        <Button Content="Custom Diet"     Click="CustomDiet_Click"/>
+                        <Button Content="Edit Family"     Click="EditFamily_Click"/>
+                    </StackPanel>
+                    <Separator/>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Ingredients to Avoid"   Click="BadIngredients_Click"/>
+                        <Button Content="Ingredients to Include" Click="GoodIngredients_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+
+            <!-- ════════ INGREDIENTS TAB ════════ -->
+            <TabItem Header="Ingredients">
+                <Grid RowDefinitions="Auto,*" Margin="12">
+                    <StackPanel Grid.Row="0" Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBox Grid.Column="0" Text="{Binding IngredientSearchText}"
+                                     Watermark="Search ingredient..." Margin="0,0,6,0"/>
+                            <Button Grid.Column="1" Content="Search"
+                                    Command="{Binding SearchIngredientCommand}"/>
+                        </Grid>
+                        <ComboBox ItemsSource="{Binding IngredientResults}"
+                                  SelectedIndex="{Binding SelectedIngredientIndex}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                    <TextBox Grid.Row="1" Text="{Binding IngredientDetails}"
+                             IsReadOnly="True" TextWrapping="Wrap" Margin="0,10,0,0"
+                             AcceptsReturn="True"/>
+                </Grid>
+            </TabItem>
+
+            <!-- ════════ SHOPPING LIST TAB ════════ -->
+            <TabItem Header="Shopping List">
+                <DockPanel Margin="12">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="0,0,0,10">
+                        <Button Content="Add Current Recipe" Command="{Binding AddToShoppingListCommand}"/>
+                        <Button Content="Clear"              Command="{Binding ClearShoppingListCommand}"/>
+                        <Button Content="Save to Desktop"    Command="{Binding SaveShoppingListCommand}"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding ShoppingListText}" IsReadOnly="True"
+                             TextWrapping="Wrap" AcceptsReturn="True"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                </DockPanel>
+            </TabItem>
+
+            <!-- ════════ CONVERTER TAB ════════ -->
+            <TabItem Header="Converter">
+                <Grid ColumnDefinitions="*,*" Margin="16" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,20,Auto,Auto,Auto,Auto,Auto">
+
+                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Weight"
+                               FontSize="15" FontWeight="SemiBold" Margin="0,0,0,6"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Grams (g)"     VerticalAlignment="Center"/>
+                    <TextBox   Grid.Row="1" Grid.Column="1" x:Name="gTxt"        TextChanged="WeightChanged"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Ounces (oz)"   VerticalAlignment="Center"/>
+                    <TextBox   Grid.Row="2" Grid.Column="1" x:Name="ozTxt"       TextChanged="WeightChanged"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Pounds (lbs)"  VerticalAlignment="Center"/>
+                    <TextBox   Grid.Row="3" Grid.Column="1" x:Name="lbsTxt"      TextChanged="WeightChanged"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Teaspoons (tsp)"   VerticalAlignment="Center"/>
+                    <TextBox   Grid.Row="4" Grid.Column="1" x:Name="tspTxt"          TextChanged="WeightChanged"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Tablespoons (tbsp)" VerticalAlignment="Center"/>
+                    <TextBox   Grid.Row="5" Grid.Column="1" x:Name="tbspTxt"          TextChanged="WeightChanged"/>
+
+                    <TextBlock Grid.Row="7" Grid.ColumnSpan="2" Text="Liquid"
+                               FontSize="15" FontWeight="SemiBold" Margin="0,0,0,6"/>
+
+                    <TextBlock Grid.Row="8"  Grid.Column="0" Text="Millilitres (ml)" VerticalAlignment="Center"/>
+                    <TextBox   Grid.Row="8"  Grid.Column="1" x:Name="mlTxt"          TextChanged="LiquidChanged"/>
+
+                    <TextBlock Grid.Row="9"  Grid.Column="0" Text="Litres (l)"       VerticalAlignment="Center"/>
+                    <TextBox   Grid.Row="9"  Grid.Column="1" x:Name="lTxt"           TextChanged="LiquidChanged"/>
+
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Fluid Oz (fl oz)" VerticalAlignment="Center"/>
+                    <TextBox   Grid.Row="10" Grid.Column="1" x:Name="flOzTxt"        TextChanged="LiquidChanged"/>
+
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Cups"             VerticalAlignment="Center"/>
+                    <TextBox   Grid.Row="11" Grid.Column="1" x:Name="cupTxt"         TextChanged="LiquidChanged"/>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </DockPanel>
+</Window>

@@ -1,0 +1,50 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DietaryApp.Avalonia.Views.CustomDietCreatorDialog"
+        Title="Create Custom Diet" Width="480" Height="520"
+        WindowStartupLocation="CenterOwner">
+
+    <DockPanel Margin="16">
+
+        <!-- Name and description -->
+        <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,12">
+            <TextBox Text="{Binding DietName}"        Watermark="Diet name..."/>
+            <TextBox Text="{Binding DietDescription}" Watermark="Diet description..."/>
+            <TextBlock Text="{Binding ValidationMessage}" Foreground="Red"
+                       IsVisible="{Binding ValidationMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Spacing="8" Margin="0,12,0,0">
+            <Button Content="Cancel" Click="CancelButton_Click"/>
+            <Button Content="Save"   Click="SaveButton_Click" IsDefault="True"/>
+        </StackPanel>
+
+        <!-- Nutrient checkboxes: Include / Avoid columns -->
+        <Grid ColumnDefinitions="*,*">
+            <StackPanel Grid.Column="0" Spacing="8">
+                <TextBlock Text="Include (positive)" FontWeight="SemiBold"/>
+                <CheckBox Content="Calories"   IsChecked="{Binding CalPos}"/>
+                <CheckBox Content="Fat"        IsChecked="{Binding FatPos}"/>
+                <CheckBox Content="Saturates"  IsChecked="{Binding SatPos}"/>
+                <CheckBox Content="Fibre"      IsChecked="{Binding FibPos}"/>
+                <CheckBox Content="Carbs"      IsChecked="{Binding CarbPos}"/>
+                <CheckBox Content="Salt"       IsChecked="{Binding SalPos}"/>
+                <CheckBox Content="Sugars"     IsChecked="{Binding SugPos}"/>
+                <CheckBox Content="Protein"    IsChecked="{Binding ProPos}"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="8">
+                <TextBlock Text="Avoid (negative)" FontWeight="SemiBold"/>
+                <CheckBox Content="Calories"   IsChecked="{Binding CalNeg}"/>
+                <CheckBox Content="Fat"        IsChecked="{Binding FatNeg}"/>
+                <CheckBox Content="Saturates"  IsChecked="{Binding SatNeg}"/>
+                <CheckBox Content="Fibre"      IsChecked="{Binding FibNeg}"/>
+                <CheckBox Content="Carbs"      IsChecked="{Binding CarbNeg}"/>
+                <CheckBox Content="Salt"       IsChecked="{Binding SalNeg}"/>
+                <CheckBox Content="Sugars"     IsChecked="{Binding SugNeg}"/>
+                <CheckBox Content="Protein"    IsChecked="{Binding ProNeg}"/>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</Window>

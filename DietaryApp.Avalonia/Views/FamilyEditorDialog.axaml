@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DietaryApp.Avalonia.Views.FamilyEditorDialog"
+        Title="Edit Family" Width="520" Height="400"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid ColumnDefinitions="*,*" Margin="16" RowDefinitions="*,Auto">
+
+        <!-- Family member list -->
+        <DockPanel Grid.Column="0" Margin="0,0,8,0">
+            <TextBlock DockPanel.Dock="Top" Text="Family Members" FontWeight="SemiBold" Margin="0,0,0,8"/>
+            <ListBox ItemsSource="{Binding FamilyMembers}"
+                     SelectedItem="{Binding SelectedMember}"
+                     DisplayMemberBinding="{Binding}"/>
+        </DockPanel>
+
+        <!-- Add buttons -->
+        <StackPanel Grid.Column="1" Spacing="6">
+            <TextBlock Text="Add member" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <TextBlock Text="— Male —" Foreground="#888" FontSize="11"/>
+            <Button Content="Child Male"       Command="{Binding AddChildMaleCommand}"   HorizontalAlignment="Stretch"/>
+            <Button Content="Teenager Male"    Command="{Binding AddTeenMaleCommand}"    HorizontalAlignment="Stretch"/>
+            <Button Content="Adult Male"       Command="{Binding AddAdultMaleCommand}"   HorizontalAlignment="Stretch"/>
+            <Button Content="Elderly Male"     Command="{Binding AddElderMaleCommand}"   HorizontalAlignment="Stretch"/>
+            <TextBlock Text="— Female —" Foreground="#888" FontSize="11" Margin="0,4,0,0"/>
+            <Button Content="Child Female"     Command="{Binding AddChildFemaleCommand}" HorizontalAlignment="Stretch"/>
+            <Button Content="Teenager Female"  Command="{Binding AddTeenFemaleCommand}"  HorizontalAlignment="Stretch"/>
+            <Button Content="Adult Female"     Command="{Binding AddAdultFemaleCommand}" HorizontalAlignment="Stretch"/>
+            <Button Content="Elderly Female"   Command="{Binding AddElderFemaleCommand}" HorizontalAlignment="Stretch"/>
+            <Button Content="Remove Selected"  Command="{Binding RemoveSelectedCommand}" HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0" Background="#e05050" Foreground="White"/>
+        </StackPanel>
+
+        <!-- Save button -->
+        <Button Grid.Row="1" Grid.ColumnSpan="2" Content="Save"
+                HorizontalAlignment="Right" Margin="0,12,0,0"
+                Click="SaveButton_Click" IsDefault="True"/>
+    </Grid>
+</Window>

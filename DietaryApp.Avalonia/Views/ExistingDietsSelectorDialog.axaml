@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DietaryApp.Avalonia.Views.ExistingDietsSelectorDialog"
+        Title="Select Diet" Width="520" Height="380"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid ColumnDefinitions="*,*" Margin="16" RowDefinitions="*,Auto">
+
+        <!-- Diet list -->
+        <DockPanel Grid.Column="0" Margin="0,0,8,0">
+            <TextBlock DockPanel.Dock="Top" Text="Available Diets"
+                       FontWeight="SemiBold" Margin="0,0,0,8"/>
+            <ListBox ItemsSource="{Binding Diets}"
+                     SelectedItem="{Binding SelectedDiet}"
+                     DisplayMemberBinding="{Binding Name}"/>
+        </DockPanel>
+
+        <!-- Diet info -->
+        <StackPanel Grid.Column="1" Spacing="8">
+            <TextBlock Text="{Binding DietTitle}" FontWeight="SemiBold" FontSize="15" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding DietInfo}"  TextWrapping="Wrap" Foreground="#555"/>
+            <TextBlock Text="{Binding PriorityText}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Spacing="8" Margin="0,12,0,0">
+            <Button Content="Cancel" Click="CancelButton_Click"/>
+            <Button Content="Select" Click="SaveButton_Click" IsDefault="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
