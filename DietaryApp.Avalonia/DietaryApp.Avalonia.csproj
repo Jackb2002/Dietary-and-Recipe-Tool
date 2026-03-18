@@ -32,11 +32,11 @@
     <None Update="spoonacular.key" Condition="Exists('spoonacular.key')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="..\WinFormsInfoApp\recipe_cache.json">
+    <None Update="..\recipe_cache.json" Condition="Exists('..\recipe_cache.json')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>recipe_cache.json</Link>
     </None>
-    <None Update="..\WinFormsInfoApp\ingredient_cache.json" Condition="Exists('..\WinFormsInfoApp\ingredient_cache.json')">
+    <None Update="..\ingredient_cache.json" Condition="Exists('..\ingredient_cache.json')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>ingredient_cache.json</Link>
     </None>
