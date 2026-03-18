@@ -1,4 +1,4 @@
-﻿using HtmlAgilityPack;
+using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -6,57 +6,58 @@ namespace SupermarketInfo
 {
     public class Tesco
     {
+        /// <summary>
+        /// Downloads and parses Tesco product pages.
+        /// </summary>
+        /// <param name="urls">
+        /// URLs to fetch. Include the literal string "PAGENUMBER" where the page number should go.
+        /// </param>
+        /// <returns>List of parsed FoodItem results.</returns>
         public static List<FoodItem> DownloadTescoURLs(string[] urls)
         {
-            string[] page_1s = new string[urls.Length];
+            string[] page1Urls = new string[urls.Length];
             for (int i = 0; i < urls.Length; i++)
-            {
-                string url = urls[i];
-                string page_1 = url.Replace("PAGENUMBER", "1");
-                page_1s[i] = page_1;
-            }
+                page1Urls[i] = urls[i].Replace("PAGENUMBER", "1");
 
-            _ = PageDownloader.DownloadPages(page_1s, 5);
-            int[] max_items = new int[urls.Length];
-            for (int i = 0; i < urls.Length; i++)
+            string[] htmlPages = PageDownloader.DownloadPages(page1Urls, delaySeconds: 1.5);
+
+            var items = new List<FoodItem>();
+            for (int i = 0; i < htmlPages.Length; i++)
             {
-                //max_items[i] = GetMaxItems(page_1_htmls[i]);
+                if (string.IsNullOrEmpty(htmlPages[i]))
+                {
+                    Debug.WriteLine($"No HTML received for URL: {page1Urls[i]}");
+                    continue;
+                }
+                int maxItems = GetMaxItems(htmlPages[i]);
+                Debug.WriteLine($"URL {page1Urls[i]} reports {maxItems} items");
             }
-            Debug.WriteLine("URL " + page_1s[0] + " has max items: " + max_items[0]);
-            return null;
+            return items;
         }
 
+        /// <summary>
+        /// Parses the total result count from a Tesco search results page.
+        /// </summary>
+        /// <param name="html">Raw HTML of the results page.</param>
+        /// <returns>Total item count, or 0 if the pagination element is not found.</returns>
         public static int GetMaxItems(string html)
         {
-            // Load the HTML content into an HtmlDocument
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(html);
 
-            // Find the element with the class 'pagination__items-displayed'
-            HtmlNode paginationNode = doc.DocumentNode.SelectSingleNode("//div[@class='pagination__items-displayed']");
+            HtmlNode? paginationNode = doc.DocumentNode
+                .SelectSingleNode("//div[@class='pagination__items-displayed']");
 
-            if (paginationNode != null)
-            {
-                // Get the inner text of the element
-                string innerText = paginationNode.InnerText;
-
-                // Find the index of the closing strong tag after the second <strong> tag
-                int startIndex = innerText.IndexOf("</strong>", innerText.IndexOf("<strong>") + 1);
-
-                // Extract the substring containing the maximum amount of items
-                string maxItemsText = innerText.Substring(startIndex + "</strong> of <strong>".Length);
-
-                // Parse the maximum amount of items as an integer
-                int maxItems = int.Parse(maxItemsText);
-
-                // Return the maximum amount of items
-                return maxItems;
-            }
-            else
-            {
-                // If the element is not found, return a default value
+            if (paginationNode == null)
                 return 0;
-            }
+
+            string innerText = paginationNode.InnerText;
+            int secondStrong = innerText.IndexOf("</strong>", innerText.IndexOf("<strong>") + 1);
+            if (secondStrong < 0)
+                return 0;
+
+            string maxItemsText = innerText.Substring(secondStrong + "</strong> of <strong>".Length);
+            return int.TryParse(maxItemsText, out int maxItems) ? maxItems : 0;
         }
     }
 }
